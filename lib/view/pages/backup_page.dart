@@ -34,16 +34,18 @@ class _BackupPageState extends State<BackupPage> {
 
     try {
       final success = await BackupService.shareBackup();
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              success 
-                ? 'Backup exported successfully!' 
-                : 'Failed to export backup',
+              success
+                  ? 'Backup exported successfully!'
+                  : 'Failed to export backup',
             ),
-            backgroundColor: success ? AppTheme.accentGreen : AppTheme.errorColor,
+            backgroundColor: success
+                ? AppTheme.accentGreen
+                : AppTheme.errorColor,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
@@ -80,16 +82,18 @@ class _BackupPageState extends State<BackupPage> {
 
     try {
       final success = await BackupService.copyBackupToClipboard();
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              success 
-                ? 'Backup copied to clipboard! You can paste it anywhere.' 
-                : 'Failed to copy backup',
+              success
+                  ? 'Backup copied to clipboard! You can paste it anywhere.'
+                  : 'Failed to copy backup',
             ),
-            backgroundColor: success ? AppTheme.accentGreen : AppTheme.errorColor,
+            backgroundColor: success
+                ? AppTheme.accentGreen
+                : AppTheme.errorColor,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
@@ -126,7 +130,7 @@ class _BackupPageState extends State<BackupPage> {
 
     try {
       final result = await BackupService.importFromClipboard();
-      
+
       if (mounted) {
         if (result.success && result.data != null) {
           _showImportDialog(result);
@@ -170,18 +174,12 @@ class _BackupPageState extends State<BackupPage> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: AppTheme.getCardColor(context),
-        title: Text(
-          'Import Backup',
-          style: AppTheme.getHeadingSmall(context),
-        ),
+        title: Text('Import Backup', style: AppTheme.getHeadingSmall(context)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Backup Details:',
-              style: AppTheme.getBodyLarge(context),
-            ),
+            Text('Backup Details:', style: AppTheme.getBodyLarge(context)),
             const SizedBox(height: 8),
             Text(
               '📅 Date: ${result.backupDate?.split('T')[0] ?? 'Unknown'}',
@@ -253,24 +251,29 @@ class _BackupPageState extends State<BackupPage> {
     });
 
     try {
-      final success = await BackupService.restoreBackup(data, clearExisting: true);
-      
+      final success = await BackupService.restoreBackup(
+        data,
+        clearExisting: true,
+      );
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              success 
-                ? 'Backup imported successfully!' 
-                : 'Failed to import backup',
+              success
+                  ? 'Backup imported successfully!'
+                  : 'Failed to import backup',
             ),
-            backgroundColor: success ? AppTheme.accentGreen : AppTheme.errorColor,
+            backgroundColor: success
+                ? AppTheme.accentGreen
+                : AppTheme.errorColor,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             ),
           ),
         );
-        
+
         if (success) {
           // Refresh backup size
           _loadBackupSize();
@@ -301,7 +304,7 @@ class _BackupPageState extends State<BackupPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    
+
     return Scaffold(
       backgroundColor: AppTheme.getBackgroundColor(context),
       appBar: AppBar(
@@ -312,9 +315,7 @@ class _BackupPageState extends State<BackupPage> {
       ),
       body: _isLoading
           ? const Center(
-              child: CircularProgressIndicator(
-                color: AppTheme.primaryBlue,
-              ),
+              child: CircularProgressIndicator(color: AppTheme.primaryBlue),
             )
           : SingleChildScrollView(
               padding: const EdgeInsets.all(16),
@@ -379,10 +380,7 @@ class _BackupPageState extends State<BackupPage> {
                   const SizedBox(height: 24),
 
                   // Export Section
-                  Text(
-                    'Export Data',
-                    style: AppTheme.getHeadingSmall(context),
-                  ),
+                  Text('Export Data', style: AppTheme.getHeadingSmall(context)),
                   const SizedBox(height: 12),
                   _buildActionCard(
                     icon: Icons.share_outlined,
@@ -402,10 +400,7 @@ class _BackupPageState extends State<BackupPage> {
                   const SizedBox(height: 24),
 
                   // Import Section
-                  Text(
-                    'Import Data',
-                    style: AppTheme.getHeadingSmall(context),
-                  ),
+                  Text('Import Data', style: AppTheme.getHeadingSmall(context)),
                   const SizedBox(height: 12),
                   _buildActionCard(
                     icon: Icons.paste_outlined,
@@ -423,7 +418,9 @@ class _BackupPageState extends State<BackupPage> {
                       color: AppTheme.getCardColor(context),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: AppTheme.getTextSecondary(context).withOpacity(0.2),
+                        color: AppTheme.getTextSecondary(
+                          context,
+                        ).withOpacity(0.2),
                       ),
                     ),
                     child: Column(
@@ -444,11 +441,21 @@ class _BackupPageState extends State<BackupPage> {
                           ],
                         ),
                         const SizedBox(height: 12),
-                        _buildInfoPoint('• Backup contains all your incomes, expenses, and commitments'),
-                        _buildInfoPoint('• You can share backup files or copy to clipboard'),
-                        _buildInfoPoint('• Importing a backup will replace all current data'),
-                        _buildInfoPoint('• Clipboard method works great for quick transfers'),
-                        _buildInfoPoint('• Keep backup data in a safe location'),
+                        _buildInfoPoint(
+                          '• Backup contains all your incomes, expenses, and commitments',
+                        ),
+                        _buildInfoPoint(
+                          '• You can share backup files or copy to clipboard',
+                        ),
+                        _buildInfoPoint(
+                          '• Importing a backup will replace all current data',
+                        ),
+                        _buildInfoPoint(
+                          '• Clipboard method works great for quick transfers',
+                        ),
+                        _buildInfoPoint(
+                          '• Keep backup data in a safe location',
+                        ),
                       ],
                     ),
                   ),
@@ -475,7 +482,7 @@ class _BackupPageState extends State<BackupPage> {
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(
-                Theme.of(context).brightness == Brightness.dark ? 0.3 : 0.05
+                Theme.of(context).brightness == Brightness.dark ? 0.3 : 0.05,
               ),
               blurRadius: 10,
               offset: const Offset(0, 2),
@@ -491,26 +498,16 @@ class _BackupPageState extends State<BackupPage> {
                 color: color.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(
-                icon,
-                color: color,
-                size: 24,
-              ),
+              child: Icon(icon, color: color, size: 24),
             ),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    title,
-                    style: AppTheme.getBodyLarge(context),
-                  ),
+                  Text(title, style: AppTheme.getBodyLarge(context)),
                   const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: AppTheme.getBodyMedium(context),
-                  ),
+                  Text(subtitle, style: AppTheme.getBodyMedium(context)),
                 ],
               ),
             ),
@@ -528,10 +525,7 @@ class _BackupPageState extends State<BackupPage> {
   Widget _buildInfoPoint(String text) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
-      child: Text(
-        text,
-        style: AppTheme.getBodyMedium(context),
-      ),
+      child: Text(text, style: AppTheme.getBodyMedium(context)),
     );
   }
 }
