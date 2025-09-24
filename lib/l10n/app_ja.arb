@@ -1,0 +1,127 @@
+{
+  "@@locale": "ja",
+  "appTitle": "マネーフォロー",
+  
+  "overview": "概要",
+  "totalBalance": "総残高",
+  "thisMonth": "今月",
+  "income": "収入",
+  "expenses": "支出",
+  "commitments": "コミットメント",
+  "history": "履歴",
+  "settings": "設定",
+  
+  "addIncome": "収入を追加",
+  "addExpense": "支出を追加",
+  "addCommitment": "コミットメントを追加",
+  "editIncome": "収入を編集",
+  "editExpense": "支出を編集",
+  "editCommitment": "コミットメントを編集",
+  
+  "amount": "金額",
+  "source": "ソース",
+  "category": "カテゴリ",
+  "date": "日付",
+  "dueDate": "期日",
+  "notes": "メモ",
+  "title": "タイトル",
+  
+  "quickSelect": "クイック選択",
+  "save": "保存",
+  "update": "更新",
+  "delete": "削除",
+  "cancel": "キャンセル",
+  
+  "saveIncome": "収入を保存",
+  "saveExpense": "支出を保存",
+  "saveCommitment": "コミットメントを保存",
+  "updateIncome": "収入を更新",
+  "updateExpense": "支出を更新",
+  "updateCommitment": "コミットメントを更新",
+  
+  "deleteIncome": "収入を削除",
+  "deleteExpense": "支出を削除",
+  "deleteCommitment": "コミットメントを削除",
+  
+  "deleteIncomeConfirm": "この収入記録を削除してもよろしいですか？この操作は元に戻せません。",
+  "deleteExpenseConfirm": "この支出記録を削除してもよろしいですか？この操作は元に戻せません。",
+  "deleteCommitmentConfirm": "このコミットメントを削除してもよろしいですか？この操作は元に戻せません。",
+  
+  "incomeUpdatedSuccess": "収入が正常に更新されました！",
+  "expenseUpdatedSuccess": "支出が正常に更新されました！",
+  "commitmentUpdatedSuccess": "コミットメントが正常に更新されました！",
+  
+  "incomeDeletedSuccess": "収入が正常に削除されました！",
+  "expenseDeletedSuccess": "支出が正常に削除されました！",
+  "commitmentDeletedSuccess": "コミットメントが正常に削除されました！",
+  
+  "incomeSavedSuccess": "収入が正常に保存されました！",
+  "expenseSavedSuccess": "支出が正常に保存されました！",
+  "commitmentSavedSuccess": "コミットメントが正常に保存されました！",
+  
+  "errorUpdatingIncome": "収入の更新エラー：{error}",
+  "errorUpdatingExpense": "支出の更新エラー：{error}",
+  "errorUpdatingCommitment": "コミットメントの更新エラー：{error}",
+  
+  "errorDeletingIncome": "収入の削除エラー：{error}",
+  "errorDeletingExpense": "支出の削除エラー：{error}",
+  "errorDeletingCommitment": "コミットメントの削除エラー：{error}",
+  
+  "errorSavingIncome": "収入の保存エラー：{error}",
+  "errorSavingExpense": "支出の保存エラー：{error}",
+  "errorSavingCommitment": "コミットメントの保存エラー：{error}",
+  
+  "transactionHistory": "取引履歴",
+  "noTransactionsYet": "まだ取引がありません",
+  "startAddingTransactions": "収入、支出、またはコミットメントの追加を開始してください",
+  "noCommitmentsYet": "まだコミットメントがありません",
+  "addYourBills": "請求書、家賃、その他のコミットメントを追加してください",
+  
+  "today": "今日",
+  "yesterday": "昨日",
+  "upcoming": "今後",
+  "overdue": "期限切れ",
+  "items": "{count}件",
+  
+  "all": "すべて",
+  
+  "food": "食費",
+  "transport": "交通費",
+  "shopping": "買い物",
+  "entertainment": "娯楽",
+  "bills": "請求書",
+  "healthcare": "医療費",
+  "education": "教育費",
+  "other": "その他",
+  
+  "salary": "給与",
+  "freelance": "フリーランス",
+  "business": "ビジネス",
+  "investment": "投資",
+  "gift": "ギフト",
+  "bonus": "ボーナス",
+  
+  "pleaseEnterAmount": "金額を入力してください",
+  "pleaseEnterValidNumber": "有効な数値を入力してください",
+  "amountMustBeGreaterThanZero": "金額は0より大きくなければなりません",
+  "pleaseEnterIncomeSource": "収入源を入力してください",
+  "pleaseEnterTitle": "タイトルを入力してください",
+  "addNote": "メモを追加...",
+  
+  "appearance": "外観",
+  "language": "言語",
+  "currency": "通貨",
+  "darkMode": "ダークモード",
+  "darkThemeEnabled": "ダークテーマが有効",
+  "lightThemeEnabled": "ライトテーマが有効",
+  
+  "about": "について",
+  "version": "バージョン",
+  "appDescription": "財務管理に役立つシンプルでエレガントなマネートラッキングアプリ。",
+  
+  "english": "English",
+  "arabic": "العربية",
+  "french": "Français",
+  "german": "Deutsch",
+  "japanese": "日本語"
+}

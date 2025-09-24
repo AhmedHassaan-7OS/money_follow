@@ -1,0 +1,127 @@
+{
+  "@@locale": "de",
+  "appTitle": "Geld Verfolgen",
+  
+  "overview": "Übersicht",
+  "totalBalance": "Gesamtsaldo",
+  "thisMonth": "Dieser Monat",
+  "income": "Einkommen",
+  "expenses": "Ausgaben",
+  "commitments": "Verpflichtungen",
+  "history": "Verlauf",
+  "settings": "Einstellungen",
+  
+  "addIncome": "Einkommen Hinzufügen",
+  "addExpense": "Ausgabe Hinzufügen",
+  "addCommitment": "Verpflichtung Hinzufügen",
+  "editIncome": "Einkommen Bearbeiten",
+  "editExpense": "Ausgabe Bearbeiten",
+  "editCommitment": "Verpflichtung Bearbeiten",
+  
+  "amount": "Betrag",
+  "source": "Quelle",
+  "category": "Kategorie",
+  "date": "Datum",
+  "dueDate": "Fälligkeitsdatum",
+  "notes": "Notizen",
+  "title": "Titel",
+  
+  "quickSelect": "Schnellauswahl",
+  "save": "Speichern",
+  "update": "Aktualisieren",
+  "delete": "Löschen",
+  "cancel": "Abbrechen",
+  
+  "saveIncome": "Einkommen Speichern",
+  "saveExpense": "Ausgabe Speichern",
+  "saveCommitment": "Verpflichtung Speichern",
+  "updateIncome": "Einkommen Aktualisieren",
+  "updateExpense": "Ausgabe Aktualisieren",
+  "updateCommitment": "Verpflichtung Aktualisieren",
+  
+  "deleteIncome": "Einkommen Löschen",
+  "deleteExpense": "Ausgabe Löschen",
+  "deleteCommitment": "Verpflichtung Löschen",
+  
+  "deleteIncomeConfirm": "Sind Sie sicher, dass Sie diesen Einkommensdatensatz löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+  "deleteExpenseConfirm": "Sind Sie sicher, dass Sie diesen Ausgabendatensatz löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+  "deleteCommitmentConfirm": "Sind Sie sicher, dass Sie diese Verpflichtung löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+  
+  "incomeUpdatedSuccess": "Einkommen erfolgreich aktualisiert!",
+  "expenseUpdatedSuccess": "Ausgabe erfolgreich aktualisiert!",
+  "commitmentUpdatedSuccess": "Verpflichtung erfolgreich aktualisiert!",
+  
+  "incomeDeletedSuccess": "Einkommen erfolgreich gelöscht!",
+  "expenseDeletedSuccess": "Ausgabe erfolgreich gelöscht!",
+  "commitmentDeletedSuccess": "Verpflichtung erfolgreich gelöscht!",
+  
+  "incomeSavedSuccess": "Einkommen erfolgreich gespeichert!",
+  "expenseSavedSuccess": "Ausgabe erfolgreich gespeichert!",
+  "commitmentSavedSuccess": "Verpflichtung erfolgreich gespeichert!",
+  
+  "errorUpdatingIncome": "Fehler beim Aktualisieren des Einkommens: {error}",
+  "errorUpdatingExpense": "Fehler beim Aktualisieren der Ausgabe: {error}",
+  "errorUpdatingCommitment": "Fehler beim Aktualisieren der Verpflichtung: {error}",
+  
+  "errorDeletingIncome": "Fehler beim Löschen des Einkommens: {error}",
+  "errorDeletingExpense": "Fehler beim Löschen der Ausgabe: {error}",
+  "errorDeletingCommitment": "Fehler beim Löschen der Verpflichtung: {error}",
+  
+  "errorSavingIncome": "Fehler beim Speichern des Einkommens: {error}",
+  "errorSavingExpense": "Fehler beim Speichern der Ausgabe: {error}",
+  "errorSavingCommitment": "Fehler beim Speichern der Verpflichtung: {error}",
+  
+  "transactionHistory": "Transaktionsverlauf",
+  "noTransactionsYet": "Noch keine Transaktionen",
+  "startAddingTransactions": "Beginnen Sie mit dem Hinzufügen von Einkommen, Ausgaben oder Verpflichtungen",
+  "noCommitmentsYet": "Noch keine Verpflichtungen",
+  "addYourBills": "Fügen Sie Ihre Rechnungen, Miete und andere Verpflichtungen hinzu",
+  
+  "today": "Heute",
+  "yesterday": "Gestern",
+  "upcoming": "Bevorstehend",
+  "overdue": "ÜBERFÄLLIG",
+  "items": "{count} Artikel",
+  
+  "all": "Alle",
+  
+  "food": "Essen",
+  "transport": "Transport",
+  "shopping": "Einkaufen",
+  "entertainment": "Unterhaltung",
+  "bills": "Rechnungen",
+  "healthcare": "Gesundheitswesen",
+  "education": "Bildung",
+  "other": "Andere",
+  
+  "salary": "Gehalt",
+  "freelance": "Freiberuflich",
+  "business": "Geschäft",
+  "investment": "Investition",
+  "gift": "Geschenk",
+  "bonus": "Bonus",
+  
+  "pleaseEnterAmount": "Bitte geben Sie einen Betrag ein",
+  "pleaseEnterValidNumber": "Bitte geben Sie eine gültige Zahl ein",
+  "amountMustBeGreaterThanZero": "Der Betrag muss größer als null sein",
+  "pleaseEnterIncomeSource": "Bitte geben Sie die Einkommensquelle ein",
+  "pleaseEnterTitle": "Bitte geben Sie einen Titel ein",
+  "addNote": "Notiz hinzufügen...",
+  
+  "appearance": "Erscheinungsbild",
+  "language": "Sprache",
+  "currency": "Währung",
+  "darkMode": "Dunkler Modus",
+  "darkThemeEnabled": "Dunkles Design aktiviert",
+  "lightThemeEnabled": "Helles Design aktiviert",
+  
+  "about": "Über",
+  "version": "Version",
+  "appDescription": "Eine einfache und elegante Geld-Tracking-App, die Ihnen bei der Verwaltung Ihrer Finanzen hilft.",
+  
+  "english": "English",
+  "arabic": "العربية",
+  "french": "Français",
+  "german": "Deutsch",
+  "japanese": "日本語"
+}

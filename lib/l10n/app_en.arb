@@ -1,0 +1,200 @@
+{
+  "@@locale": "en",
+  "appTitle": "Money Follow",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  
+  "overview": "Overview",
+  "totalBalance": "Total Balance",
+  "thisMonth": "This Month",
+  "income": "Income",
+  "expenses": "Expenses",
+  "commitments": "Commitments",
+  "history": "History",
+  "settings": "Settings",
+  
+  "addIncome": "Add Income",
+  "addExpense": "Add Expense",
+  "addCommitment": "Add Commitment",
+  "editIncome": "Edit Income",
+  "editExpense": "Edit Expense",
+  "editCommitment": "Edit Commitment",
+  
+  "amount": "Amount",
+  "source": "Source",
+  "category": "Category",
+  "date": "Date",
+  "dueDate": "Due Date",
+  "notes": "Notes",
+  "title": "Title",
+  
+  "quickSelect": "Quick Select",
+  "save": "Save",
+  "update": "Update",
+  "delete": "Delete",
+  "cancel": "Cancel",
+  
+  "saveIncome": "Save Income",
+  "saveExpense": "Save Expense",
+  "saveCommitment": "Save Commitment",
+  "updateIncome": "Update Income",
+  "updateExpense": "Update Expense",
+  "updateCommitment": "Update Commitment",
+  
+  "deleteIncome": "Delete Income",
+  "deleteExpense": "Delete Expense",
+  "deleteCommitment": "Delete Commitment",
+  
+  "deleteIncomeConfirm": "Are you sure you want to delete this income record? This action cannot be undone.",
+  "deleteExpenseConfirm": "Are you sure you want to delete this expense record? This action cannot be undone.",
+  "deleteCommitmentConfirm": "Are you sure you want to delete this commitment? This action cannot be undone.",
+  
+  "incomeUpdatedSuccess": "Income updated successfully!",
+  "expenseUpdatedSuccess": "Expense updated successfully!",
+  "commitmentUpdatedSuccess": "Commitment updated successfully!",
+  
+  "incomeDeletedSuccess": "Income deleted successfully!",
+  "expenseDeletedSuccess": "Expense deleted successfully!",
+  "commitmentDeletedSuccess": "Commitment deleted successfully!",
+  
+  "incomeSavedSuccess": "Income saved successfully!",
+  "expenseSavedSuccess": "Expense saved successfully!",
+  "commitmentSavedSuccess": "Commitment saved successfully!",
+  
+  "errorUpdatingIncome": "Error updating income: {error}",
+  "@errorUpdatingIncome": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorUpdatingExpense": "Error updating expense: {error}",
+  "@errorUpdatingExpense": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorUpdatingCommitment": "Error updating commitment: {error}",
+  "@errorUpdatingCommitment": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "errorDeletingIncome": "Error deleting income: {error}",
+  "@errorDeletingIncome": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorDeletingExpense": "Error deleting expense: {error}",
+  "@errorDeletingExpense": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorDeletingCommitment": "Error deleting commitment: {error}",
+  "@errorDeletingCommitment": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "errorSavingIncome": "Error saving income: {error}",
+  "@errorSavingIncome": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorSavingExpense": "Error saving expense: {error}",
+  "@errorSavingExpense": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorSavingCommitment": "Error saving commitment: {error}",
+  "@errorSavingCommitment": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "transactionHistory": "Transaction History",
+  "noTransactionsYet": "No transactions yet",
+  "startAddingTransactions": "Start adding income, expenses, or commitments",
+  "noCommitmentsYet": "No commitments yet",
+  "addYourBills": "Add your bills, rent, and other commitments",
+  
+  "today": "Today",
+  "yesterday": "Yesterday",
+  "upcoming": "Upcoming",
+  "overdue": "OVERDUE",
+  "items": "{count} items",
+  "@items": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  
+  "all": "All",
+  
+  "food": "Food",
+  "transport": "Transport",
+  "shopping": "Shopping",
+  "entertainment": "Entertainment",
+  "bills": "Bills",
+  "healthcare": "Healthcare",
+  "education": "Education",
+  "other": "Other",
+  
+  "salary": "Salary",
+  "freelance": "Freelance",
+  "business": "Business",
+  "investment": "Investment",
+  "gift": "Gift",
+  "bonus": "Bonus",
+  
+  "pleaseEnterAmount": "Please enter an amount",
+  "pleaseEnterValidNumber": "Please enter a valid number",
+  "amountMustBeGreaterThanZero": "Amount must be greater than 0",
+  "pleaseEnterIncomeSource": "Please enter income source",
+  "pleaseEnterTitle": "Please enter a title",
+  "addNote": "Add a note...",
+  
+  "appearance": "Appearance",
+  "language": "Language",
+  "currency": "Currency",
+  "darkMode": "Dark Mode",
+  "darkThemeEnabled": "Dark theme enabled",
+  "lightThemeEnabled": "Light theme enabled",
+  
+  "about": "About",
+  "version": "Version",
+  "appDescription": "A simple and elegant money tracking app to help you manage your finances.",
+  
+  "english": "English",
+  "arabic": "العربية",
+  "french": "Français",
+  "german": "Deutsch",
+  "japanese": "日本語"
+}

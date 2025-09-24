@@ -1,0 +1,127 @@
+{
+  "@@locale": "ar",
+  "appTitle": "متابع المال",
+  
+  "overview": "نظرة عامة",
+  "totalBalance": "الرصيد الإجمالي",
+  "thisMonth": "هذا الشهر",
+  "income": "الدخل",
+  "expenses": "المصروفات",
+  "commitments": "الالتزامات",
+  "history": "التاريخ",
+  "settings": "الإعدادات",
+  
+  "addIncome": "إضافة دخل",
+  "addExpense": "إضافة مصروف",
+  "addCommitment": "إضافة التزام",
+  "editIncome": "تعديل الدخل",
+  "editExpense": "تعديل المصروف",
+  "editCommitment": "تعديل الالتزام",
+  
+  "amount": "المبلغ",
+  "source": "المصدر",
+  "category": "الفئة",
+  "date": "التاريخ",
+  "dueDate": "تاريخ الاستحقاق",
+  "notes": "الملاحظات",
+  "title": "العنوان",
+  
+  "quickSelect": "اختيار سريع",
+  "save": "حفظ",
+  "update": "تحديث",
+  "delete": "حذف",
+  "cancel": "إلغاء",
+  
+  "saveIncome": "حفظ الدخل",
+  "saveExpense": "حفظ المصروف",
+  "saveCommitment": "حفظ الالتزام",
+  "updateIncome": "تحديث الدخل",
+  "updateExpense": "تحديث المصروف",
+  "updateCommitment": "تحديث الالتزام",
+  
+  "deleteIncome": "حذف الدخل",
+  "deleteExpense": "حذف المصروف",
+  "deleteCommitment": "حذف الالتزام",
+  
+  "deleteIncomeConfirm": "هل أنت متأكد من حذف سجل الدخل هذا؟ لا يمكن التراجع عن هذا الإجراء.",
+  "deleteExpenseConfirm": "هل أنت متأكد من حذف سجل المصروف هذا؟ لا يمكن التراجع عن هذا الإجراء.",
+  "deleteCommitmentConfirm": "هل أنت متأكد من حذف هذا الالتزام؟ لا يمكن التراجع عن هذا الإجراء.",
+  
+  "incomeUpdatedSuccess": "تم تحديث الدخل بنجاح!",
+  "expenseUpdatedSuccess": "تم تحديث المصروف بنجاح!",
+  "commitmentUpdatedSuccess": "تم تحديث الالتزام بنجاح!",
+  
+  "incomeDeletedSuccess": "تم حذف الدخل بنجاح!",
+  "expenseDeletedSuccess": "تم حذف المصروف بنجاح!",
+  "commitmentDeletedSuccess": "تم حذف الالتزام بنجاح!",
+  
+  "incomeSavedSuccess": "تم حفظ الدخل بنجاح!",
+  "expenseSavedSuccess": "تم حفظ المصروف بنجاح!",
+  "commitmentSavedSuccess": "تم حفظ الالتزام بنجاح!",
+  
+  "errorUpdatingIncome": "خطأ في تحديث الدخل: {error}",
+  "errorUpdatingExpense": "خطأ في تحديث المصروف: {error}",
+  "errorUpdatingCommitment": "خطأ في تحديث الالتزام: {error}",
+  
+  "errorDeletingIncome": "خطأ في حذف الدخل: {error}",
+  "errorDeletingExpense": "خطأ في حذف المصروف: {error}",
+  "errorDeletingCommitment": "خطأ في حذف الالتزام: {error}",
+  
+  "errorSavingIncome": "خطأ في حفظ الدخل: {error}",
+  "errorSavingExpense": "خطأ في حفظ المصروف: {error}",
+  "errorSavingCommitment": "خطأ في حفظ الالتزام: {error}",
+  
+  "transactionHistory": "تاريخ المعاملات",
+  "noTransactionsYet": "لا توجد معاملات بعد",
+  "startAddingTransactions": "ابدأ بإضافة الدخل والمصروفات والالتزامات",
+  "noCommitmentsYet": "لا توجد التزامات بعد",
+  "addYourBills": "أضف فواتيرك وإيجارك والتزاماتك الأخرى",
+  
+  "today": "اليوم",
+  "yesterday": "أمس",
+  "upcoming": "قادم",
+  "overdue": "متأخر",
+  "items": "{count} عنصر",
+  
+  "all": "الكل",
+  
+  "food": "طعام",
+  "transport": "مواصلات",
+  "shopping": "تسوق",
+  "entertainment": "ترفيه",
+  "bills": "فواتير",
+  "healthcare": "رعاية صحية",
+  "education": "تعليم",
+  "other": "أخرى",
+  
+  "salary": "راتب",
+  "freelance": "عمل حر",
+  "business": "أعمال",
+  "investment": "استثمار",
+  "gift": "هدية",
+  "bonus": "مكافأة",
+  
+  "pleaseEnterAmount": "يرجى إدخال المبلغ",
+  "pleaseEnterValidNumber": "يرجى إدخال رقم صحيح",
+  "amountMustBeGreaterThanZero": "يجب أن يكون المبلغ أكبر من صفر",
+  "pleaseEnterIncomeSource": "يرجى إدخال مصدر الدخل",
+  "pleaseEnterTitle": "يرجى إدخال العنوان",
+  "addNote": "إضافة ملاحظة...",
+  
+  "appearance": "المظهر",
+  "language": "اللغة",
+  "currency": "العملة",
+  "darkMode": "الوضع المظلم",
+  "darkThemeEnabled": "تم تفعيل الوضع المظلم",
+  "lightThemeEnabled": "تم تفعيل الوضع المضيء",
+  
+  "about": "حول",
+  "version": "الإصدار",
+  "appDescription": "تطبيق بسيط وأنيق لتتبع الأموال لمساعدتك في إدارة أموالك.",
+  
+  "english": "English",
+  "arabic": "العربية",
+  "french": "Français",
+  "german": "Deutsch",
+  "japanese": "日本語"
+}

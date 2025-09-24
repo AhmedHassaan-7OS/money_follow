@@ -1,0 +1,127 @@
+{
+  "@@locale": "fr",
+  "appTitle": "Suivi d'Argent",
+  
+  "overview": "Aperçu",
+  "totalBalance": "Solde Total",
+  "thisMonth": "Ce Mois",
+  "income": "Revenus",
+  "expenses": "Dépenses",
+  "commitments": "Engagements",
+  "history": "Historique",
+  "settings": "Paramètres",
+  
+  "addIncome": "Ajouter Revenu",
+  "addExpense": "Ajouter Dépense",
+  "addCommitment": "Ajouter Engagement",
+  "editIncome": "Modifier Revenu",
+  "editExpense": "Modifier Dépense",
+  "editCommitment": "Modifier Engagement",
+  
+  "amount": "Montant",
+  "source": "Source",
+  "category": "Catégorie",
+  "date": "Date",
+  "dueDate": "Date d'Échéance",
+  "notes": "Notes",
+  "title": "Titre",
+  
+  "quickSelect": "Sélection Rapide",
+  "save": "Enregistrer",
+  "update": "Mettre à Jour",
+  "delete": "Supprimer",
+  "cancel": "Annuler",
+  
+  "saveIncome": "Enregistrer Revenu",
+  "saveExpense": "Enregistrer Dépense",
+  "saveCommitment": "Enregistrer Engagement",
+  "updateIncome": "Mettre à Jour Revenu",
+  "updateExpense": "Mettre à Jour Dépense",
+  "updateCommitment": "Mettre à Jour Engagement",
+  
+  "deleteIncome": "Supprimer Revenu",
+  "deleteExpense": "Supprimer Dépense",
+  "deleteCommitment": "Supprimer Engagement",
+  
+  "deleteIncomeConfirm": "Êtes-vous sûr de vouloir supprimer cet enregistrement de revenu ? Cette action ne peut pas être annulée.",
+  "deleteExpenseConfirm": "Êtes-vous sûr de vouloir supprimer cet enregistrement de dépense ? Cette action ne peut pas être annulée.",
+  "deleteCommitmentConfirm": "Êtes-vous sûr de vouloir supprimer cet engagement ? Cette action ne peut pas être annulée.",
+  
+  "incomeUpdatedSuccess": "Revenu mis à jour avec succès !",
+  "expenseUpdatedSuccess": "Dépense mise à jour avec succès !",
+  "commitmentUpdatedSuccess": "Engagement mis à jour avec succès !",
+  
+  "incomeDeletedSuccess": "Revenu supprimé avec succès !",
+  "expenseDeletedSuccess": "Dépense supprimée avec succès !",
+  "commitmentDeletedSuccess": "Engagement supprimé avec succès !",
+  
+  "incomeSavedSuccess": "Revenu enregistré avec succès !",
+  "expenseSavedSuccess": "Dépense enregistrée avec succès !",
+  "commitmentSavedSuccess": "Engagement enregistré avec succès !",
+  
+  "errorUpdatingIncome": "Erreur lors de la mise à jour du revenu : {error}",
+  "errorUpdatingExpense": "Erreur lors de la mise à jour de la dépense : {error}",
+  "errorUpdatingCommitment": "Erreur lors de la mise à jour de l'engagement : {error}",
+  
+  "errorDeletingIncome": "Erreur lors de la suppression du revenu : {error}",
+  "errorDeletingExpense": "Erreur lors de la suppression de la dépense : {error}",
+  "errorDeletingCommitment": "Erreur lors de la suppression de l'engagement : {error}",
+  
+  "errorSavingIncome": "Erreur lors de l'enregistrement du revenu : {error}",
+  "errorSavingExpense": "Erreur lors de l'enregistrement de la dépense : {error}",
+  "errorSavingCommitment": "Erreur lors de l'enregistrement de l'engagement : {error}",
+  
+  "transactionHistory": "Historique des Transactions",
+  "noTransactionsYet": "Aucune transaction pour le moment",
+  "startAddingTransactions": "Commencez à ajouter des revenus, dépenses ou engagements",
+  "noCommitmentsYet": "Aucun engagement pour le moment",
+  "addYourBills": "Ajoutez vos factures, loyer et autres engagements",
+  
+  "today": "Aujourd'hui",
+  "yesterday": "Hier",
+  "upcoming": "À Venir",
+  "overdue": "EN RETARD",
+  "items": "{count} éléments",
+  
+  "all": "Tout",
+  
+  "food": "Nourriture",
+  "transport": "Transport",
+  "shopping": "Shopping",
+  "entertainment": "Divertissement",
+  "bills": "Factures",
+  "healthcare": "Santé",
+  "education": "Éducation",
+  "other": "Autre",
+  
+  "salary": "Salaire",
+  "freelance": "Freelance",
+  "business": "Entreprise",
+  "investment": "Investissement",
+  "gift": "Cadeau",
+  "bonus": "Prime",
+  
+  "pleaseEnterAmount": "Veuillez saisir un montant",
+  "pleaseEnterValidNumber": "Veuillez saisir un nombre valide",
+  "amountMustBeGreaterThanZero": "Le montant doit être supérieur à zéro",
+  "pleaseEnterIncomeSource": "Veuillez saisir la source de revenu",
+  "pleaseEnterTitle": "Veuillez saisir un titre",
+  "addNote": "Ajouter une note...",
+  
+  "appearance": "Apparence",
+  "language": "Langue",
+  "currency": "Devise",
+  "darkMode": "Mode Sombre",
+  "darkThemeEnabled": "Thème sombre activé",
+  "lightThemeEnabled": "Thème clair activé",
+  
+  "about": "À Propos",
+  "version": "Version",
+  "appDescription": "Une application simple et élégante de suivi d'argent pour vous aider à gérer vos finances.",
+  
+  "english": "English",
+  "arabic": "العربية",
+  "french": "Français",
+  "german": "Deutsch",
+  "japanese": "日本語"
+}
