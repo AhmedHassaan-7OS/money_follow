@@ -1,0 +1,26 @@
+{
+  "version": "1.0",
+  "timestamp": "2025-01-28T15:45:00.000Z",
+  "app_name": "Money Follow",
+  "data": {
+    "incomes": [
+      {
+        "id": 1,
+        "amount": 5000.0,
+        "description": "راتب شهري",
+        "date": "2025-01-01",
+        "category": "Salary"
+      }
+    ],
+    "expenses": [
+      {
+        "id": 1,
+        "amount": 150.0,
+        "description": "فاتورة كهرباء",
+        "date": "2025-01-15",
+        "category": "Bills"
+      }
+    ],
+    "commitments": []
+  }
+}

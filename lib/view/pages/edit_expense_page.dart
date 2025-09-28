@@ -108,7 +108,6 @@ class _EditExpensePageState extends State<EditExpensePage> {
           'expenses',
           updatedExpense.toMap(),
           widget.expense.id!,
-          [],
         );
         
         if (mounted) {

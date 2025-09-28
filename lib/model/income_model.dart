@@ -9,7 +9,9 @@ class IncomeModel {
     required this.amount,
     required this.source,
     required this.date,
-  });
+  }) : assert(amount > 0, 'Amount must be greater than 0'),
+       assert(source.isNotEmpty, 'Source cannot be empty'),
+       assert(date.isNotEmpty, 'Date cannot be empty');
 
   Map<String, dynamic> toMap() {
     return {'id': id, 'amount': amount, 'source': source, 'date': date};

@@ -59,13 +59,12 @@ class _EditCommitmentPageState extends State<EditCommitmentPage> {
           'commitments',
           updatedCommitment.toMap(),
           widget.commitment.id!,
-          [],
         );
         
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text('Commitment updated successfully!'),
+              content: Text(AppLocalizations.of(context).commitmentUpdatedSuccess),
               backgroundColor: AppTheme.accentGreen,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(

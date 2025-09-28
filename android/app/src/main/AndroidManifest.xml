@@ -1,5 +1,25 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
+    <!-- Storage permissions for backup functionality -->
+    <!-- Legacy storage permissions for Android 10 and below -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+    
+    <!-- Manage external storage for Android 11 and 12 -->
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" tools:ignore="ScopedStorage" />
+    
+    <!-- Granular media permissions for Android 13 (API level 33) and above -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+    
+    <!-- Internet permission for sharing functionality -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    
+    <!-- Permission to access device information for permission handling -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    
     <application
+        android:requestLegacyExternalStorage="true"
         android:label="money_follow"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">

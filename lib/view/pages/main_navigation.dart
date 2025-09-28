@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:money_follow/bloc/expense/expense_bloc.dart';
 import 'package:money_follow/config/app_theme.dart';
 import 'package:money_follow/view/pages/home_page.dart';
-import 'package:money_follow/view/pages/Expense_page.dart';
+import 'package:money_follow/view/pages/expense_page_bloc.dart';
 import 'package:money_follow/view/pages/Income_page.dart';
 import 'package:money_follow/view/pages/commitments_page.dart';
 import 'package:money_follow/view/pages/history_page.dart';
@@ -19,7 +21,10 @@ class _MainNavigationState extends State<MainNavigation> {
 
   final List<Widget> _pages = [
     const HomeScreen(),
-    const ExpensePage(),
+    BlocProvider(
+      create: (context) => ExpenseBloc(),
+      child: const ExpensePageBloc(),
+    ),
     const IncomePage(),
     const CommitmentsPage(),
     const HistoryPage(),

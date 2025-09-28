@@ -86,6 +86,8 @@ class AppLocalizations {
   String get amountMustBeGreaterThanZero => _localizedStrings['amountMustBeGreaterThanZero'] ?? 'Amount must be greater than 0';
   String get pleaseEnterTitle => _localizedStrings['pleaseEnterTitle'] ?? 'Please enter a title';
   String get pleaseEnterSource => _localizedStrings['pleaseEnterSource'] ?? 'Please enter income source';
+  String get incomeUpdatedSuccess => _localizedStrings['incomeUpdatedSuccess'] ?? 'Income updated successfully!';
+  String get commitmentUpdatedSuccess => _localizedStrings['commitmentUpdatedSuccess'] ?? 'Commitment updated successfully!';
 
   // English strings
   static const Map<String, String> _englishStrings = {
@@ -145,6 +147,8 @@ class AppLocalizations {
     'amountMustBeGreaterThanZero': 'Amount must be greater than 0',
     'pleaseEnterTitle': 'Please enter a title',
     'pleaseEnterSource': 'Please enter income source',
+    'incomeUpdatedSuccess': 'Income updated successfully!',
+    'commitmentUpdatedSuccess': 'Commitment updated successfully!',
   };
 
   // Arabic strings

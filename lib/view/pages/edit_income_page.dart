@@ -75,13 +75,12 @@ class _EditIncomePageState extends State<EditIncomePage> {
           'incomes',
           updatedIncome.toMap(),
           widget.income.id!,
-          [],
         );
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text('Income updated successfully!'),
+              content: Text(AppLocalizations.of(context).incomeUpdatedSuccess),
               backgroundColor: AppTheme.accentGreen,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(

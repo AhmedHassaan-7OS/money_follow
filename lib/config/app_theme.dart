@@ -271,4 +271,12 @@ class AppTheme {
       color: getTextSecondary(context),
     );
   }
+
+  static TextStyle getBodySmall(BuildContext context) {
+    return TextStyle(
+      fontSize: 12,
+      fontWeight: FontWeight.normal,
+      color: getTextSecondary(context),
+    );
+  }
 }

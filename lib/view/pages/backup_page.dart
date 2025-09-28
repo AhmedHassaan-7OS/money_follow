@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:money_follow/config/app_theme.dart';
+import 'package:money_follow/models/backup_models.dart';
 import 'package:money_follow/services/backup_service.dart';
 import 'package:money_follow/utils/app_localizations_temp.dart';
 
@@ -33,17 +34,17 @@ class _BackupPageState extends State<BackupPage> {
     });
 
     try {
-      final success = await BackupService.shareBackup();
+      final result = await BackupService.shareBackup(context);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              success
+              result
                   ? 'Backup exported successfully!'
                   : 'Failed to export backup',
             ),
-            backgroundColor: success
+            backgroundColor: result
                 ? AppTheme.accentGreen
                 : AppTheme.errorColor,
             behavior: SnackBarBehavior.floating,
@@ -81,7 +82,7 @@ class _BackupPageState extends State<BackupPage> {
     });
 
     try {
-      final success = await BackupService.copyBackupToClipboard();
+      final success = await BackupService.copyBackupToClipboard(context);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -130,6 +131,267 @@ class _BackupPageState extends State<BackupPage> {
 
     try {
       final result = await BackupService.importFromClipboard();
+
+      if (mounted) {
+        if (result.success && result.data != null) {
+          _showImportDialog(result);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(result.message),
+              backgroundColor: AppTheme.errorColor,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: $e'),
+            backgroundColor: AppTheme.errorColor,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  /// Show import options dialog
+  Future<void> _importFromFile() async {
+    if (mounted) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          backgroundColor: AppTheme.getCardColor(context),
+          title: Text(
+            'Import Backup',
+            style: AppTheme.getHeadingSmall(context),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Choose how you want to import your backup:',
+                style: AppTheme.getBodyMedium(context),
+              ),
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppTheme.lightBlue.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  'Tip: If file selection doesn\'t work, use manual input to paste your backup data.',
+                  style: TextStyle(fontSize: 11, color: AppTheme.lightBlue),
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // Pick File Option
+              ListTile(
+                leading: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: AppTheme.accentGreen.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    Icons.file_upload_outlined,
+                    color: AppTheme.accentGreen,
+                    size: 20,
+                  ),
+                ),
+                title: Text(
+                  'Select File',
+                  style: AppTheme.getBodyLarge(context),
+                ),
+                subtitle: Text(
+                  'Choose backup.json file from device',
+                  style: AppTheme.getBodySmall(context),
+                ),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _pickAndImportFile();
+                },
+              ),
+
+              const SizedBox(height: 8),
+
+              // Manual Input Option
+              ListTile(
+                leading: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: AppTheme.primaryBlue.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    Icons.edit_outlined,
+                    color: AppTheme.primaryBlue,
+                    size: 20,
+                  ),
+                ),
+                title: Text(
+                  'Manual Input',
+                  style: AppTheme.getBodyLarge(context),
+                ),
+                subtitle: Text(
+                  'Select backup.json file or paste backup data manually',
+                  style: AppTheme.getBodySmall(context),
+                ),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _showManualInputDialog();
+                },
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(
+                'Cancel',
+                style: TextStyle(color: AppTheme.getTextSecondary(context)),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
+  /// Pick and import backup file using file picker
+  Future<void> _pickAndImportFile() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final result = await BackupService.pickAndImportFile(context);
+
+      if (mounted) {
+        if (result.success && result.data != null) {
+          _showImportDialog(result);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(result.message),
+              backgroundColor: AppTheme.errorColor,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: $e'),
+            backgroundColor: AppTheme.errorColor,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  /// Show manual input dialog for backup data
+  Future<void> _showManualInputDialog() async {
+    final TextEditingController textController = TextEditingController();
+
+    if (mounted) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          backgroundColor: AppTheme.getCardColor(context),
+          title: Text(
+            'Manual Import',
+            style: AppTheme.getHeadingSmall(context),
+          ),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Paste your backup JSON data here:',
+                  style: AppTheme.getBodyMedium(context),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: textController,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: 'Paste backup data...',
+                  ),
+                  maxLines: 8,
+                  style: AppTheme.getBodyMedium(context),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(
+                'Cancel',
+                style: TextStyle(color: AppTheme.getTextSecondary(context)),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+                await _importFromText(textController.text);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.primaryBlue,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Import'),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
+  /// Import from text input
+  Future<void> _importFromText(String backupText) async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final result = await BackupService.importFromText(backupText);
 
       if (mounted) {
         if (result.success && result.data != null) {
@@ -403,6 +665,14 @@ class _BackupPageState extends State<BackupPage> {
                   Text('Import Data', style: AppTheme.getHeadingSmall(context)),
                   const SizedBox(height: 12),
                   _buildActionCard(
+                    icon: Icons.file_upload_outlined,
+                    title: 'Import from File',
+                    subtitle: 'Pick backup.json file or paste data manually',
+                    color: AppTheme.accentGreen,
+                    onTap: _importFromFile,
+                  ),
+                  const SizedBox(height: 12),
+                  _buildActionCard(
                     icon: Icons.paste_outlined,
                     title: 'Paste from Clipboard',
                     subtitle: 'Import backup data from clipboard',
@@ -448,10 +718,13 @@ class _BackupPageState extends State<BackupPage> {
                           '• You can share backup files or copy to clipboard',
                         ),
                         _buildInfoPoint(
+                          '• Import by selecting .json file or pasting data manually',
+                        ),
+                        _buildInfoPoint(
                           '• Importing a backup will replace all current data',
                         ),
                         _buildInfoPoint(
-                          '• Clipboard method works great for quick transfers',
+                          '• File import works with exported backup files',
                         ),
                         _buildInfoPoint(
                           '• Keep backup data in a safe location',

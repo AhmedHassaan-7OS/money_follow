@@ -205,13 +205,13 @@ class _IncomePageState extends State<IncomePage> {
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter an amount';
+                        return l10n.pleaseEnterAmount;
                       }
                       if (double.tryParse(value) == null) {
-                        return 'Please enter a valid number';
+                        return l10n.pleaseEnterValidNumber;
                       }
                       if (double.parse(value) <= 0) {
-                        return 'Amount must be greater than 0';
+                        return l10n.amountMustBeGreaterThanZero;
                       }
                       return null;
                     },
@@ -258,7 +258,7 @@ class _IncomePageState extends State<IncomePage> {
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter income source';
+                        return l10n.pleaseEnterSource;
                       }
                       return null;
                     },

@@ -206,13 +206,13 @@ class _ExpensePageState extends State<ExpensePage> {
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter an amount';
+                        return l10n.pleaseEnterAmount;
                       }
                       if (double.tryParse(value) == null) {
-                        return 'Please enter a valid number';
+                        return l10n.pleaseEnterValidNumber;
                       }
                       if (double.parse(value) <= 0) {
-                        return 'Amount must be greater than 0';
+                        return l10n.amountMustBeGreaterThanZero;
                       }
                       return null;
                     },
@@ -329,7 +329,7 @@ class _ExpensePageState extends State<ExpensePage> {
                 const SizedBox(height: 24),
 
                 // Notes Input
-                Text(l10n.category, style: AppTheme.getHeadingSmall(context)),
+                Text(l10n.notes, style: AppTheme.getHeadingSmall(context)),
                 const SizedBox(height: 12),
                 Container(
                   decoration: BoxDecoration(

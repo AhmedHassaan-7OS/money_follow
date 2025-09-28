@@ -11,7 +11,9 @@ class ExpenseModel {
     required this.category,
     required this.date,
     this.note,
-  });
+  }) : assert(amount > 0, 'Amount must be greater than 0'),
+       assert(category.isNotEmpty, 'Category cannot be empty'),
+       assert(date.isNotEmpty, 'Date cannot be empty');
 
   Map<String, dynamic> toMap() {
     return {

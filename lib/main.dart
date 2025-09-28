@@ -8,6 +8,7 @@ import 'package:money_follow/providers/currency_provider.dart';
 import 'package:money_follow/view/pages/main_navigation.dart';
 import 'package:money_follow/utils/app_localizations_temp.dart';
 import 'package:money_follow/utils/system_detection_helper.dart';
+import 'package:money_follow/services/permission_service.dart';
 
 void main() {
   // Print system detection info for debugging
@@ -15,8 +16,40 @@ void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  bool _permissionsRequested = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Request permissions after the first frame is built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _requestPermissionsOnStartup();
+    });
+  }
+
+  Future<void> _requestPermissionsOnStartup() async {
+    if (_permissionsRequested) return;
+    _permissionsRequested = true;
+
+    try {
+      // Wait a bit for the UI to settle
+      await Future.delayed(const Duration(milliseconds: 500));
+      
+      if (mounted) {
+        await PermissionService.requestPermissionsOnStartup(context);
+      }
+    } catch (e) {
+      print('Error requesting permissions on startup: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

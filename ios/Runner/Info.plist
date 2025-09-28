@@ -45,5 +45,21 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	
+	<!-- Storage and file access permissions -->
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>يحتاج Money Follow للوصول لمكتبة الصور لحفظ واستيراد ملفات النسخ الاحتياطية للبيانات المالية.</string>
+	<key>NSDocumentsFolderUsageDescription</key>
+	<string>يحتاج Money Follow للوصول للمستندات لحفظ واستيراد ملفات النسخ الاحتياطية.</string>
+	<key>NSDownloadsFolderUsageDescription</key>
+	<string>يحتاج Money Follow للوصول لمجلد التحميلات لاستيراد ملفات النسخ الاحتياطية.</string>
+	
+	<!-- File access permissions for backup functionality -->
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
+	<key>UIFileSharingEnabled</key>
+	<true/>
+	<key>UISupportsDocumentBrowser</key>
+	<true/>
 </dict>
 </plist>
