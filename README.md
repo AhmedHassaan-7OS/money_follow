@@ -76,9 +76,9 @@ Type "Netflix subscription" → AI suggests "Bills" category
 
 ## 📱 Screenshots
 
-| Light Mode | Dark Mode | AI Insights |
-|------------|-----------|-------------|
-| ![Light](screenshots/light.png) | ![Dark](screenshots/dark.png) | ![AI](screenshots/ai.png) |
+You can browse all app screenshots here:
+
+- [screenshots/](screenshots/)
 
 ## 🏗️ Architecture
 
