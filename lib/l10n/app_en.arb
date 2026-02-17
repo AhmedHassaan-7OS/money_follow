@@ -196,5 +196,31 @@
   "arabic": "العربية",
   "french": "Français",
   "german": "Deutsch",
-  "japanese": "日本語"
+  "japanese": "日本語",
+  
+  "statistics": "Statistics",
+  "financialStatistics": "Financial Statistics",
+  "quickOverview": "Quick Overview",
+  "todaySpent": "Today",
+  "thisWeekSpent": "This Week",
+  "thisMonthSpent": "This Month",
+  "monthlyReport": "{month} Report",
+  "totalExpenses": "Total Expenses",
+  "statisticsCalculatedFromStart": "Statistics calculated from the beginning of the month to today",
+  "currentWeekBreakdown": "Current Week Breakdown",
+  "weekTotal": "Week Total",
+  "dailyAverage": "Daily Average",
+  "dailyActivity": "Daily Activity",
+  "noTransactionsRecorded": "No transactions recorded",
+  "netAmount": "Net: {amount}",
+  "spent": "Spent: {amount}",
+  "earned": "Earned: {amount}",
+  "errorLoadingStatistics": "Error loading statistics",
+
+  "markAsCompleted": "Mark as Completed",
+  "markAsPending": "Mark as Pending",
+  "commitmentCompleted": "Commitment marked as completed!",
+  "commitmentPending": "Commitment marked as pending!",
+  "errorUpdatingCommitment": "Error updating commitment: {error}",
+  "undo": "Undo"
 }

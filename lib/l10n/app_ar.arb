@@ -123,5 +123,31 @@
   "arabic": "العربية",
   "french": "Français",
   "german": "Deutsch",
-  "japanese": "日本語"
+  "japanese": "日本語",
+  
+  "statistics": "الإحصائيات",
+  "financialStatistics": "الإحصائيات المالية",
+  "quickOverview": "نظرة سريعة",
+  "todaySpent": "اليوم",
+  "thisWeekSpent": "هذا الأسبوع",
+  "thisMonthSpent": "هذا الشهر",
+  "monthlyReport": "تقرير {month}",
+  "totalExpenses": "إجمالي المصروفات",
+  "statisticsCalculatedFromStart": "يتم حساب الإحصائيات من بداية الشهر حتى اليوم",
+  "currentWeekBreakdown": "تفصيل الأسبوع الحالي",
+  "weekTotal": "إجمالي الأسبوع",
+  "dailyAverage": "متوسط يومي",
+  "dailyActivity": "النشاط اليومي",
+  "noTransactionsRecorded": "لا توجد معاملات مسجلة",
+  "netAmount": "صافي: {amount}",
+  "spent": "صرفت: {amount}",
+  "earned": "كسبت: {amount}",
+  "errorLoadingStatistics": "خطأ في تحميل الإحصائيات",
+
+  "markAsCompleted": "تمييز كمكتمل",
+  "markAsPending": "تمييز كمعلق",
+  "commitmentCompleted": "تم تمييز الالتزام كمكتمل!",
+  "commitmentPending": "تم تمييز الالتزام كمعلق!",
+  "errorUpdatingCommitment": "خطأ في تحديث الالتزام: {error}",
+  "undo": "تراجع"
 }

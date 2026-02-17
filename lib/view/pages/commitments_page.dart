@@ -47,6 +47,51 @@ class _CommitmentsPageState extends State<CommitmentsPage> {
     });
   }
 
+  Future<void> _toggleCommitmentStatus(CommitmentModel commitment) async {
+    try {
+      final updatedCommitment = CommitmentModel(
+        id: commitment.id,
+        title: commitment.title,
+        amount: commitment.amount,
+        dueDate: commitment.dueDate,
+        isCompleted: !commitment.isCompleted,
+      );
+
+      await _sqlControl.updateData('commitments', updatedCommitment.toMap(), commitment.id!);
+      _loadCommitments();
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              updatedCommitment.isCompleted 
+                ? AppLocalizations.of(context).commitmentCompleted
+                : AppLocalizations.of(context).commitmentPending
+            ),
+            backgroundColor: AppTheme.accentGreen,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context).errorUpdatingCommitment(e.toString())),
+            backgroundColor: AppTheme.errorColor,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        );
+      }
+    }
+  }
+
   Future<void> _deleteCommitment(CommitmentModel commitment) async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -195,7 +240,7 @@ class _CommitmentsPageState extends State<CommitmentsPage> {
                         itemCount: commitments.length,
                         itemBuilder: (context, index) {
                           final commitment = commitments[index];
-                          return _buildCommitmentCard(commitment, currencyProvider);
+                          return _buildCommitmentCard(commitment, currencyProvider, l10n);
                         },
                       ),
                     ),
@@ -213,7 +258,7 @@ class _CommitmentsPageState extends State<CommitmentsPage> {
     );
   }
 
-  Widget _buildCommitmentCard(CommitmentModel commitment, CurrencyProvider currencyProvider) {
+  Widget _buildCommitmentCard(CommitmentModel commitment, CurrencyProvider currencyProvider, AppLocalizations l10n) {
     final dueDate = DateTime.tryParse(commitment.dueDate);
     final isOverdue = dueDate != null && dueDate.isBefore(DateTime.now());
     final isUpcoming =
@@ -247,7 +292,9 @@ class _CommitmentsPageState extends State<CommitmentsPage> {
           width: 48,
           height: 48,
           decoration: BoxDecoration(
-            color: isOverdue
+            color: commitment.isCompleted
+                ? AppTheme.accentGreen.withOpacity(0.1)
+                : isOverdue
                 ? AppTheme.errorColor.withOpacity(0.1)
                 : isUpcoming
                 ? AppTheme.warningColor.withOpacity(0.1)
@@ -255,8 +302,12 @@ class _CommitmentsPageState extends State<CommitmentsPage> {
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(
-            _getCommitmentIcon(commitment.title),
-            color: isOverdue
+            commitment.isCompleted 
+                ? Icons.check_circle 
+                : _getCommitmentIcon(commitment.title),
+            color: commitment.isCompleted
+                ? AppTheme.accentGreen
+                : isOverdue
                 ? AppTheme.errorColor
                 : isUpcoming
                 ? AppTheme.warningColor
@@ -264,7 +315,15 @@ class _CommitmentsPageState extends State<CommitmentsPage> {
             size: 24,
           ),
         ),
-        title: Text(commitment.title, style: AppTheme.getBodyLarge(context)),
+        title: Text(
+          commitment.title, 
+          style: AppTheme.getBodyLarge(context).copyWith(
+            decoration: commitment.isCompleted ? TextDecoration.lineThrough : null,
+            color: commitment.isCompleted 
+                ? AppTheme.getTextSecondary(context) 
+                : AppTheme.getTextPrimary(context),
+          ),
+        ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -329,16 +388,32 @@ class _CommitmentsPageState extends State<CommitmentsPage> {
               onSelected: (value) {
                 if (value == 'delete') {
                   _deleteCommitment(commitment);
+                } else if (value == 'toggle') {
+                  _toggleCommitmentStatus(commitment);
                 }
               },
               itemBuilder: (context) => [
-                const PopupMenuItem(
+                PopupMenuItem(
+                  value: 'toggle',
+                  child: Row(
+                    children: [
+                      Icon(
+                        commitment.isCompleted ? Icons.undo : Icons.check,
+                        color: commitment.isCompleted ? AppTheme.warningColor : AppTheme.accentGreen,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(commitment.isCompleted ? l10n.markAsPending : l10n.markAsCompleted),
+                    ],
+                  ),
+                ),
+                PopupMenuItem(
                   value: 'delete',
                   child: Row(
                     children: [
                       Icon(Icons.delete, color: AppTheme.errorColor, size: 20),
                       SizedBox(width: 8),
-                      Text('Delete'),
+                      Text(l10n.delete),
                     ],
                   ),
                 ),

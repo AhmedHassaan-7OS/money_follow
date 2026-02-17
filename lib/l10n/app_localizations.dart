@@ -715,6 +715,144 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'日本語'**
   String get japanese;
+
+  /// No description provided for @statistics.
+  ///
+  /// In en, this message translates to:
+  /// **'Statistics'**
+  String get statistics;
+
+  /// No description provided for @financialStatistics.
+  ///
+  /// In en, this message translates to:
+  /// **'Financial Statistics'**
+  String get financialStatistics;
+
+  /// No description provided for @quickOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Overview'**
+  String get quickOverview;
+
+  /// No description provided for @todaySpent.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get todaySpent;
+
+  /// No description provided for @thisWeekSpent.
+  ///
+  /// In en, this message translates to:
+  /// **'This Week'**
+  String get thisWeekSpent;
+
+  /// No description provided for @thisMonthSpent.
+  ///
+  /// In en, this message translates to:
+  /// **'This Month'**
+  String get thisMonthSpent;
+
+  /// No description provided for @monthlyReport.
+  ///
+  /// In en, this message translates to:
+  /// **'{month} Report'**
+  String monthlyReport(Object month);
+
+  /// No description provided for @totalExpenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Expenses'**
+  String get totalExpenses;
+
+  /// No description provided for @statisticsCalculatedFromStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Statistics calculated from the beginning of the month to today'**
+  String get statisticsCalculatedFromStart;
+
+  /// No description provided for @currentWeekBreakdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Week Breakdown'**
+  String get currentWeekBreakdown;
+
+  /// No description provided for @weekTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Week Total'**
+  String get weekTotal;
+
+  /// No description provided for @dailyAverage.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Average'**
+  String get dailyAverage;
+
+  /// No description provided for @dailyActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Activity'**
+  String get dailyActivity;
+
+  /// No description provided for @noTransactionsRecorded.
+  ///
+  /// In en, this message translates to:
+  /// **'No transactions recorded'**
+  String get noTransactionsRecorded;
+
+  /// No description provided for @netAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Net: {amount}'**
+  String netAmount(Object amount);
+
+  /// No description provided for @spent.
+  ///
+  /// In en, this message translates to:
+  /// **'Spent: {amount}'**
+  String spent(Object amount);
+
+  /// No description provided for @earned.
+  ///
+  /// In en, this message translates to:
+  /// **'Earned: {amount}'**
+  String earned(Object amount);
+
+  /// No description provided for @errorLoadingStatistics.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading statistics'**
+  String get errorLoadingStatistics;
+
+  /// No description provided for @markAsCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as Completed'**
+  String get markAsCompleted;
+
+  /// No description provided for @markAsPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as Pending'**
+  String get markAsPending;
+
+  /// No description provided for @commitmentCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Commitment marked as completed!'**
+  String get commitmentCompleted;
+
+  /// No description provided for @commitmentPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Commitment marked as pending!'**
+  String get commitmentPending;
+
+  /// No description provided for @undo.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get undo;
 }
 
 class _AppLocalizationsDelegate

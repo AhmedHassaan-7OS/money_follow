@@ -340,4 +340,83 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get japanese => '日本語';
+
+  @override
+  String get statistics => 'Statistiques';
+
+  @override
+  String get financialStatistics => 'Statistiques Financières';
+
+  @override
+  String get quickOverview => 'Aperçu Rapide';
+
+  @override
+  String get todaySpent => 'Aujourd\'hui';
+
+  @override
+  String get thisWeekSpent => 'Cette Semaine';
+
+  @override
+  String get thisMonthSpent => 'Ce Mois';
+
+  @override
+  String monthlyReport(Object month) {
+    return 'Rapport $month';
+  }
+
+  @override
+  String get totalExpenses => 'Total des Dépenses';
+
+  @override
+  String get statisticsCalculatedFromStart =>
+      'Les statistiques sont calculées du début du mois à aujourd\'hui';
+
+  @override
+  String get currentWeekBreakdown => 'Répartition de la Semaine Actuelle';
+
+  @override
+  String get weekTotal => 'Total de la Semaine';
+
+  @override
+  String get dailyAverage => 'Moyenne Quotidienne';
+
+  @override
+  String get dailyActivity => 'Activité Quotidienne';
+
+  @override
+  String get noTransactionsRecorded => 'Aucune transaction enregistrée';
+
+  @override
+  String netAmount(Object amount) {
+    return 'Net: $amount';
+  }
+
+  @override
+  String spent(Object amount) {
+    return 'Dépensé: $amount';
+  }
+
+  @override
+  String earned(Object amount) {
+    return 'Gagné: $amount';
+  }
+
+  @override
+  String get errorLoadingStatistics =>
+      'Erreur lors du chargement des statistiques';
+
+  @override
+  String get markAsCompleted => 'Mark as Completed';
+
+  @override
+  String get markAsPending => 'Mark as Pending';
+
+  @override
+  String get commitmentCompleted => 'Commitment marked as completed!';
+
+  @override
+  String get commitmentPending => 'Commitment marked as pending!';
+
+  @override
+  String get undo => 'Undo';
 }

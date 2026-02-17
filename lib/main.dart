@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:money_follow/config/app_theme.dart';
 import 'package:money_follow/providers/theme_provider.dart';
 import 'package:money_follow/providers/localization_provider.dart';
@@ -9,6 +10,7 @@ import 'package:money_follow/view/pages/main_navigation.dart';
 import 'package:money_follow/utils/app_localizations_temp.dart';
 import 'package:money_follow/utils/system_detection_helper.dart';
 import 'package:money_follow/services/permission_service.dart';
+import 'package:money_follow/bloc/statistics/statistics_bloc.dart';
 
 void main() {
   // Print system detection info for debugging
@@ -53,13 +55,19 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
+    return MultiBlocProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => ThemeProvider()),
-        ChangeNotifierProvider(create: (context) => LocalizationProvider()),
-        ChangeNotifierProvider(create: (context) => CurrencyProvider()),
+        BlocProvider<StatisticsBloc>(
+          create: (context) => StatisticsBloc()..add(LoadStatistics()),
+        ),
       ],
-      child: Consumer2<ThemeProvider, LocalizationProvider>(
+      child: MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (context) => ThemeProvider()),
+          ChangeNotifierProvider(create: (context) => LocalizationProvider()),
+          ChangeNotifierProvider(create: (context) => CurrencyProvider()),
+        ],
+        child: Consumer2<ThemeProvider, LocalizationProvider>(
         builder: (context, themeProvider, localizationProvider, child) {
           return MaterialApp(
             title: AppLocalizations.of(context).appTitle,
@@ -87,6 +95,7 @@ class _MyAppState extends State<MyApp> {
             debugShowCheckedModeBanner: false,
           );
         },
+        ),
       ),
     );
   }

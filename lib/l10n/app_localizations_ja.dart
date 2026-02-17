@@ -333,4 +333,81 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get japanese => '日本語';
+
+  @override
+  String get statistics => '統計';
+
+  @override
+  String get financialStatistics => '財務統計';
+
+  @override
+  String get quickOverview => 'クイック概要';
+
+  @override
+  String get todaySpent => '今日';
+
+  @override
+  String get thisWeekSpent => '今週';
+
+  @override
+  String get thisMonthSpent => '今月';
+
+  @override
+  String monthlyReport(Object month) {
+    return '$monthレポート';
+  }
+
+  @override
+  String get totalExpenses => '総支出';
+
+  @override
+  String get statisticsCalculatedFromStart => '統計は月初から今日まで計算されます';
+
+  @override
+  String get currentWeekBreakdown => '今週の内訳';
+
+  @override
+  String get weekTotal => '週合計';
+
+  @override
+  String get dailyAverage => '日平均';
+
+  @override
+  String get dailyActivity => '日次活動';
+
+  @override
+  String get noTransactionsRecorded => '記録された取引がありません';
+
+  @override
+  String netAmount(Object amount) {
+    return '純額：$amount';
+  }
+
+  @override
+  String spent(Object amount) {
+    return '支出：$amount';
+  }
+
+  @override
+  String earned(Object amount) {
+    return '収入：$amount';
+  }
+
+  @override
+  String get errorLoadingStatistics => '統計の読み込みエラー';
+
+  @override
+  String get markAsCompleted => 'Mark as Completed';
+
+  @override
+  String get markAsPending => 'Mark as Pending';
+
+  @override
+  String get commitmentCompleted => 'Commitment marked as completed!';
+
+  @override
+  String get commitmentPending => 'Commitment marked as pending!';
+
+  @override
+  String get undo => 'Undo';
 }

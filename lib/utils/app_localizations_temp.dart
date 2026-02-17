@@ -32,7 +32,8 @@ class AppLocalizations {
   // Getters for all strings
   String get appTitle => _localizedStrings['appTitle'] ?? 'Money Follow';
   String get overview => _localizedStrings['overview'] ?? 'Overview';
-  String get totalBalance => _localizedStrings['totalBalance'] ?? 'Total Balance';
+  String get totalBalance =>
+      _localizedStrings['totalBalance'] ?? 'Total Balance';
   String get thisMonth => _localizedStrings['thisMonth'] ?? 'This Month';
   String get income => _localizedStrings['income'] ?? 'Income';
   String get expenses => _localizedStrings['expenses'] ?? 'Expenses';
@@ -41,19 +42,27 @@ class AppLocalizations {
   String get settings => _localizedStrings['settings'] ?? 'Settings';
   String get category => _localizedStrings['category'] ?? 'Category';
   String get upcoming => _localizedStrings['upcoming'] ?? 'Upcoming';
-  String get noCommitmentsYet => _localizedStrings['noCommitmentsYet'] ?? 'No commitments yet';
+  String get noCommitmentsYet =>
+      _localizedStrings['noCommitmentsYet'] ?? 'No commitments yet';
   String get language => _localizedStrings['language'] ?? 'Language';
   String get currency => _localizedStrings['currency'] ?? 'Currency';
   String get darkMode => _localizedStrings['darkMode'] ?? 'Dark Mode';
-  String get darkThemeEnabled => _localizedStrings['darkThemeEnabled'] ?? 'Dark theme enabled';
-  String get lightThemeEnabled => _localizedStrings['lightThemeEnabled'] ?? 'Light theme enabled';
+  String get darkThemeEnabled =>
+      _localizedStrings['darkThemeEnabled'] ?? 'Dark theme enabled';
+  String get lightThemeEnabled =>
+      _localizedStrings['lightThemeEnabled'] ?? 'Light theme enabled';
   String get appearance => _localizedStrings['appearance'] ?? 'Appearance';
   String get about => _localizedStrings['about'] ?? 'About';
   String get version => _localizedStrings['version'] ?? 'Version';
-  String get appDescription => _localizedStrings['appDescription'] ?? 'A simple and elegant money tracking app to help you manage your finances.';
-  String get backupRestore => _localizedStrings['backupRestore'] ?? 'Backup & Restore';
-  String get dataManagement => _localizedStrings['dataManagement'] ?? 'Data Management';
-  String get exportImportData => _localizedStrings['exportImportData'] ?? 'Export and import your data';
+  String get appDescription =>
+      _localizedStrings['appDescription'] ??
+      'A simple and elegant money tracking app to help you manage your finances.';
+  String get backupRestore =>
+      _localizedStrings['backupRestore'] ?? 'Backup & Restore';
+  String get dataManagement =>
+      _localizedStrings['dataManagement'] ?? 'Data Management';
+  String get exportImportData =>
+      _localizedStrings['exportImportData'] ?? 'Export and import your data';
   String get amount => _localizedStrings['amount'] ?? 'Amount';
   String get source => _localizedStrings['source'] ?? 'Source';
   String get quickSelect => _localizedStrings['quickSelect'] ?? 'Quick Select';
@@ -71,23 +80,89 @@ class AppLocalizations {
   String get food => _localizedStrings['food'] ?? 'Food';
   String get transport => _localizedStrings['transport'] ?? 'Transport';
   String get shopping => _localizedStrings['shopping'] ?? 'Shopping';
-  String get entertainment => _localizedStrings['entertainment'] ?? 'Entertainment';
+  String get entertainment =>
+      _localizedStrings['entertainment'] ?? 'Entertainment';
   String get bills => _localizedStrings['bills'] ?? 'Bills';
   String get healthcare => _localizedStrings['healthcare'] ?? 'Healthcare';
   String get education => _localizedStrings['education'] ?? 'Education';
   String get other => _localizedStrings['other'] ?? 'Other';
-  String get expenseUpdatedSuccess => _localizedStrings['expenseUpdatedSuccess'] ?? 'Expense updated successfully!';
-  String get expenseDeletedSuccess => _localizedStrings['expenseDeletedSuccess'] ?? 'Expense deleted successfully!';
-  String get deleteExpenseConfirm => _localizedStrings['deleteExpenseConfirm'] ?? 'Are you sure you want to delete this expense record? This action cannot be undone.';
-  String get errorUpdatingExpense => _localizedStrings['errorUpdatingExpense'] ?? 'Error updating expense';
-  String get errorDeletingExpense => _localizedStrings['errorDeletingExpense'] ?? 'Error deleting expense';
-  String get pleaseEnterAmount => _localizedStrings['pleaseEnterAmount'] ?? 'Please enter an amount';
-  String get pleaseEnterValidNumber => _localizedStrings['pleaseEnterValidNumber'] ?? 'Please enter a valid number';
-  String get amountMustBeGreaterThanZero => _localizedStrings['amountMustBeGreaterThanZero'] ?? 'Amount must be greater than 0';
-  String get pleaseEnterTitle => _localizedStrings['pleaseEnterTitle'] ?? 'Please enter a title';
-  String get pleaseEnterSource => _localizedStrings['pleaseEnterSource'] ?? 'Please enter income source';
-  String get incomeUpdatedSuccess => _localizedStrings['incomeUpdatedSuccess'] ?? 'Income updated successfully!';
-  String get commitmentUpdatedSuccess => _localizedStrings['commitmentUpdatedSuccess'] ?? 'Commitment updated successfully!';
+  String get expenseUpdatedSuccess =>
+      _localizedStrings['expenseUpdatedSuccess'] ??
+      'Expense updated successfully!';
+  String get expenseDeletedSuccess =>
+      _localizedStrings['expenseDeletedSuccess'] ??
+      'Expense deleted successfully!';
+  String get deleteExpenseConfirm =>
+      _localizedStrings['deleteExpenseConfirm'] ??
+      'Are you sure you want to delete this expense record? This action cannot be undone.';
+  String get errorUpdatingExpense =>
+      _localizedStrings['errorUpdatingExpense'] ?? 'Error updating expense';
+  String get errorDeletingExpense =>
+      _localizedStrings['errorDeletingExpense'] ?? 'Error deleting expense';
+  String get pleaseEnterAmount =>
+      _localizedStrings['pleaseEnterAmount'] ?? 'Please enter an amount';
+  String get pleaseEnterValidNumber =>
+      _localizedStrings['pleaseEnterValidNumber'] ??
+      'Please enter a valid number';
+  String get amountMustBeGreaterThanZero =>
+      _localizedStrings['amountMustBeGreaterThanZero'] ??
+      'Amount must be greater than 0';
+  String get pleaseEnterTitle =>
+      _localizedStrings['pleaseEnterTitle'] ?? 'Please enter a title';
+  String get pleaseEnterSource =>
+      _localizedStrings['pleaseEnterSource'] ?? 'Please enter income source';
+  String get incomeUpdatedSuccess =>
+      _localizedStrings['incomeUpdatedSuccess'] ??
+      'Income updated successfully!';
+  String get commitmentUpdatedSuccess =>
+      _localizedStrings['commitmentUpdatedSuccess'] ??
+      'Commitment updated successfully!';
+  String get financialStatistics =>
+      _localizedStrings['financialStatistics'] ?? 'Financial Statistics';
+  String get errorLoadingStatistics =>
+      _localizedStrings['errorLoadingStatistics'] ?? 'Error loading statistics';
+  String get quickOverview =>
+      _localizedStrings['quickOverview'] ?? 'Quick Overview';
+  String get todaySpent => _localizedStrings['todaySpent'] ?? 'Today Spent';
+  String get thisWeekSpent =>
+      _localizedStrings['thisWeekSpent'] ?? 'This Week Spent';
+  String get thisMonthSpent =>
+      _localizedStrings['thisMonthSpent'] ?? 'This Month Spent';
+  String get monthlyReport =>
+      _localizedStrings['monthlyReport'] ?? 'Monthly Report: {month}';
+  String get totalExpenses =>
+      _localizedStrings['totalExpenses'] ?? 'Total Expenses';
+  String get statisticsCalculatedFromStart =>
+      _localizedStrings['statisticsCalculatedFromStart'] ??
+      'Statistics calculated from the start of tracking.';
+  String get currentWeekBreakdown =>
+      _localizedStrings['currentWeekBreakdown'] ?? 'Current Week Breakdown';
+  String get weekTotal => _localizedStrings['weekTotal'] ?? 'Week Total';
+  String get dailyAverage =>
+      _localizedStrings['dailyAverage'] ?? 'Daily Average';
+  String get dailyActivity =>
+      _localizedStrings['dailyActivity'] ?? 'Daily Activity';
+  String get noTransactionsRecorded =>
+      _localizedStrings['noTransactionsRecorded'] ?? 'No transactions recorded';
+  String get today => _localizedStrings['today'] ?? 'Today';
+  String get netAmount => _localizedStrings['netAmount'] ?? '{amount}';
+  String get markAsCompleted =>
+      _localizedStrings['markAsCompleted'] ?? 'Mark as Completed';
+  String get markAsPending =>
+      _localizedStrings['markAsPending'] ?? 'Mark as Pending';
+  String get commitmentCompleted =>
+      _localizedStrings['commitmentCompleted'] ??
+      'Commitment marked as completed!';
+  String get commitmentPending =>
+      _localizedStrings['commitmentPending'] ?? 'Commitment marked as pending!';
+  String errorUpdatingCommitment(String error) =>
+      _localizedStrings['errorUpdatingCommitment'] != null
+      ? _localizedStrings['errorUpdatingCommitment']!.replaceAll(
+          '{error}',
+          error,
+        )
+      : 'Error updating commitment: $error';
+  String get undo => _localizedStrings['undo'] ?? 'Undo';
 
   // English strings
   static const Map<String, String> _englishStrings = {
@@ -111,7 +186,8 @@ class AppLocalizations {
     'appearance': 'Appearance',
     'about': 'About',
     'version': 'Version',
-    'appDescription': 'A simple and elegant money tracking app to help you manage your finances.',
+    'appDescription':
+        'A simple and elegant money tracking app to help you manage your finances.',
     'backupRestore': 'Backup & Restore',
     'dataManagement': 'Data Management',
     'exportImportData': 'Export and import your data',
@@ -139,7 +215,8 @@ class AppLocalizations {
     'other': 'Other',
     'expenseUpdatedSuccess': 'Expense updated successfully!',
     'expenseDeletedSuccess': 'Expense deleted successfully!',
-    'deleteExpenseConfirm': 'Are you sure you want to delete this expense record? This action cannot be undone.',
+    'deleteExpenseConfirm':
+        'Are you sure you want to delete this expense record? This action cannot be undone.',
     'errorUpdatingExpense': 'Error updating expense',
     'errorDeletingExpense': 'Error deleting expense',
     'pleaseEnterAmount': 'Please enter an amount',
@@ -149,6 +226,29 @@ class AppLocalizations {
     'pleaseEnterSource': 'Please enter income source',
     'incomeUpdatedSuccess': 'Income updated successfully!',
     'commitmentUpdatedSuccess': 'Commitment updated successfully!',
+    'financialStatistics': 'Financial Statistics',
+    'errorLoadingStatistics': 'Error loading statistics',
+    'quickOverview': 'Quick Overview',
+    'todaySpent': 'Today Spent',
+    'thisWeekSpent': 'This Week Spent',
+    'thisMonthSpent': 'This Month Spent',
+    'monthlyReport': 'Monthly Report: {month}',
+    'totalExpenses': 'Total Expenses',
+    'statisticsCalculatedFromStart':
+        'Statistics calculated from the start of tracking.',
+    'currentWeekBreakdown': 'Current Week Breakdown',
+    'weekTotal': 'Week Total',
+    'dailyAverage': 'Daily Average',
+    'dailyActivity': 'Daily Activity',
+    'noTransactionsRecorded': 'No transactions recorded',
+    'today': 'Today',
+    'netAmount': '{amount}',
+    'undo': 'Undo',
+    'markAsCompleted': 'Mark as Completed',
+    'markAsPending': 'Mark as Pending',
+    'commitmentCompleted': 'Commitment marked as completed!',
+    'commitmentPending': 'Commitment marked as pending!',
+    'errorUpdatingCommitment': 'Error updating commitment: {error}',
   };
 
   // Arabic strings
@@ -173,7 +273,8 @@ class AppLocalizations {
     'appearance': 'المظهر',
     'about': 'حول',
     'version': 'الإصدار',
-    'appDescription': 'تطبيق بسيط وأنيق لتتبع الأموال لمساعدتك في إدارة أموالك.',
+    'appDescription':
+        'تطبيق بسيط وأنيق لتتبع الأموال لمساعدتك في إدارة أموالك.',
     'backupRestore': 'نسخ احتياطي واستعادة',
     'dataManagement': 'إدارة البيانات',
     'exportImportData': 'تصدير واستيراد بياناتك',
@@ -201,7 +302,8 @@ class AppLocalizations {
     'other': 'أخرى',
     'expenseUpdatedSuccess': 'تم تحديث المصروف بنجاح!',
     'expenseDeletedSuccess': 'تم حذف المصروف بنجاح!',
-    'deleteExpenseConfirm': 'هل أنت متأكد من حذف سجل المصروف هذا؟ لا يمكن التراجع عن هذا الإجراء.',
+    'deleteExpenseConfirm':
+        'هل أنت متأكد من حذف سجل المصروف هذا؟ لا يمكن التراجع عن هذا الإجراء.',
     'errorUpdatingExpense': 'خطأ في تحديث المصروف',
     'errorDeletingExpense': 'خطأ في حذف المصروف',
     'pleaseEnterAmount': 'يرجى إدخال المبلغ',
@@ -209,6 +311,28 @@ class AppLocalizations {
     'amountMustBeGreaterThanZero': 'يجب أن يكون المبلغ أكبر من صفر',
     'pleaseEnterTitle': 'يرجى إدخال العنوان',
     'pleaseEnterSource': 'يرجى إدخال مصدر الدخل',
+    'financialStatistics': 'إحصاءات مالية',
+    'errorLoadingStatistics': 'خطأ أثناء تحميل الإحصاءات',
+    'quickOverview': 'نظرة سريعة',
+    'todaySpent': 'مُنفَق اليوم',
+    'thisWeekSpent': 'مُنفَق هذا الأسبوع',
+    'thisMonthSpent': 'مُنفَق هذا الشهر',
+    'monthlyReport': 'تقرير شهري: {month}',
+    'totalExpenses': 'إجمالي المصروفات',
+    'statisticsCalculatedFromStart': 'الإحصاءات محسوبة منذ بداية التتبع.',
+    'currentWeekBreakdown': 'تفصيل الأسبوع الحالي',
+    'weekTotal': 'إجمالي الأسبوع',
+    'dailyAverage': 'المتوسط اليومي',
+    'dailyActivity': 'النشاط اليومي',
+    'noTransactionsRecorded': 'لا توجد معاملات مسجلة',
+    'today': 'اليوم',
+    'netAmount': '{amount}',
+    'undo': 'تراجع',
+    'markAsCompleted': 'تمييز كمكتمل',
+    'markAsPending': 'تمييز كمعلق',
+    'commitmentCompleted': 'تم تمييز الالتزام كمكتمل!',
+    'commitmentPending': 'تم تمييز الالتزام كمعلق!',
+    'errorUpdatingCommitment': 'خطأ في تحديث الالتزام: {error}',
   };
 
   // French strings
@@ -233,7 +357,8 @@ class AppLocalizations {
     'appearance': 'Apparence',
     'about': 'À Propos',
     'version': 'Version',
-    'appDescription': 'Une application simple et élégante de suivi d\'argent pour vous aider à gérer vos finances.',
+    'appDescription':
+        'Une application simple et élégante de suivi d\'argent pour vous aider à gérer vos finances.',
     'backupRestore': 'Sauvegarde et Restauration',
     'dataManagement': 'Gestion des Données',
     'exportImportData': 'Exportez et importez vos données',
@@ -261,9 +386,17 @@ class AppLocalizations {
     'other': 'Autre',
     'expenseUpdatedSuccess': 'Dépense mise à jour avec succès !',
     'expenseDeletedSuccess': 'Dépense supprimée avec succès !',
-    'deleteExpenseConfirm': 'Êtes-vous sûr de vouloir supprimer cet enregistrement de dépense ? Cette action ne peut pas être annulée.',
+    'deleteExpenseConfirm':
+        'Êtes-vous sûr de vouloir supprimer cet enregistrement de dépense ? Cette action ne peut pas être annulée.',
     'errorUpdatingExpense': 'Erreur lors de la mise à jour de la dépense',
     'errorDeletingExpense': 'Erreur lors de la suppression de la dépense',
+    'undo': 'Annuler',
+    'markAsCompleted': 'Marquer comme terminé',
+    'markAsPending': 'Marquer comme en attente',
+    'commitmentCompleted': 'Engagement marqué comme terminé!',
+    'commitmentPending': 'Engagement marqué comme en attente!',
+    'errorUpdatingCommitment':
+        'Erreur lors de la mise à jour de l\'engagement: {error}',
   };
 
   // German strings
@@ -288,7 +421,8 @@ class AppLocalizations {
     'appearance': 'Erscheinungsbild',
     'about': 'Über',
     'version': 'Version',
-    'appDescription': 'Eine einfache und elegante Geld-Tracking-App, die Ihnen bei der Verwaltung Ihrer Finanzen hilft.',
+    'appDescription':
+        'Eine einfache und elegante Geld-Tracking-App, die Ihnen bei der Verwaltung Ihrer Finanzen hilft.',
     'backupRestore': 'Sichern & Wiederherstellen',
     'dataManagement': 'Datenverwaltung',
     'exportImportData': 'Exportieren und importieren Sie Ihre Daten',
@@ -316,9 +450,17 @@ class AppLocalizations {
     'other': 'Andere',
     'expenseUpdatedSuccess': 'Ausgabe erfolgreich aktualisiert!',
     'expenseDeletedSuccess': 'Ausgabe erfolgreich gelöscht!',
-    'deleteExpenseConfirm': 'Sind Sie sicher, dass Sie diesen Ausgabenposten löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.',
+    'deleteExpenseConfirm':
+        'Sind Sie sicher, dass Sie diesen Ausgabenposten löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.',
     'errorUpdatingExpense': 'Fehler beim Aktualisieren der Ausgabe',
     'errorDeletingExpense': 'Fehler beim Löschen der Ausgabe',
+    'undo': 'Rückgängig',
+    'markAsCompleted': 'Als erledigt markieren',
+    'markAsPending': 'Als ausstehend markieren',
+    'commitmentCompleted': 'Verpflichtung als erledigt markiert!',
+    'commitmentPending': 'Verpflichtung als ausstehend markiert!',
+    'errorUpdatingCommitment':
+        'Fehler beim Aktualisieren der Verpflichtung: {error}',
   };
 
   // Japanese strings
@@ -374,10 +516,17 @@ class AppLocalizations {
     'deleteExpenseConfirm': 'この支出の記録を削除してもよろしいですか？ この操作は元に戻せません。',
     'errorUpdatingExpense': '支出の更新エラー',
     'errorDeletingExpense': '支出の削除エラー',
+    'undo': '元に戻す',
+    'markAsCompleted': '完了としてマーク',
+    'markAsPending': '保留としてマーク',
+    'commitmentCompleted': 'コミットメントが完了としてマークされました！',
+    'commitmentPending': 'コミットメントが保留としてマークされました！',
+    'errorUpdatingCommitment': 'コミットメントの更新エラー: {error}',
   };
 }
 
-class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
+class _AppLocalizationsDelegate
+    extends LocalizationsDelegate<AppLocalizations> {
   const _AppLocalizationsDelegate();
 
   @override

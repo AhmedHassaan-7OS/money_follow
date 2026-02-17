@@ -338,4 +338,82 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get japanese => '日本語';
+
+  @override
+  String get statistics => 'الإحصائيات';
+
+  @override
+  String get financialStatistics => 'الإحصائيات المالية';
+
+  @override
+  String get quickOverview => 'نظرة سريعة';
+
+  @override
+  String get todaySpent => 'اليوم';
+
+  @override
+  String get thisWeekSpent => 'هذا الأسبوع';
+
+  @override
+  String get thisMonthSpent => 'هذا الشهر';
+
+  @override
+  String monthlyReport(Object month) {
+    return 'تقرير $month';
+  }
+
+  @override
+  String get totalExpenses => 'إجمالي المصروفات';
+
+  @override
+  String get statisticsCalculatedFromStart =>
+      'يتم حساب الإحصائيات من بداية الشهر حتى اليوم';
+
+  @override
+  String get currentWeekBreakdown => 'تفصيل الأسبوع الحالي';
+
+  @override
+  String get weekTotal => 'إجمالي الأسبوع';
+
+  @override
+  String get dailyAverage => 'متوسط يومي';
+
+  @override
+  String get dailyActivity => 'النشاط اليومي';
+
+  @override
+  String get noTransactionsRecorded => 'لا توجد معاملات مسجلة';
+
+  @override
+  String netAmount(Object amount) {
+    return 'صافي: $amount';
+  }
+
+  @override
+  String spent(Object amount) {
+    return 'صرفت: $amount';
+  }
+
+  @override
+  String earned(Object amount) {
+    return 'كسبت: $amount';
+  }
+
+  @override
+  String get errorLoadingStatistics => 'خطأ في تحميل الإحصائيات';
+
+  @override
+  String get markAsCompleted => 'تمييز كمكتمل';
+
+  @override
+  String get markAsPending => 'تمييز كمعلق';
+
+  @override
+  String get commitmentCompleted => 'تم تمييز الالتزام كمكتمل!';
+
+  @override
+  String get commitmentPending => 'تم تمييز الالتزام كمعلق!';
+
+  @override
+  String get undo => 'تراجع';
 }

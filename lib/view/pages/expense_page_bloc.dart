@@ -38,13 +38,15 @@ class _ExpensePageBlocState extends State<ExpensePageBloc> {
   void _onNotesChanged() {
     final text = _notesController.text;
     if (text.length > 3) { // Only suggest after user types a few characters
+      final l10n = AppLocalizations.of(context);
       final suggestedCategory = context.read<ExpenseBloc>().suggestCategoryFromDescription(text);
       final currentState = context.read<ExpenseBloc>().state;
       
-      // Only auto-suggest if current category is still default and suggestion is different
+      // Only auto-suggest if current category is still default and suggestion is different and not "Other"
       if (currentState is ExpenseLoaded && 
           currentState.selectedCategory == 'Food' && 
-          suggestedCategory != 'Food') {
+          suggestedCategory != 'Food' &&
+          suggestedCategory != 'Other') { // Don't auto-change to "Other"
         context.read<ExpenseBloc>().add(ChangeCategoryExpense(suggestedCategory));
         
         // Show a subtle hint to user
@@ -55,6 +57,13 @@ class _ExpensePageBlocState extends State<ExpensePageBloc> {
             behavior: SnackBarBehavior.floating,
             backgroundColor: AppTheme.primaryBlue.withOpacity(0.8),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            action: SnackBarAction(
+              label: l10n.undo,
+              textColor: Colors.white,
+              onPressed: () {
+                context.read<ExpenseBloc>().add(ChangeCategoryExpense('Food'));
+              },
+            ),
           ),
         );
       }

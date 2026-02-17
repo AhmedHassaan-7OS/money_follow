@@ -8,6 +8,7 @@ import 'package:money_follow/model/expense_model.dart';
 import 'package:money_follow/model/income_model.dart';
 import 'package:money_follow/model/commitment_model.dart';
 import 'package:money_follow/view/pages/settings_page.dart';
+import 'package:money_follow/view/pages/statistics_page.dart';
 import 'package:money_follow/providers/currency_provider.dart';
 import 'package:money_follow/utils/app_localizations_temp.dart';
 
@@ -109,17 +110,34 @@ class _HomeScreenState extends State<HomeScreen> {
                       l10n.overview,
                       style: AppTheme.getHeadingMedium(context),
                     ),
-                    IconButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const SettingsPage(),
-                          ),
-                        );
-                      },
-                      icon: const Icon(Icons.settings_outlined),
-                      color: AppTheme.getTextSecondary(context),
+                    Row(
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const StatisticsPage(),
+                              ),
+                            );
+                          },
+                          icon: const Icon(Icons.analytics_outlined),
+                          color: AppTheme.primaryBlue,
+                          tooltip: 'الإحصائيات المالية',
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const SettingsPage(),
+                              ),
+                            );
+                          },
+                          icon: const Icon(Icons.settings_outlined),
+                          color: AppTheme.getTextSecondary(context),
+                        ),
+                      ],
                     ),
                   ],
                 ),

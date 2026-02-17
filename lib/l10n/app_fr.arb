@@ -123,5 +123,24 @@
   "arabic": "العربية",
   "french": "Français",
   "german": "Deutsch",
-  "japanese": "日本語"
+  "japanese": "日本語",
+
+  "statistics": "Statistiques",
+  "financialStatistics": "Statistiques Financières",
+  "quickOverview": "Aperçu Rapide",
+  "todaySpent": "Aujourd'hui",
+  "thisWeekSpent": "Cette Semaine",
+  "thisMonthSpent": "Ce Mois",
+  "monthlyReport": "Rapport {month}",
+  "totalExpenses": "Total des Dépenses",
+  "statisticsCalculatedFromStart": "Les statistiques sont calculées du début du mois à aujourd'hui",
+  "currentWeekBreakdown": "Répartition de la Semaine Actuelle",
+  "weekTotal": "Total de la Semaine",
+  "dailyAverage": "Moyenne Quotidienne",
+  "dailyActivity": "Activité Quotidienne",
+  "noTransactionsRecorded": "Aucune transaction enregistrée",
+  "netAmount": "Net: {amount}",
+  "spent": "Dépensé: {amount}",
+  "earned": "Gagné: {amount}",
+  "errorLoadingStatistics": "Erreur lors du chargement des statistiques"
 }

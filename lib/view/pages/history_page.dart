@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:money_follow/config/app_theme.dart';
 import 'package:money_follow/control/sqlcontrol.dart';
 import 'package:money_follow/model/expense_model.dart';
@@ -11,6 +12,7 @@ import 'package:money_follow/model/commitment_model.dart';
 import 'package:money_follow/view/pages/edit_income_page.dart';
 import 'package:money_follow/view/pages/edit_expense_page.dart';
 import 'package:money_follow/view/pages/edit_commitment_page.dart';
+import 'package:money_follow/bloc/statistics/statistics_bloc.dart';
 
 class HistoryPage extends StatefulWidget {
   const HistoryPage({super.key});
@@ -255,6 +257,68 @@ class _HistoryPageState extends State<HistoryPage> {
     return null;
   }
 
+  Widget _buildDateHeader(String dateText, DateTime date, CurrencyProvider currencyProvider, StatisticsState state) {
+    final dateKey = DateFormat('yyyy-MM-dd').format(date);
+    
+    return Padding(
+      padding: const EdgeInsets.only(left: 4, bottom: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            dateText,
+            style: AppTheme.getHeadingSmall(context).copyWith(
+              fontSize: 16,
+            ),
+          ),
+          if (state is StatisticsLoaded && state.dailySummaries.containsKey(dateKey)) ...[
+            const SizedBox(height: 4),
+            Row(
+              children: [
+                if (state.dailySummaries[dateKey]!['expense']! > 0) ...[
+                  Icon(
+                    Icons.arrow_downward,
+                    size: 14,
+                    color: AppTheme.errorColor,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    'صرفت: ${currencyProvider.formatAmount(state.dailySummaries[dateKey]!['expense']!)}',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppTheme.errorColor,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+                if (state.dailySummaries[dateKey]!['expense']! > 0 && 
+                    state.dailySummaries[dateKey]!['income']! > 0) ...[
+                  const SizedBox(width: 16),
+                ],
+                if (state.dailySummaries[dateKey]!['income']! > 0) ...[
+                  Icon(
+                    Icons.arrow_upward,
+                    size: 14,
+                    color: AppTheme.accentGreen,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    'كسبت: ${currencyProvider.formatAmount(state.dailySummaries[dateKey]!['income']!)}',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppTheme.accentGreen,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -432,14 +496,10 @@ class _HistoryPageState extends State<HistoryPage> {
       children: [
         if (showDateHeader) ...[
           if (index > 0) const SizedBox(height: 16),
-          Padding(
-            padding: const EdgeInsets.only(left: 4, bottom: 12),
-            child: Text(
-              dateText,
-              style: AppTheme.getHeadingSmall(context).copyWith(
-                fontSize: 16,
-              ),
-            ),
+          BlocBuilder<StatisticsBloc, StatisticsState>(
+            builder: (context, state) {
+              return _buildDateHeader(dateText, item.date, currencyProvider, state);
+            },
           ),
         ],
         Container(

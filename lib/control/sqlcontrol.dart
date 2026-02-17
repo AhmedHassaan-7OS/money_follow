@@ -16,8 +16,9 @@ class SqlControl {
 
     Database database = await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: _onCreate,
+      onUpgrade: _onUpgrade,
     );
 
     return database;
@@ -48,9 +49,19 @@ class SqlControl {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT,
         amount REAL,
-        dueDate TEXT
+        dueDate TEXT,
+        isCompleted INTEGER DEFAULT 0
       )
     ''');
+  }
+
+  Future _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      // Add isCompleted column to existing commitments table
+      await db.execute('''
+        ALTER TABLE commitments ADD COLUMN isCompleted INTEGER DEFAULT 0
+      ''');
+    }
   }
 
   /// Insert
@@ -98,6 +109,66 @@ class SqlControl {
     } catch (e) {
       print('Error deleting data from $table: $e');
       rethrow;
+    }
+  }
+
+  // Get total amount for a specific date range
+  Future<double> getTotalAmountForDateRange(String table, String startDate, String endDate) async {
+    try {
+      Database dbClient = await db;
+      final result = await dbClient.rawQuery('''
+        SELECT SUM(amount) as total
+        FROM $table
+        WHERE date >= ? AND date <= ?
+      ''', [startDate, endDate]);
+
+      if (result.isNotEmpty && result.first['total'] != null) {
+        return result.first['total'] as double;
+      }
+      return 0.0;
+    } catch (e) {
+      print('Error getting total amount for $table: $e');
+      return 0.0;
+    }
+  }
+
+  // Get daily summaries for all transaction days
+  Future<Map<String, Map<String, double>>> getDailySummaries() async {
+    try {
+      Database dbClient = await db;
+
+      final expensesResult = await dbClient.rawQuery('''
+        SELECT date, SUM(amount) as total
+        FROM expenses
+        GROUP BY date
+      ''');
+
+      final incomesResult = await dbClient.rawQuery('''
+        SELECT date, SUM(amount) as total
+        FROM incomes
+        GROUP BY date
+      ''');
+
+      Map<String, Map<String, double>> summaries = {};
+
+      for (var row in expensesResult) {
+        final date = (row['date'] as String).split('T').first;
+        final total = row['total'] as double;
+        summaries.putIfAbsent(date, () => {'expense': 0, 'income': 0});
+        summaries[date]!['expense'] = total;
+      }
+
+      for (var row in incomesResult) {
+        final date = (row['date'] as String).split('T').first;
+        final total = row['total'] as double;
+        summaries.putIfAbsent(date, () => {'expense': 0, 'income': 0});
+        summaries[date]!['income'] = total;
+      }
+
+      return summaries;
+    } catch (e) {
+      print('Error getting daily summaries: $e');
+      return {};
     }
   }
 }

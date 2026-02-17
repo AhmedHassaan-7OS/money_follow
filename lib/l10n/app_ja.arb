@@ -123,5 +123,24 @@
   "arabic": "العربية",
   "french": "Français",
   "german": "Deutsch",
-  "japanese": "日本語"
+  "japanese": "日本語",
+
+  "statistics": "統計",
+  "financialStatistics": "財務統計",
+  "quickOverview": "クイック概要",
+  "todaySpent": "今日",
+  "thisWeekSpent": "今週",
+  "thisMonthSpent": "今月",
+  "monthlyReport": "{month}レポート",
+  "totalExpenses": "総支出",
+  "statisticsCalculatedFromStart": "統計は月初から今日まで計算されます",
+  "currentWeekBreakdown": "今週の内訳",
+  "weekTotal": "週合計",
+  "dailyAverage": "日平均",
+  "dailyActivity": "日次活動",
+  "noTransactionsRecorded": "記録された取引がありません",
+  "netAmount": "純額：{amount}",
+  "spent": "支出：{amount}",
+  "earned": "収入：{amount}",
+  "errorLoadingStatistics": "統計の読み込みエラー"
 }
