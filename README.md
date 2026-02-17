@@ -2,6 +2,7 @@
 
 A modern Flutter expense tracking app with **AI-powered insights** and **intelligent categorization**.
 
+
 ## ✨ Features
 
 ### 🤖 **AI-Powered Smart Features**
