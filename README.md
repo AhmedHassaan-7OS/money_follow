@@ -77,9 +77,29 @@ Type "Netflix subscription" → AI suggests "Bills" category
 
 ## 📱 Screenshots
 
-You can browse all app screenshots here:
+<p>
+  <img src="screenshots/1.jpeg" width="220" />
+  <img src="screenshots/2.jpeg" width="220" />
+  <img src="screenshots/3.jpeg" width="220" />
+</p>
 
-- [screenshots/](screenshots/)
+<p>
+  <img src="screenshots/WhatsApp%20Image%202026-02-17%20at%203.33.28%20PM%20(1).jpeg" width="220" />
+  <img src="screenshots/WhatsApp%20Image%202026-02-17%20at%203.33.28%20PM%20(2).jpeg" width="220" />
+  <img src="screenshots/WhatsApp%20Image%202026-02-17%20at%203.33.28%20PM%20(3).jpeg" width="220" />
+</p>
+
+<p>
+  <img src="screenshots/WhatsApp%20Image%202026-02-17%20at%203.33.28%20PM%20(4).jpeg" width="220" />
+  <img src="screenshots/WhatsApp%20Image%202026-02-17%20at%203.33.29%20PM%20(1).jpeg" width="220" />
+  <img src="screenshots/WhatsApp%20Image%202026-02-17%20at%203.33.29%20PM%20(2).jpeg" width="220" />
+</p>
+
+<p>
+  <img src="screenshots/WhatsApp%20Image%202026-02-17%20at%203.33.29%20PM%20(3).jpeg" width="220" />
+  <img src="screenshots/WhatsApp%20Image%202026-02-17%20at%203.33.29%20PM.jpeg" width="220" />
+  <img src="screenshots/WhatsApp%20Image%202026-02-17%20at%203.33.30%20PM.jpeg" width="220" />
+</p>
 
 ## 🏗️ Architecture
 
