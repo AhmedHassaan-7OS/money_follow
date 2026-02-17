@@ -2,6 +2,22 @@
 
 A modern Flutter expense tracking app with **AI-powered insights** and **intelligent categorization**.
 
+------------------------------------------------------------------------------------------------------
+![WhatsApp Image 2026-02-17 at 3 33 30 PM](https://github.com/user-attachments/assets/5a06dc30-27b2-4ddb-a187-6fcf832f5739)
+![WhatsApp Image 2026-02-17 at 3 33 29 PM](https://github.com/user-attachments/assets/679ef28a-85d6-441b-96ed-1190faae9266)
+![WhatsApp Image 2026-02-17 at 3 33 29 PM (3)](https://github.com/user-attachments/assets/a5aa1439-428f-4a03-a862-c04e301e8119)
+![WhatsApp Image 2026-02-17 at 3 33 29 PM (2)](https://github.com/user-attachments/assets/d967d197-bcb0-46cf-b8e3-684a5c8198f6)
+![WhatsApp Image 2026-02-17 at 3 33 29 PM (1)](https://github.com/user-attachments/assets/5305468f-ab9e-4ccc-af18-a2069138afaf)
+![WhatsApp Image 2026-02-17 at 3 33 28 PM (4)](https://github.com/user-attachments/assets/e9d83f45-a06f-4810-a35b-5f062602384b)
+![WhatsApp Image 2026-02-17 at 3 33 28 PM (3)](https://github.com/user-attachments/assets/a2c5e5f0-eb0f-413a-b907-a175a4e49fee)
+![WhatsApp Image 2026-02-17 at 3 33 28 PM (2)](https://github.com/user-attachments/assets/c8563436-cfd3-4a5f-b19f-0ff795725e7e)
+![WhatsApp Image 2026-02-17 at 3 33 28 PM (1)](https://github.com/user-attachments/assets/51d35ecf-40c6-4896-96e5-c05a5d92c2ac)
+![3](https://github.com/user-attachments/assets/a2731546-d176-43ee-a7d5-b6f74a5b1e7f)
+![2](https://github.com/user-attachments/assets/1847ab35-320d-4dfa-92a5-ade652838aef)
+![1](https://github.com/user-attachments/assets/a0d79938-3b44-4b0d-8b54-545b309cedb5)
+
+------------------------------------------------------------------------------------------------------
+
 ## ✨ Features
 
 ### 🤖 **AI-Powered Smart Features**
