@@ -1,17 +1,38 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:money_follow/core/constants/app_constants.dart'
+    show AppConstants;
+import 'package:money_follow/repository/income_repository.dart'
+    show IncomeRepository;
+import 'package:money_follow/view/widgets/amount_input_field.dart'
+    show AmountInputField;
+import 'package:money_follow/view/widgets/app_card.dart' show AppCard;
+import 'package:money_follow/view/widgets/app_snack_bar.dart' show AppSnackBar;
+import 'package:money_follow/view/widgets/confirm_delete_dialog.dart'
+    show ConfirmDeleteDialog;
+import 'package:money_follow/view/widgets/date_picker_field.dart'
+    show DatePickerField;
+import 'package:money_follow/view/widgets/primary_button.dart'
+    show PrimaryButton;
+import 'package:money_follow/view/widgets/section_label.dart' show SectionLabel;
 import 'package:provider/provider.dart';
 import 'package:money_follow/config/app_theme.dart';
-import 'package:money_follow/control/sqlcontrol.dart';
 import 'package:money_follow/model/income_model.dart';
 import 'package:money_follow/providers/currency_provider.dart';
 import 'package:money_follow/utils/app_localizations_temp.dart';
+import 'package:money_follow/utils/validators.dart';
 
+/// ============================================================
+/// EditIncomePage — صفحة تعديل/حذف دخل.
+///
+/// قبل الـ Refactor: ~340 سطر (مع تكرار كامل لكل العناصر).
+/// بعد الـ Refactor:  ~150 سطر.
+/// ============================================================
 class EditIncomePage extends StatefulWidget {
+  const EditIncomePage({super.key, required this.income, this.onUpdated});
+
   final IncomeModel income;
   final VoidCallback? onUpdated;
-
-  const EditIncomePage({super.key, required this.income, this.onUpdated});
 
   @override
   State<EditIncomePage> createState() => _EditIncomePageState();
@@ -21,34 +42,14 @@ class _EditIncomePageState extends State<EditIncomePage> {
   final _formKey = GlobalKey<FormState>();
   final _amountController = TextEditingController();
   final _sourceController = TextEditingController();
-  final SqlControl _sqlControl = SqlControl();
+  final _repository = IncomeRepository();
 
-  DateTime _selectedDate = DateTime.now();
-
-  final List<String> _incomeSources = [
-    'Salary',
-    'Freelance',
-    'Business',
-    'Investment',
-    'Gift',
-    'Bonus',
-    'Other',
-  ];
-
-  final Map<String, IconData> _sourceIcons = {
-    'Salary': Icons.work,
-    'Freelance': Icons.laptop,
-    'Business': Icons.business,
-    'Investment': Icons.trending_up,
-    'Gift': Icons.card_giftcard,
-    'Bonus': Icons.star,
-    'Other': Icons.attach_money,
-  };
+  late DateTime _selectedDate;
+  bool _isSaving = false;
 
   @override
   void initState() {
     super.initState();
-    // Initialize form with existing data
     _amountController.text = widget.income.amount.toString();
     _sourceController.text = widget.income.source;
     _selectedDate = DateTime.parse(widget.income.date);
@@ -61,180 +62,73 @@ class _EditIncomePageState extends State<EditIncomePage> {
     super.dispose();
   }
 
-  Future<void> _updateIncome() async {
-    if (_formKey.currentState!.validate()) {
-      final updatedIncome = IncomeModel(
+  // ─── Actions ──────────────────────────────────────────────────────────────
+
+  Future<void> _update() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isSaving = true);
+
+    try {
+      final updated = IncomeModel(
         id: widget.income.id,
         amount: double.parse(_amountController.text),
-        source: _sourceController.text,
-        date: DateFormat('yyyy-MM-dd').format(_selectedDate),
+        source: _sourceController.text.trim(),
+        date: DateFormat(AppConstants.dbDateFormat).format(_selectedDate),
       );
 
-      try {
-        await _sqlControl.updateData(
-          'incomes',
-          updatedIncome.toMap(),
-          widget.income.id!,
+      await _repository.update(updated, widget.income.id!);
+
+      if (mounted) {
+        AppSnackBar.success(
+          context,
+          AppLocalizations.of(context).incomeUpdatedSuccess,
         );
-
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(AppLocalizations.of(context).incomeUpdatedSuccess),
-              backgroundColor: AppTheme.accentGreen,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-          );
-
-          widget.onUpdated?.call();
-          Navigator.pop(context);
-        }
-      } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Error updating income: $e'),
-              backgroundColor: AppTheme.errorColor,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-          );
-        }
+        widget.onUpdated?.call();
+        Navigator.pop(context);
       }
+    } catch (e) {
+      if (mounted) {
+        AppSnackBar.error(context, 'Error updating income: $e');
+      }
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
     }
   }
 
-  Future<void> _deleteIncome() async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppTheme.getCardColor(context),
-        title: Text('Delete Income', style: AppTheme.getHeadingSmall(context)),
-        content: Text(
+  Future<void> _delete() async {
+    final confirmed = await ConfirmDeleteDialog.show(
+      context,
+      title: 'Delete Income',
+      message:
           'Are you sure you want to delete this income record? This action cannot be undone.',
-          style: AppTheme.getBodyMedium(context),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(
-              'Cancel',
-              style: TextStyle(color: AppTheme.getTextSecondary(context)),
-            ),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text(
-              'Delete',
-              style: TextStyle(color: AppTheme.errorColor),
-            ),
-          ),
-        ],
-      ),
     );
+    if (!confirmed) return;
 
-    if (confirmed == true) {
-      try {
-        await _sqlControl.deleteData('incomes', widget.income.id!);
-
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Text('Income deleted successfully!'),
-              backgroundColor: AppTheme.errorColor,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-          );
-
-          widget.onUpdated?.call();
-          Navigator.pop(context);
-        }
-      } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Error deleting income: $e'),
-              backgroundColor: AppTheme.errorColor,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-          );
-        }
+    try {
+      await _repository.delete(widget.income.id!);
+      if (mounted) {
+        AppSnackBar.error(context, 'Income deleted successfully!');
+        widget.onUpdated?.call();
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      if (mounted) {
+        AppSnackBar.error(context, 'Error deleting income: $e');
       }
     }
   }
 
-  Future<void> _selectDate() async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: _selectedDate,
-      firstDate: DateTime(2020),
-      lastDate: DateTime.now(),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
-              primary: AppTheme.accentGreen,
-              onPrimary: Colors.white,
-              surface: AppTheme.getCardColor(context),
-              onSurface: AppTheme.getTextPrimary(context),
-            ),
-          ),
-          child: child!,
-        );
-      },
-    );
-
-    if (picked != null && picked != _selectedDate) {
-      setState(() {
-        _selectedDate = picked;
-      });
-    }
-  }
-
-  void _selectSource(String source) {
-    setState(() {
-      _sourceController.text = source;
-    });
-  }
+  // ─── Build ────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final currencyProvider = Provider.of<CurrencyProvider>(context);
+    final currency = Provider.of<CurrencyProvider>(context);
 
     return Scaffold(
       backgroundColor: AppTheme.getBackgroundColor(context),
-      appBar: AppBar(
-        backgroundColor: AppTheme.getBackgroundColor(context),
-        elevation: 0,
-        leading: IconButton(
-          onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_back),
-          color: AppTheme.getTextSecondary(context),
-        ),
-        title: Text(
-          'Edit ${l10n.income}',
-          style: AppTheme.getHeadingMedium(context),
-        ),
-        actions: [
-          IconButton(
-            onPressed: _deleteIncome,
-            icon: const Icon(Icons.delete_outline),
-            color: AppTheme.errorColor,
-          ),
-        ],
-      ),
+      appBar: _buildAppBar(l10n),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
@@ -243,94 +137,18 @@ class _EditIncomePageState extends State<EditIncomePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Amount Input
-                Text('Amount', style: AppTheme.getHeadingSmall(context)),
-                const SizedBox(height: 12),
-                Container(
-                  decoration: BoxDecoration(
-                    gradient: AppTheme.incomeGradient,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppTheme.accentGreen.withOpacity(0.3),
-                        blurRadius: 15,
-                        offset: const Offset(0, 5),
-                      ),
-                    ],
-                  ),
-                  child: Container(
-                    margin: const EdgeInsets.all(2),
-                    decoration: BoxDecoration(
-                      color: AppTheme.getCardColor(context),
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: TextFormField(
-                      controller: _amountController,
-                      keyboardType: const TextInputType.numberWithOptions(
-                        decimal: true,
-                      ),
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w600,
-                        color: AppTheme.getTextPrimary(context),
-                      ),
-                      decoration: InputDecoration(
-                        hintText: '0.00',
-                        prefixIcon: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Text(
-                            currencyProvider.currencySymbol,
-                            style: const TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.w600,
-                              color: AppTheme.accentGreen,
-                            ),
-                          ),
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          borderSide: BorderSide.none,
-                        ),
-                        filled: true,
-                        fillColor: Colors.transparent,
-                        contentPadding: const EdgeInsets.all(20),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter an amount';
-                        }
-                        if (double.tryParse(value) == null) {
-                          return 'Please enter a valid number';
-                        }
-                        if (double.parse(value) <= 0) {
-                          return 'Amount must be greater than 0';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
+                // Amount
+                SectionLabel(l10n.amount),
+                AmountInputField(
+                  controller: _amountController,
+                  currencySymbol: currency.currencySymbol,
+                  accentColor: AppTheme.accentGreen,
                 ),
                 const SizedBox(height: 24),
 
-                // Source Input
-                Text('Source', style: AppTheme.getHeadingSmall(context)),
-                const SizedBox(height: 12),
-                Container(
-                  decoration: BoxDecoration(
-                    color: AppTheme.getCardColor(context),
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(
-                          Theme.of(context).brightness == Brightness.dark
-                              ? 0.3
-                              : 0.05,
-                        ),
-                        blurRadius: 10,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
+                // Source text field
+                SectionLabel('Source'),
+                AppCard(
                   child: TextFormField(
                     controller: _sourceController,
                     style: TextStyle(
@@ -345,150 +163,129 @@ class _EditIncomePageState extends State<EditIncomePage> {
                         borderSide: BorderSide.none,
                       ),
                       filled: true,
-                      fillColor: AppTheme.getCardColor(context),
+                      fillColor: Colors.transparent,
                       contentPadding: const EdgeInsets.all(20),
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter income source';
-                      }
-                      return null;
-                    },
+                    validator: AppValidators.incomeSource,
                   ),
                 ),
                 const SizedBox(height: 16),
 
-                // Quick Source Selection
-                Text('Quick Select', style: AppTheme.getBodyMedium(context)),
-                const SizedBox(height: 12),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: _incomeSources.map((source) {
-                    return InkWell(
-                      onTap: () => _selectSource(source),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: _sourceController.text == source
-                              ? AppTheme.accentGreen.withOpacity(0.1)
-                              : AppTheme.getCardColor(context),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: _sourceController.text == source
-                                ? AppTheme.accentGreen
-                                : Colors.grey[300]!,
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              _sourceIcons[source],
-                              size: 16,
-                              color: _sourceController.text == source
-                                  ? AppTheme.accentGreen
-                                  : AppTheme.getTextSecondary(context),
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              source,
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: _sourceController.text == source
-                                    ? AppTheme.accentGreen
-                                    : AppTheme.getTextSecondary(context),
-                                fontWeight: _sourceController.text == source
-                                    ? FontWeight.w600
-                                    : FontWeight.normal,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }).toList(),
+                // Quick source chips
+                SectionLabel('Quick Select', bottomSpacing: 8),
+                _SourceChips(
+                  selectedSource: _sourceController.text,
+                  onSelected: (s) => setState(() => _sourceController.text = s),
                 ),
                 const SizedBox(height: 24),
 
-                // Date Selection
-                Text('Date', style: AppTheme.getHeadingSmall(context)),
-                const SizedBox(height: 12),
-                InkWell(
-                  onTap: _selectDate,
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: AppTheme.getCardColor(context),
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(
-                            Theme.of(context).brightness == Brightness.dark
-                                ? 0.3
-                                : 0.05,
-                          ),
-                          blurRadius: 10,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.calendar_today,
-                          color: AppTheme.accentGreen,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          DateFormat('MMM dd, yyyy').format(_selectedDate),
-                          style: AppTheme.getBodyLarge(context),
-                        ),
-                        const Spacer(),
-                        Icon(
-                          Icons.keyboard_arrow_right,
-                          color: AppTheme.getTextSecondary(context),
-                        ),
-                      ],
-                    ),
-                  ),
+                // Date
+                SectionLabel(l10n.date),
+                DatePickerField(
+                  selectedDate: _selectedDate,
+                  onDateChanged: (d) => setState(() => _selectedDate = d),
+                  accentColor: AppTheme.accentGreen,
                 ),
                 const SizedBox(height: 40),
 
-                // Update Button
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: ElevatedButton(
-                    onPressed: _updateIncome,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.accentGreen,
-                      foregroundColor: Colors.white,
-                      elevation: 2,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      shadowColor: AppTheme.accentGreen.withOpacity(0.3),
-                    ),
-                    child: const Text(
-                      'Update Income',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
+                // Save Button
+                PrimaryButton(
+                  label: 'Update ${l10n.income}',
+                  onPressed: _update,
+                  isLoading: _isSaving,
+                  color: AppTheme.accentGreen,
                 ),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  AppBar _buildAppBar(AppLocalizations l10n) {
+    return AppBar(
+      backgroundColor: AppTheme.getBackgroundColor(context),
+      elevation: 0,
+      leading: IconButton(
+        onPressed: () => Navigator.pop(context),
+        icon: const Icon(Icons.arrow_back),
+        color: AppTheme.getTextSecondary(context),
+      ),
+      title: Text(
+        'Edit ${l10n.income}',
+        style: AppTheme.getHeadingMedium(context),
+      ),
+      actions: [
+        IconButton(
+          onPressed: _delete,
+          icon: const Icon(Icons.delete_outline),
+          color: AppTheme.errorColor,
+        ),
+      ],
+    );
+  }
+}
+
+// ─── Private Widget ────────────────────────────────────────────────────────
+
+/// Chips سريعة لاختيار مصدر الدخل.
+/// مفصولة كـ widget منفصل (SRP).
+class _SourceChips extends StatelessWidget {
+  const _SourceChips({required this.selectedSource, required this.onSelected});
+
+  final String selectedSource;
+  final ValueChanged<String> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: AppConstants.incomeSources.map((source) {
+        final isSelected = selectedSource == source;
+        return InkWell(
+          onTap: () => onSelected(source),
+          borderRadius: BorderRadius.circular(20),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? AppTheme.accentGreen.withOpacity(0.1)
+                  : AppTheme.getCardColor(context),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: isSelected ? AppTheme.accentGreen : Colors.grey[300]!,
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  AppConstants.getIncomeSourceIcon(source),
+                  size: 16,
+                  color: isSelected
+                      ? AppTheme.accentGreen
+                      : AppTheme.getTextSecondary(context),
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  source,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: isSelected
+                        ? AppTheme.accentGreen
+                        : AppTheme.getTextSecondary(context),
+                    fontWeight: isSelected
+                        ? FontWeight.w600
+                        : FontWeight.normal,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 }

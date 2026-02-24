@@ -2,29 +2,28 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:money_follow/bloc/expense/expense_event.dart';
 import 'package:money_follow/bloc/expense/expense_state.dart';
-import 'package:money_follow/control/sqlcontrol.dart';
+import 'package:money_follow/core/constants/app_constants.dart'
+    show AppConstants;
 import 'package:money_follow/model/expense_model.dart';
+import 'package:money_follow/repository/expense_repository.dart'
+    show ExpenseRepository;
 import 'package:money_follow/services/ai_suggestion_service.dart';
+import 'package:money_follow/utils/validators.dart';
 
-/// BLoC for managing expense-related business logic
-/// This separates all business logic from the UI components
+/// ============================================================
+/// ExpenseBloc — Business logic for expenses.
+///
+/// SOLID:
+///  • SRP : يعمل فقط لوجيك المصاريف، مش DB مش UI.
+///  • DIP : يستخدم ExpenseRepository (abstraction) مش SqlControl.
+///  • OCP : الـ handlers مفصولة، سهل إضافة event جديد.
+/// ============================================================
 class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
-  final SqlControl _sqlControl = SqlControl();
+  final ExpenseRepository _repository;
 
-  /// Available expense categories
-  static const List<String> categories = [
-    'Food',
-    'Transport',
-    'Shopping',
-    'Entertainment',
-    'Bills',
-    'Healthcare',
-    'Education',
-    'Other',
-  ];
-
-  ExpenseBloc() : super(ExpenseInitial()) {
-    // Register event handlers
+  ExpenseBloc({ExpenseRepository? repository})
+    : _repository = repository ?? ExpenseRepository(),
+      super(ExpenseInitial()) {
     on<LoadExpenses>(_onLoadExpenses);
     on<AddExpense>(_onAddExpense);
     on<UpdateExpense>(_onUpdateExpense);
@@ -33,62 +32,47 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
     on<ChangeDateExpense>(_onChangeDateExpense);
   }
 
-  /// Handle loading expenses from database
+  // ─── Event Handlers ───────────────────────────────────────────────────────
+
   Future<void> _onLoadExpenses(
     LoadExpenses event,
     Emitter<ExpenseState> emit,
   ) async {
     try {
       emit(ExpenseLoading());
-      
-      final expenseData = await _sqlControl.getData('expenses');
-      final expenses = expenseData
-          .map((e) => ExpenseModel.fromMap(e))
-          .toList();
-
-      // Sort by date (newest first)
-      expenses.sort((a, b) => b.date.compareTo(a.date));
-
+      final expenses = await _repository.getAllSorted();
       emit(ExpenseLoaded(expenses: expenses));
     } catch (e) {
       emit(ExpenseError('Failed to load expenses: $e'));
     }
   }
 
-  /// Handle adding a new expense
   Future<void> _onAddExpense(
     AddExpense event,
     Emitter<ExpenseState> emit,
   ) async {
     try {
       emit(ExpenseSaving());
-
       final expense = ExpenseModel(
         amount: event.amount,
         category: event.category,
         date: event.date,
         note: event.note,
       );
-
-      await _sqlControl.insertData('expenses', expense.toMap());
-      
+      await _repository.insert(expense);
       emit(ExpenseSaved('Expense saved successfully!'));
-      
-      // Reload expenses to update the list
       add(LoadExpenses());
     } catch (e) {
       emit(ExpenseError('Failed to save expense: $e'));
     }
   }
 
-  /// Handle updating an existing expense
   Future<void> _onUpdateExpense(
     UpdateExpense event,
     Emitter<ExpenseState> emit,
   ) async {
     try {
       emit(ExpenseSaving());
-
       final expense = ExpenseModel(
         id: event.id,
         amount: event.amount,
@@ -96,131 +80,96 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
         date: event.date,
         note: event.note,
       );
-
-      await _sqlControl.updateData('expenses', expense.toMap(), event.id);
-      
+      await _repository.update(expense, event.id);
       emit(ExpenseSaved('Expense updated successfully!'));
-      
-      // Reload expenses to update the list
       add(LoadExpenses());
     } catch (e) {
       emit(ExpenseError('Failed to update expense: $e'));
     }
   }
 
-  /// Handle deleting an expense
   Future<void> _onDeleteExpense(
     DeleteExpense event,
     Emitter<ExpenseState> emit,
   ) async {
     try {
       emit(ExpenseDeleting());
-
-      await _sqlControl.deleteData('expenses', event.id);
-      
+      await _repository.delete(event.id);
       emit(ExpenseDeleted('Expense deleted successfully!'));
-      
-      // Reload expenses to update the list
       add(LoadExpenses());
     } catch (e) {
       emit(ExpenseError('Failed to delete expense: $e'));
     }
   }
 
-  /// Handle category change
   Future<void> _onChangeCategoryExpense(
     ChangeCategoryExpense event,
     Emitter<ExpenseState> emit,
   ) async {
     if (state is ExpenseLoaded) {
-      final currentState = state as ExpenseLoaded;
-      emit(currentState.copyWith(
-        selectedCategory: event.category,
-        isCustomCategory: event.category == 'Other',
-      ));
+      emit(
+        (state as ExpenseLoaded).copyWith(
+          selectedCategory: event.category,
+          isCustomCategory: event.category == 'Other',
+        ),
+      );
     }
   }
 
-  /// Handle date change
   Future<void> _onChangeDateExpense(
     ChangeDateExpense event,
     Emitter<ExpenseState> emit,
   ) async {
     if (state is ExpenseLoaded) {
-      final currentState = state as ExpenseLoaded;
-      emit(currentState.copyWith(selectedDate: event.date));
+      emit((state as ExpenseLoaded).copyWith(selectedDate: event.date));
     }
   }
 
-  /// Get formatted date string
-  String getFormattedDate(DateTime date) {
-    return DateFormat('yyyy-MM-dd').format(date);
-  }
+  // ─── Public Helpers ───────────────────────────────────────────────────────
 
-  /// Validate expense data
-  String? validateAmount(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please enter an amount';
-    }
-    if (double.tryParse(value) == null) {
-      return 'Please enter a valid number';
-    }
-    if (double.parse(value) <= 0) {
-      return 'Amount must be greater than 0';
-    }
-    return null;
-  }
+  /// يرجع التاريخ بصيغة DB.
+  String getFormattedDate(DateTime date) =>
+      DateFormat(AppConstants.dbDateFormat).format(date);
 
-  /// Get AI suggestion for category based on description
-  String suggestCategoryFromDescription(String description) {
-    return AISuggestionService.suggestCategory(description);
-  }
+  /// يتحقق من صحة المبلغ — يستخدم AppValidators (DRY).
+  String? validateAmount(String? value) => AppValidators.amount(value);
 
-  /// Get financial tips based on current expenses
+  /// يقترح فئة بناءً على الوصف.
+  String suggestCategoryFromDescription(String description) =>
+      AISuggestionService.suggestCategory(description);
+
+  /// يرجع نصائح مالية.
   List<String> getFinancialTips(double monthlyIncome) {
-    if (state is ExpenseLoaded) {
-      final expenses = (state as ExpenseLoaded).expenses;
-      
-      // Calculate category spending for current month
-      final now = DateTime.now();
-      final currentMonth = DateFormat('yyyy-MM').format(now);
-      
-      Map<String, double> categorySpending = {};
-      
-      for (var expense in expenses) {
-        if (expense.date.startsWith(currentMonth)) {
-          categorySpending[expense.category] = 
-              (categorySpending[expense.category] ?? 0) + expense.amount;
-        }
-      }
-      
-      return AISuggestionService.getFinancialTips(categorySpending, monthlyIncome);
+    if (state is! ExpenseLoaded) {
+      return ['Start tracking expenses to get personalized tips!'];
     }
-    
-    return ['Start tracking expenses to get personalized tips!'];
+    final expenses = (state as ExpenseLoaded).expenses;
+    final currentMonth = DateFormat('yyyy-MM').format(DateTime.now());
+    final categorySpending = <String, double>{};
+    for (final e in expenses) {
+      if (e.date.startsWith(currentMonth)) {
+        categorySpending[e.category] =
+            (categorySpending[e.category] ?? 0) + e.amount;
+      }
+    }
+    return AISuggestionService.getFinancialTips(
+      categorySpending,
+      monthlyIncome,
+    );
   }
 
-  /// Get spending insights
+  /// يرجع insights على الإنفاق.
   Map<String, String> getSpendingInsights() {
-    if (state is ExpenseLoaded) {
-      final expenses = (state as ExpenseLoaded).expenses;
-      
-      // Calculate category spending for current month
-      final now = DateTime.now();
-      final currentMonth = DateFormat('yyyy-MM').format(now);
-      
-      Map<String, double> categorySpending = {};
-      
-      for (var expense in expenses) {
-        if (expense.date.startsWith(currentMonth)) {
-          categorySpending[expense.category] = 
-              (categorySpending[expense.category] ?? 0) + expense.amount;
-        }
+    if (state is! ExpenseLoaded) return {'general': 'No expenses tracked yet'};
+    final expenses = (state as ExpenseLoaded).expenses;
+    final currentMonth = DateFormat('yyyy-MM').format(DateTime.now());
+    final categorySpending = <String, double>{};
+    for (final e in expenses) {
+      if (e.date.startsWith(currentMonth)) {
+        categorySpending[e.category] =
+            (categorySpending[e.category] ?? 0) + e.amount;
       }
-      
-      return AISuggestionService.getSpendingInsights(categorySpending);
     }
-    
-    return {'general': 'No expenses tracked yet'};
+    return AISuggestionService.getSpendingInsights(categorySpending);
   }
 }
