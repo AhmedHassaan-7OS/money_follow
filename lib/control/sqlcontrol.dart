@@ -3,20 +3,29 @@ import 'package:path/path.dart';
 
 class SqlControl {
   static Database? _db;
+  static Future<Database>? _openingDb;
 
   Future<Database> get db async {
     if (_db != null) return _db!;
-    _db = await initialDb();
+    _openingDb ??= initialDb();
+    try {
+      _db = await _openingDb!;
+    } finally {
+      _openingDb = null;
+    }
     return _db!;
   }
 
-  initialDb() async {
+  Future<Database> initialDb() async {
     String databasepath = await getDatabasesPath();
     String path = join(databasepath, 'moneyfollow.db');
 
     Database database = await openDatabase(
       path,
       version: 2,
+      onConfigure: (db) async {
+        await db.rawQuery('PRAGMA busy_timeout = 3000');
+      },
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );

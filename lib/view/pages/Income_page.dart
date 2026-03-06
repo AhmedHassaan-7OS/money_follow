@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:money_follow/core/constants/app_constants.dart';
 import 'package:money_follow/repository/income_repository.dart';
@@ -10,17 +10,17 @@ import 'package:money_follow/view/widgets/primary_button.dart';
 import 'package:money_follow/view/widgets/section_label.dart';
 import 'package:provider/provider.dart';
 import 'package:money_follow/config/app_theme.dart';
-import 'package:money_follow/model/income_model.dart';
+import 'package:money_follow/models/income_model.dart';
 import 'package:money_follow/providers/currency_provider.dart';
 import 'package:money_follow/utils/app_localizations_temp.dart';
 import 'package:money_follow/utils/validators.dart';
-import 'package:money_follow/view/pages/edit_income_page.dart';
+import 'edit_income_page.dart';
 
 /// ============================================================
-/// IncomePage — صفحة إضافة وعرض الدخل.
+/// IncomePage â€” ØµÙØ­Ø© Ø¥Ø¶Ø§ÙØ© ÙˆØ¹Ø±Ø¶ Ø§Ù„Ø¯Ø®Ù„.
 ///
-/// قبل الـ Refactor: ~402 سطر.
-/// بعد الـ Refactor:  ~190 سطر.
+/// Ù‚Ø¨Ù„ Ø§Ù„Ù€ Refactor: ~402 Ø³Ø·Ø±.
+/// Ø¨Ø¹Ø¯ Ø§Ù„Ù€ Refactor:  ~190 Ø³Ø·Ø±.
 /// ============================================================
 class IncomePage extends StatefulWidget {
   const IncomePage({super.key});
@@ -52,7 +52,7 @@ class _IncomePageState extends State<IncomePage> {
     super.dispose();
   }
 
-  // ─── Data ─────────────────────────────────────────────────────────────────
+  // â”€â”€â”€ Data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   Future<void> _loadIncomes() async {
     setState(() => _isLoading = true);
@@ -91,7 +91,7 @@ class _IncomePageState extends State<IncomePage> {
     }
   }
 
-  // ─── Build ────────────────────────────────────────────────────────────────
+  // â”€â”€â”€ Build â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   @override
   Widget build(BuildContext context) {
@@ -118,7 +118,7 @@ class _IncomePageState extends State<IncomePage> {
                 ),
                 const SizedBox(height: 32),
 
-                // ── Form ──────────────────────────────────────────────────
+                // â”€â”€ Form â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
                 Form(
                   key: _formKey,
                   child: Column(
@@ -186,7 +186,7 @@ class _IncomePageState extends State<IncomePage> {
                   ),
                 ),
 
-                // ── Income List ───────────────────────────────────────────
+                // â”€â”€ Income List â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
                 if (_incomes.isNotEmpty) ...[
                   const SizedBox(height: 40),
                   Text(l10n.income, style: AppTheme.getHeadingSmall(context)),
@@ -219,7 +219,7 @@ class _IncomePageState extends State<IncomePage> {
   }
 }
 
-// ─── Private Widgets ───────────────────────────────────────────────────────
+// â”€â”€â”€ Private Widgets â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 class _SourceChips extends StatelessWidget {
   const _SourceChips({required this.selectedSource, required this.onSelected});
@@ -338,3 +338,4 @@ class _IncomeListItem extends StatelessWidget {
     );
   }
 }
+

@@ -6,8 +6,10 @@ import 'package:money_follow/providers/theme_provider.dart';
 import 'package:money_follow/providers/localization_provider.dart';
 import 'package:money_follow/providers/currency_provider.dart';
 import 'package:money_follow/services/bank_sms_service.dart';
+import 'package:money_follow/services/commitment_reminder_service.dart';
 import 'package:money_follow/utils/app_localizations_temp.dart';
 import 'package:money_follow/view/pages/backup_page.dart';
+import 'package:money_follow/view/widgets/settings_toggle_tile.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -122,6 +124,10 @@ class SettingsPage extends StatelessWidget {
                     _sectionTitle(context, 'Bank SMS'),
                     const SizedBox(height: 8),
                     const _BankSmsSettingsCard(),
+                    const SizedBox(height: 24),
+                    _sectionTitle(context, 'Commitment Reminders'),
+                    const SizedBox(height: 8),
+                    const _CommitmentReminderSettingsCard(),
                     const SizedBox(height: 24),
                   ],
                   _sectionTitle(context, l10n.about),
@@ -434,26 +440,20 @@ class _BankSmsSettingsCardState extends State<_BankSmsSettingsCard> {
       ),
       child: Column(
         children: [
-          ListTile(
-            leading: const Icon(Icons.sms_outlined, color: AppTheme.primaryBlue),
-            title: const Text('Read bank SMS'),
-            subtitle: const Text('Detect income/expense from incoming bank messages'),
-            trailing: Switch(
-              value: _captureEnabled,
-              onChanged: _toggleCapture,
-              activeColor: AppTheme.primaryBlue,
-            ),
+          SettingsToggleTile(
+            icon: Icons.sms_outlined,
+            title: 'Read bank SMS',
+            subtitle: 'Detect income/expense from incoming bank messages',
+            value: _captureEnabled,
+            onChanged: _toggleCapture,
           ),
           Divider(height: 1, color: AppTheme.getTextSecondary(context).withOpacity(0.1)),
-          ListTile(
-            leading: const Icon(Icons.flash_on_outlined, color: AppTheme.primaryBlue),
-            title: const Text('Auto record'),
-            subtitle: const Text('Save detected messages directly without confirmation'),
-            trailing: Switch(
-              value: _autoRecordEnabled,
-              onChanged: _captureEnabled ? _toggleAutoRecord : null,
-              activeColor: AppTheme.primaryBlue,
-            ),
+          SettingsToggleTile(
+            icon: Icons.flash_on_outlined,
+            title: 'Auto record',
+            subtitle: 'Save detected messages directly without confirmation',
+            value: _autoRecordEnabled,
+            onChanged: _captureEnabled ? _toggleAutoRecord : null,
           ),
           Divider(height: 1, color: AppTheme.getTextSecondary(context).withOpacity(0.1)),
           ListTile(
@@ -462,6 +462,140 @@ class _BankSmsSettingsCardState extends State<_BankSmsSettingsCard> {
             subtitle: const Text('Review and confirm detected bank messages'),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
             onTap: _reviewPendingNow,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CommitmentReminderSettingsCard extends StatefulWidget {
+  const _CommitmentReminderSettingsCard();
+
+  @override
+  State<_CommitmentReminderSettingsCard> createState() =>
+      _CommitmentReminderSettingsCardState();
+}
+
+class _CommitmentReminderSettingsCardState
+    extends State<_CommitmentReminderSettingsCard> {
+  bool _enabled = false;
+  int _hoursBefore = 24;
+  bool _loading = true;
+
+  static const List<int> _options = [6, 12, 24, 48];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSettings();
+  }
+
+  Future<void> _loadSettings() async {
+    final settings = await CommitmentReminderService.getSettings();
+    if (!mounted) return;
+    setState(() {
+      _enabled = settings.enabled;
+      _hoursBefore = settings.hoursBefore;
+      _loading = false;
+    });
+  }
+
+  Future<void> _toggleEnabled(bool value) async {
+    if (value) {
+      final granted =
+          await CommitmentReminderService.requestNotificationPermission();
+      if (!granted) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Notification permission is required'),
+            ),
+          );
+        }
+        return;
+      }
+    }
+
+    await CommitmentReminderService.setEnabled(value);
+    if (!mounted) return;
+    setState(() => _enabled = value);
+    if (value) {
+      await CommitmentReminderService.checkAndNotifyDueCommitments();
+    }
+  }
+
+  Future<void> _changeHoursBefore(int value) async {
+    await CommitmentReminderService.setHoursBefore(value);
+    if (!mounted) return;
+    setState(() => _hoursBefore = value);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_loading) {
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppTheme.getCardColor(context),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        color: AppTheme.getCardColor(context),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(
+              Theme.of(context).brightness == Brightness.dark ? 0.3 : 0.05,
+            ),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          SettingsToggleTile(
+            icon: Icons.notifications_active_outlined,
+            title: 'Remind before due date',
+            subtitle: 'Show notification before commitments are due',
+            value: _enabled,
+            onChanged: _toggleEnabled,
+          ),
+          Divider(
+            height: 1,
+            color: AppTheme.getTextSecondary(context).withOpacity(0.1),
+          ),
+          ListTile(
+            leading: const Icon(
+              Icons.schedule_outlined,
+              color: AppTheme.primaryBlue,
+            ),
+            title: const Text('Reminder time'),
+            subtitle: Text('$_hoursBefore hours before due date'),
+            trailing: DropdownButton<int>(
+              value: _hoursBefore,
+              onChanged: _enabled
+                  ? (value) {
+                      if (value != null) {
+                        _changeHoursBefore(value);
+                      }
+                    }
+                  : null,
+              items: _options
+                  .map(
+                    (hours) => DropdownMenuItem<int>(
+                      value: hours,
+                      child: Text('$hours h'),
+                    ),
+                  )
+                  .toList(),
+            ),
           ),
         ],
       ),

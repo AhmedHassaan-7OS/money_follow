@@ -1,4 +1,4 @@
-import 'package:money_follow/model/commitment_model.dart';
+import 'package:money_follow/models/commitment_model.dart';
 import 'package:money_follow/repository/base_repository.dart'
     show BaseRepository;
 

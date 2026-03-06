@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:money_follow/control/sqlcontrol.dart';
-import 'package:money_follow/model/expense_model.dart';
-import 'package:money_follow/model/income_model.dart';
-import 'package:money_follow/model/commitment_model.dart';
+import 'package:money_follow/models/expense_model.dart';
+import 'package:money_follow/models/income_model.dart';
+import 'package:money_follow/models/commitment_model.dart';
 import 'package:money_follow/models/backup_models.dart';
 import 'package:money_follow/constants/backup_constants.dart';
 

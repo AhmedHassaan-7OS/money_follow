@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:money_follow/core/constants/app_constants.dart'
     show AppConstants;
@@ -17,16 +17,16 @@ import 'package:money_follow/view/widgets/primary_button.dart'
 import 'package:money_follow/view/widgets/section_label.dart' show SectionLabel;
 import 'package:provider/provider.dart';
 import 'package:money_follow/config/app_theme.dart';
-import 'package:money_follow/model/income_model.dart';
+import 'package:money_follow/models/income_model.dart';
 import 'package:money_follow/providers/currency_provider.dart';
 import 'package:money_follow/utils/app_localizations_temp.dart';
 import 'package:money_follow/utils/validators.dart';
 
 /// ============================================================
-/// EditIncomePage — صفحة تعديل/حذف دخل.
+/// EditIncomePage — ???? ?????/??? ???.
 ///
-/// قبل الـ Refactor: ~340 سطر (مع تكرار كامل لكل العناصر).
-/// بعد الـ Refactor:  ~150 سطر.
+/// ??? ??? Refactor: ~340 ??? (?? ????? ???? ??? ???????).
+/// ??? ??? Refactor:  ~150 ???.
 /// ============================================================
 class EditIncomePage extends StatefulWidget {
   const EditIncomePage({super.key, required this.income, this.onUpdated});
@@ -62,7 +62,7 @@ class _EditIncomePageState extends State<EditIncomePage> {
     super.dispose();
   }
 
-  // ─── Actions ──────────────────────────────────────────────────────────────
+  // --- Actions --------------------------------------------------------------
 
   Future<void> _update() async {
     if (!_formKey.currentState!.validate()) return;
@@ -119,7 +119,7 @@ class _EditIncomePageState extends State<EditIncomePage> {
     }
   }
 
-  // ─── Build ────────────────────────────────────────────────────────────────
+  // --- Build ----------------------------------------------------------------
 
   @override
   Widget build(BuildContext context) {
@@ -227,10 +227,10 @@ class _EditIncomePageState extends State<EditIncomePage> {
   }
 }
 
-// ─── Private Widget ────────────────────────────────────────────────────────
+// --- Private Widget --------------------------------------------------------
 
-/// Chips سريعة لاختيار مصدر الدخل.
-/// مفصولة كـ widget منفصل (SRP).
+/// Chips ????? ??????? ???? ?????.
+/// ?????? ?? widget ????? (SRP).
 class _SourceChips extends StatelessWidget {
   const _SourceChips({required this.selectedSource, required this.onSelected});
 

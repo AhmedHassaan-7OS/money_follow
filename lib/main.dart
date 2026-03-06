@@ -11,9 +11,16 @@ import 'package:money_follow/utils/app_localizations_temp.dart';
 import 'package:money_follow/utils/system_detection_helper.dart';
 import 'package:money_follow/services/permission_service.dart';
 import 'package:money_follow/services/bank_sms_service.dart';
+import 'package:money_follow/services/commitment_reminder_service.dart';
 import 'package:money_follow/bloc/statistics/statistics_bloc.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  try {
+    await CommitmentReminderService.initialize();
+  } catch (e) {
+    debugPrint('Commitment reminders plugin unavailable: $e');
+  }
   // Print system detection info for debugging
   SystemDetectionHelper.printSystemInfo();
   runApp(const MyApp());
@@ -39,6 +46,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _requestPermissionsOnStartup();
       _checkPendingBankSmsAndPrompt();
+      CommitmentReminderService.checkAndNotifyDueCommitments().catchError((e) {
+        debugPrint('Reminder check failed: $e');
+      });
     });
   }
 
@@ -52,6 +62,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       _checkPendingBankSmsAndPrompt();
+      CommitmentReminderService.checkAndNotifyDueCommitments().catchError((e) {
+        debugPrint('Reminder check failed on resume: $e');
+      });
     }
   }
 

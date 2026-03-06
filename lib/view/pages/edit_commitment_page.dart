@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:money_follow/repository/commitment_repository.dart'
     show CommitmentRepository;
@@ -16,16 +16,17 @@ import 'package:money_follow/view/widgets/section_label.dart' show SectionLabel;
 import 'package:provider/provider.dart';
 import 'package:money_follow/config/app_theme.dart';
 import 'package:money_follow/core/constants/app_constants.dart';
-import 'package:money_follow/model/commitment_model.dart';
+import 'package:money_follow/models/commitment_model.dart';
 import 'package:money_follow/providers/currency_provider.dart';
+import 'package:money_follow/services/commitment_reminder_service.dart';
 import 'package:money_follow/utils/app_localizations_temp.dart';
 import 'package:money_follow/utils/validators.dart';
 
 /// ============================================================
-/// EditCommitmentPage — صفحة تعديل/حذف التزام.
+/// EditCommitmentPage â€” ØµÙØ­Ø© ØªØ¹Ø¯ÙŠÙ„/Ø­Ø°Ù Ø§Ù„ØªØ²Ø§Ù….
 ///
-/// قبل الـ Refactor: ~380 سطر.
-/// بعد الـ Refactor:  ~160 سطر.
+/// Ù‚Ø¨Ù„ Ø§Ù„Ù€ Refactor: ~380 Ø³Ø·Ø±.
+/// Ø¨Ø¹Ø¯ Ø§Ù„Ù€ Refactor:  ~160 Ø³Ø·Ø±.
 /// ============================================================
 class EditCommitmentPage extends StatefulWidget {
   const EditCommitmentPage({
@@ -65,7 +66,7 @@ class _EditCommitmentPageState extends State<EditCommitmentPage> {
     super.dispose();
   }
 
-  // ─── Actions ──────────────────────────────────────────────────────────────
+  // â”€â”€â”€ Actions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   Future<void> _update() async {
     if (!_formKey.currentState!.validate()) return;
@@ -81,6 +82,12 @@ class _EditCommitmentPageState extends State<EditCommitmentPage> {
       );
 
       await _repository.update(updated, widget.commitment.id!);
+      await CommitmentReminderService.clearReminderMarkersForCommitment(
+        widget.commitment.id!,
+      );
+      CommitmentReminderService.checkAndNotifyDueCommitments().timeout(
+        const Duration(seconds: 2),
+      ).catchError((_) {});
 
       if (mounted) {
         AppSnackBar.success(
@@ -110,6 +117,9 @@ class _EditCommitmentPageState extends State<EditCommitmentPage> {
 
     try {
       await _repository.delete(widget.commitment.id!);
+      await CommitmentReminderService.clearReminderMarkersForCommitment(
+        widget.commitment.id!,
+      );
       if (mounted) {
         AppSnackBar.error(context, 'Commitment deleted successfully!');
         widget.onUpdated?.call();
@@ -122,7 +132,7 @@ class _EditCommitmentPageState extends State<EditCommitmentPage> {
     }
   }
 
-  // ─── Build ────────────────────────────────────────────────────────────────
+  // â”€â”€â”€ Build â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   @override
   Widget build(BuildContext context) {
@@ -140,7 +150,7 @@ class _EditCommitmentPageState extends State<EditCommitmentPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Preview card — يتحدث مع كل كتابة
+                // Preview card â€” ÙŠØªØ­Ø¯Ø« Ù…Ø¹ ÙƒÙ„ ÙƒØªØ§Ø¨Ø©
                 _CommitmentPreviewCard(
                   titleController: _titleController,
                   amountController: _amountController,
@@ -191,7 +201,7 @@ class _EditCommitmentPageState extends State<EditCommitmentPage> {
                   selectedDate: _selectedDate,
                   onDateChanged: (d) => setState(() => _selectedDate = d),
                   accentColor: AppTheme.warningColor,
-                  // الالتزامات ممتدة للمستقبل
+                  // Ø§Ù„Ø§Ù„ØªØ²Ø§Ù…Ø§Øª Ù…Ù…ØªØ¯Ø© Ù„Ù„Ù…Ø³ØªÙ‚Ø¨Ù„
                   lastDate: DateTime.now().add(const Duration(days: 365 * 5)),
                   firstDate: DateTime.now(),
                 ),
@@ -236,10 +246,10 @@ class _EditCommitmentPageState extends State<EditCommitmentPage> {
   }
 }
 
-// ─── Private Widget ────────────────────────────────────────────────────────
+// â”€â”€â”€ Private Widget â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-/// بطاقة Preview تعرض معاينة الالتزام live أثناء التعديل.
-/// مفصولة كـ widget (SRP).
+/// Ø¨Ø·Ø§Ù‚Ø© Preview ØªØ¹Ø±Ø¶ Ù…Ø¹Ø§ÙŠÙ†Ø© Ø§Ù„Ø§Ù„ØªØ²Ø§Ù… live Ø£Ø«Ù†Ø§Ø¡ Ø§Ù„ØªØ¹Ø¯ÙŠÙ„.
+/// Ù…ÙØµÙˆÙ„Ø© ÙƒÙ€ widget (SRP).
 class _CommitmentPreviewCard extends StatelessWidget {
   const _CommitmentPreviewCard({
     required this.titleController,
@@ -311,3 +321,4 @@ class _CommitmentPreviewCard extends StatelessWidget {
     );
   }
 }
+

@@ -19,7 +19,7 @@ import 'package:money_follow/view/widgets/primary_button.dart'
 import 'package:money_follow/view/widgets/section_label.dart' show SectionLabel;
 import 'package:provider/provider.dart';
 import 'package:money_follow/config/app_theme.dart';
-import 'package:money_follow/model/expense_model.dart';
+import 'package:money_follow/models/expense_model.dart';
 import 'package:money_follow/providers/currency_provider.dart';
 import 'package:money_follow/utils/app_localizations_temp.dart';
 

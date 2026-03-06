@@ -1,15 +1,15 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:money_follow/config/app_theme.dart';
 import 'package:money_follow/control/sqlcontrol.dart';
-import 'package:money_follow/model/expense_model.dart';
-import 'package:money_follow/model/income_model.dart';
+import 'package:money_follow/models/expense_model.dart';
+import 'package:money_follow/models/income_model.dart';
 import 'package:money_follow/providers/currency_provider.dart';
 import 'package:money_follow/utils/app_localizations_temp.dart';
-import 'package:money_follow/model/commitment_model.dart';
-import 'package:money_follow/view/pages/edit_income_page.dart';
+import 'package:money_follow/models/commitment_model.dart';
+import 'edit_income_page.dart';
 import 'package:money_follow/view/pages/edit_expense_page.dart';
 import 'package:money_follow/view/pages/edit_commitment_page.dart';
 import 'package:money_follow/bloc/statistics/statistics_bloc.dart';
@@ -27,7 +27,12 @@ class _HistoryPageState extends State<HistoryPage> {
   bool isLoading = true;
   String selectedFilter = 'All';
 
-  final List<String> filterOptions = ['All', 'Income', 'Expenses', 'Commitments'];
+  final List<String> filterOptions = [
+    'All',
+    'Income',
+    'Expenses',
+    'Commitments',
+  ];
   final Map<String, String> filterMapping = {
     'All': 'All',
     'Income': 'Income',
@@ -53,48 +58,54 @@ class _HistoryPageState extends State<HistoryPage> {
       final expenseData = await _sqlControl.getData('expenses');
       for (var expense in expenseData) {
         final expenseModel = ExpenseModel.fromMap(expense);
-        items.add(HistoryItem(
-          id: expenseModel.id.toString(),
-          type: 'Expense',
-          title: expenseModel.category,
-          amount: -expenseModel.amount, // Negative for expenses
-          date: DateTime.parse(expenseModel.date),
-          note: expenseModel.note,
-          icon: _getCategoryIcon(expenseModel.category),
-          color: AppTheme.errorColor,
-        ));
+        items.add(
+          HistoryItem(
+            id: expenseModel.id.toString(),
+            type: 'Expense',
+            title: expenseModel.category,
+            amount: -expenseModel.amount, // Negative for expenses
+            date: DateTime.parse(expenseModel.date),
+            note: expenseModel.note,
+            icon: _getCategoryIcon(expenseModel.category),
+            color: AppTheme.errorColor,
+          ),
+        );
       }
 
       // Load income
       final incomeData = await _sqlControl.getData('incomes');
       for (var income in incomeData) {
         final incomeModel = IncomeModel.fromMap(income);
-        items.add(HistoryItem(
-          id: incomeModel.id.toString(),
-          type: 'Income',
-          title: incomeModel.source,
-          amount: incomeModel.amount, // Positive for income
-          date: DateTime.parse(incomeModel.date),
-          note: null,
-          icon: _getIncomeIcon(incomeModel.source),
-          color: AppTheme.accentGreen,
-        ));
+        items.add(
+          HistoryItem(
+            id: incomeModel.id.toString(),
+            type: 'Income',
+            title: incomeModel.source,
+            amount: incomeModel.amount, // Positive for income
+            date: DateTime.parse(incomeModel.date),
+            note: null,
+            icon: _getIncomeIcon(incomeModel.source),
+            color: AppTheme.accentGreen,
+          ),
+        );
       }
 
       // Load commitments
       final commitmentData = await _sqlControl.getData('commitments');
       for (var commitment in commitmentData) {
         final commitmentModel = CommitmentModel.fromMap(commitment);
-        items.add(HistoryItem(
-          id: commitmentModel.id.toString(),
-          type: 'Commitment',
-          title: commitmentModel.title,
-          amount: -commitmentModel.amount, // Negative for commitments
-          date: DateTime.parse(commitmentModel.dueDate),
-          note: null,
-          icon: _getCommitmentIcon(commitmentModel.title),
-          color: AppTheme.warningColor,
-        ));
+        items.add(
+          HistoryItem(
+            id: commitmentModel.id.toString(),
+            type: 'Commitment',
+            title: commitmentModel.title,
+            amount: -commitmentModel.amount, // Negative for commitments
+            date: DateTime.parse(commitmentModel.dueDate),
+            note: null,
+            icon: _getCommitmentIcon(commitmentModel.title),
+            color: AppTheme.warningColor,
+          ),
+        );
       }
 
       // Sort by date (newest first)
@@ -161,36 +172,35 @@ class _HistoryPageState extends State<HistoryPage> {
   IconData _getCommitmentIcon(String title) {
     final titleLower = title.toLowerCase();
     if (titleLower.contains('rent')) return Icons.home;
-    if (titleLower.contains('electricity') || titleLower.contains('electric')) return Icons.flash_on;
+    if (titleLower.contains('electricity') || titleLower.contains('electric'))
+      return Icons.flash_on;
     if (titleLower.contains('water')) return Icons.water_drop;
-    if (titleLower.contains('internet') || titleLower.contains('wifi')) return Icons.wifi;
-    if (titleLower.contains('phone') || titleLower.contains('mobile')) return Icons.phone;
-    if (titleLower.contains('car') || titleLower.contains('loan')) return Icons.directions_car;
+    if (titleLower.contains('internet') || titleLower.contains('wifi'))
+      return Icons.wifi;
+    if (titleLower.contains('phone') || titleLower.contains('mobile'))
+      return Icons.phone;
+    if (titleLower.contains('car') || titleLower.contains('loan'))
+      return Icons.directions_car;
     if (titleLower.contains('insurance')) return Icons.security;
-    if (titleLower.contains('gym') || titleLower.contains('fitness')) return Icons.fitness_center;
+    if (titleLower.contains('gym') || titleLower.contains('fitness'))
+      return Icons.fitness_center;
     return Icons.schedule;
   }
 
   Future<void> _navigateToEdit(HistoryItem item) async {
     Widget? editPage;
-    
+
     switch (item.type) {
       case 'Income':
         final income = await _getIncomeById(item.id);
         if (income != null) {
-          editPage = EditIncomePage(
-            income: income,
-            onUpdated: _loadHistory,
-          );
+          editPage = EditIncomePage(income: income, onUpdated: _loadHistory);
         }
         break;
       case 'Expense':
         final expense = await _getExpenseById(item.id);
         if (expense != null) {
-          editPage = EditExpensePage(
-            expense: expense,
-            onUpdated: _loadHistory,
-          );
+          editPage = EditExpensePage(expense: expense, onUpdated: _loadHistory);
         }
         break;
       case 'Commitment':
@@ -257,9 +267,14 @@ class _HistoryPageState extends State<HistoryPage> {
     return null;
   }
 
-  Widget _buildDateHeader(String dateText, DateTime date, CurrencyProvider currencyProvider, StatisticsState state) {
+  Widget _buildDateHeader(
+    String dateText,
+    DateTime date,
+    CurrencyProvider currencyProvider,
+    StatisticsState state,
+  ) {
     final dateKey = DateFormat('yyyy-MM-dd').format(date);
-    
+
     return Padding(
       padding: const EdgeInsets.only(left: 4, bottom: 12),
       child: Column(
@@ -267,11 +282,10 @@ class _HistoryPageState extends State<HistoryPage> {
         children: [
           Text(
             dateText,
-            style: AppTheme.getHeadingSmall(context).copyWith(
-              fontSize: 16,
-            ),
+            style: AppTheme.getHeadingSmall(context).copyWith(fontSize: 16),
           ),
-          if (state is StatisticsLoaded && state.dailySummaries.containsKey(dateKey)) ...[
+          if (state is StatisticsLoaded &&
+              state.dailySummaries.containsKey(dateKey)) ...[
             const SizedBox(height: 4),
             Row(
               children: [
@@ -283,7 +297,7 @@ class _HistoryPageState extends State<HistoryPage> {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    'صرفت: ${currencyProvider.formatAmount(state.dailySummaries[dateKey]!['expense']!)}',
+                    'ØµØ±ÙØª: ${currencyProvider.formatAmount(state.dailySummaries[dateKey]!['expense']!)}',
                     style: TextStyle(
                       fontSize: 12,
                       color: AppTheme.errorColor,
@@ -291,7 +305,7 @@ class _HistoryPageState extends State<HistoryPage> {
                     ),
                   ),
                 ],
-                if (state.dailySummaries[dateKey]!['expense']! > 0 && 
+                if (state.dailySummaries[dateKey]!['expense']! > 0 &&
                     state.dailySummaries[dateKey]!['income']! > 0) ...[
                   const SizedBox(width: 16),
                 ],
@@ -303,7 +317,7 @@ class _HistoryPageState extends State<HistoryPage> {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    'كسبت: ${currencyProvider.formatAmount(state.dailySummaries[dateKey]!['income']!)}',
+                    'ÙƒØ³Ø¨Øª: ${currencyProvider.formatAmount(state.dailySummaries[dateKey]!['income']!)}',
                     style: TextStyle(
                       fontSize: 12,
                       color: AppTheme.accentGreen,
@@ -323,7 +337,7 @@ class _HistoryPageState extends State<HistoryPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final currencyProvider = Provider.of<CurrencyProvider>(context);
-    
+
     return Scaffold(
       backgroundColor: AppTheme.getBackgroundColor(context),
       body: SafeArea(
@@ -340,14 +354,19 @@ class _HistoryPageState extends State<HistoryPage> {
                   ),
                   const Spacer(),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: AppTheme.getCardColor(context),
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(
-                            Theme.of(context).brightness == Brightness.dark ? 0.3 : 0.05
+                            Theme.of(context).brightness == Brightness.dark
+                                ? 0.3
+                                : 0.05,
                           ),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
@@ -380,34 +399,43 @@ class _HistoryPageState extends State<HistoryPage> {
                         margin: const EdgeInsets.symmetric(horizontal: 4),
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         decoration: BoxDecoration(
-                          color: isSelected 
-                              ? AppTheme.primaryBlue 
+                          color: isSelected
+                              ? AppTheme.primaryBlue
                               : AppTheme.getCardColor(context),
                           borderRadius: BorderRadius.circular(12),
-                          boxShadow: isSelected ? [
-                            BoxShadow(
-                              color: AppTheme.primaryBlue.withOpacity(0.3),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ] : [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(
-                                Theme.of(context).brightness == Brightness.dark ? 0.3 : 0.05
-                              ),
-                              blurRadius: 4,
-                              offset: const Offset(0, 1),
-                            ),
-                          ],
+                          boxShadow: isSelected
+                              ? [
+                                  BoxShadow(
+                                    color: AppTheme.primaryBlue.withOpacity(
+                                      0.3,
+                                    ),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ]
+                              : [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(
+                                      Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? 0.3
+                                          : 0.05,
+                                    ),
+                                    blurRadius: 4,
+                                    offset: const Offset(0, 1),
+                                  ),
+                                ],
                         ),
                         child: Text(
                           filter,
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            color: isSelected 
-                                ? Colors.white 
+                            color: isSelected
+                                ? Colors.white
                                 : AppTheme.getTextPrimary(context),
-                            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                            fontWeight: isSelected
+                                ? FontWeight.w600
+                                : FontWeight.normal,
                             fontSize: 14,
                           ),
                         ),
@@ -428,42 +456,46 @@ class _HistoryPageState extends State<HistoryPage> {
                       ),
                     )
                   : filteredItems.isEmpty
-                      ? Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.history,
-                                size: 64,
-                                color: Colors.grey[400],
-                              ),
-                              const SizedBox(height: 16),
-                              Text(
-                                'No transactions yet',
-                                style: AppTheme.getHeadingSmall(context).copyWith(
-                                  color: Colors.grey[600],
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Start adding income, expenses, or commitments',
-                                style: AppTheme.getBodyMedium(context),
-                                textAlign: TextAlign.center,
-                              ),
-                            ],
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.history,
+                            size: 64,
+                            color: Colors.grey[400],
                           ),
-                        )
-                      : RefreshIndicator(
-                          onRefresh: _loadHistory,
-                          child: ListView.builder(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            itemCount: filteredItems.length,
-                            itemBuilder: (context, index) {
-                              final item = filteredItems[index];
-                              return _buildHistoryCard(item, index, currencyProvider);
-                            },
+                          const SizedBox(height: 16),
+                          Text(
+                            'No transactions yet',
+                            style: AppTheme.getHeadingSmall(
+                              context,
+                            ).copyWith(color: Colors.grey[600]),
                           ),
-                        ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Start adding income, expenses, or commitments',
+                            style: AppTheme.getBodyMedium(context),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    )
+                  : RefreshIndicator(
+                      onRefresh: _loadHistory,
+                      child: ListView.builder(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        itemCount: filteredItems.length,
+                        itemBuilder: (context, index) {
+                          final item = filteredItems[index];
+                          return _buildHistoryCard(
+                            item,
+                            index,
+                            currencyProvider,
+                          );
+                        },
+                      ),
+                    ),
             ),
           ],
         ),
@@ -471,12 +503,20 @@ class _HistoryPageState extends State<HistoryPage> {
     );
   }
 
-  Widget _buildHistoryCard(HistoryItem item, int index, CurrencyProvider currencyProvider) {
-    final isToday = DateFormat('yyyy-MM-dd').format(item.date) == 
-                   DateFormat('yyyy-MM-dd').format(DateTime.now());
-    final isYesterday = DateFormat('yyyy-MM-dd').format(item.date) == 
-                       DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(const Duration(days: 1)));
-    
+  Widget _buildHistoryCard(
+    HistoryItem item,
+    int index,
+    CurrencyProvider currencyProvider,
+  ) {
+    final isToday =
+        DateFormat('yyyy-MM-dd').format(item.date) ==
+        DateFormat('yyyy-MM-dd').format(DateTime.now());
+    final isYesterday =
+        DateFormat('yyyy-MM-dd').format(item.date) ==
+        DateFormat(
+          'yyyy-MM-dd',
+        ).format(DateTime.now().subtract(const Duration(days: 1)));
+
     String dateText;
     if (isToday) {
       dateText = 'Today';
@@ -487,9 +527,10 @@ class _HistoryPageState extends State<HistoryPage> {
     }
 
     // Show date header if this is the first item or date changed
-    bool showDateHeader = index == 0 || 
-        DateFormat('yyyy-MM-dd').format(item.date) != 
-        DateFormat('yyyy-MM-dd').format(filteredItems[index - 1].date);
+    bool showDateHeader =
+        index == 0 ||
+        DateFormat('yyyy-MM-dd').format(item.date) !=
+            DateFormat('yyyy-MM-dd').format(filteredItems[index - 1].date);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -498,7 +539,12 @@ class _HistoryPageState extends State<HistoryPage> {
           if (index > 0) const SizedBox(height: 16),
           BlocBuilder<StatisticsBloc, StatisticsState>(
             builder: (context, state) {
-              return _buildDateHeader(dateText, item.date, currencyProvider, state);
+              return _buildDateHeader(
+                dateText,
+                item.date,
+                currencyProvider,
+                state,
+              );
             },
           ),
         ],
@@ -510,7 +556,7 @@ class _HistoryPageState extends State<HistoryPage> {
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(
-                  Theme.of(context).brightness == Brightness.dark ? 0.3 : 0.05
+                  Theme.of(context).brightness == Brightness.dark ? 0.3 : 0.05,
                 ),
                 blurRadius: 10,
                 offset: const Offset(0, 2),
@@ -532,28 +578,24 @@ class _HistoryPageState extends State<HistoryPage> {
                       color: item.color.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Icon(
-                      item.icon,
-                      color: item.color,
-                      size: 24,
-                    ),
+                    child: Icon(item.icon, color: item.color, size: 24),
                   ),
                   const SizedBox(width: 16),
-                  
+
                   // Content
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          item.title,
-                          style: AppTheme.getBodyLarge(context),
-                        ),
+                        Text(item.title, style: AppTheme.getBodyLarge(context)),
                         const SizedBox(height: 4),
                         Row(
                           children: [
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 2,
+                              ),
                               decoration: BoxDecoration(
                                 color: item.color.withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(8),
@@ -610,7 +652,7 @@ class _HistoryPageState extends State<HistoryPage> {
                       ],
                     ),
                   ),
-                  
+
                   // Amount and Edit Icon
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
@@ -620,7 +662,9 @@ class _HistoryPageState extends State<HistoryPage> {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: item.amount >= 0 ? AppTheme.accentGreen : AppTheme.errorColor,
+                          color: item.amount >= 0
+                              ? AppTheme.accentGreen
+                              : AppTheme.errorColor,
                         ),
                       ),
                       const SizedBox(height: 4),

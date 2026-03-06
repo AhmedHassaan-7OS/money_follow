@@ -4,7 +4,7 @@ import 'package:money_follow/bloc/expense/expense_event.dart';
 import 'package:money_follow/bloc/expense/expense_state.dart';
 import 'package:money_follow/core/constants/app_constants.dart'
     show AppConstants;
-import 'package:money_follow/model/expense_model.dart';
+import 'package:money_follow/models/expense_model.dart';
 import 'package:money_follow/repository/expense_repository.dart'
     show ExpenseRepository;
 import 'package:money_follow/services/ai_suggestion_service.dart';

@@ -1,4 +1,4 @@
-import 'package:money_follow/model/income_model.dart';
+import 'package:money_follow/models/income_model.dart';
 import 'package:money_follow/repository/base_repository.dart'
     show BaseRepository;
 
