@@ -10,6 +10,7 @@ import 'package:money_follow/view/pages/main_navigation.dart';
 import 'package:money_follow/utils/app_localizations_temp.dart';
 import 'package:money_follow/utils/system_detection_helper.dart';
 import 'package:money_follow/services/permission_service.dart';
+import 'package:money_follow/services/bank_sms_service.dart';
 import 'package:money_follow/bloc/statistics/statistics_bloc.dart';
 
 void main() {
@@ -25,16 +26,33 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   bool _permissionsRequested = false;
+  bool _isShowingPendingDialog = false;
+  final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     // Request permissions after the first frame is built
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _requestPermissionsOnStartup();
+      _checkPendingBankSmsAndPrompt();
     });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _checkPendingBankSmsAndPrompt();
+    }
   }
 
   Future<void> _requestPermissionsOnStartup() async {
@@ -50,6 +68,71 @@ class _MyAppState extends State<MyApp> {
       }
     } catch (e) {
       print('Error requesting permissions on startup: $e');
+    }
+  }
+
+  Future<void> _checkPendingBankSmsAndPrompt() async {
+    if (!mounted || _isShowingPendingDialog) return;
+
+    try {
+      final pending = await BankSmsService.getPendingTransactions();
+      if (pending.isEmpty) return;
+
+      _isShowingPendingDialog = true;
+      for (final tx in pending) {
+        if (!mounted) break;
+        final context = _navigatorKey.currentContext;
+        if (context == null) break;
+
+        final action = await showDialog<String>(
+          context: context,
+          barrierDismissible: false,
+          builder: (dialogContext) => AlertDialog(
+            title: Text(tx.isIncome ? 'Bank SMS Income' : 'Bank SMS Expense'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Amount: ${tx.amount}'),
+                const SizedBox(height: 8),
+                Text('Sender: ${tx.sender}'),
+                const SizedBox(height: 8),
+                Text(
+                  tx.body,
+                  maxLines: 5,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext, 'skip'),
+                child: const Text('Skip'),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(dialogContext, 'save'),
+                child: const Text('Save'),
+              ),
+            ],
+          ),
+        );
+
+        if (action == 'save') {
+          await BankSmsService.confirmAndSave(tx);
+          if (mounted && context.mounted) {
+            context.read<StatisticsBloc>().add(LoadStatistics());
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Transaction saved from bank SMS')),
+            );
+          }
+        } else {
+          await BankSmsService.removePendingById(tx.id);
+        }
+      }
+    } catch (e) {
+      print('Error while processing pending bank SMS: $e');
+    } finally {
+      _isShowingPendingDialog = false;
     }
   }
 
@@ -70,6 +153,7 @@ class _MyAppState extends State<MyApp> {
         child: Consumer2<ThemeProvider, LocalizationProvider>(
         builder: (context, themeProvider, localizationProvider, child) {
           return MaterialApp(
+            navigatorKey: _navigatorKey,
             title: AppLocalizations.of(context).appTitle,
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,

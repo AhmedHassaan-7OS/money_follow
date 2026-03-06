@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
 import 'package:provider/provider.dart';
 import 'package:money_follow/config/app_theme.dart';
 import 'package:money_follow/providers/theme_provider.dart';
 import 'package:money_follow/providers/localization_provider.dart';
 import 'package:money_follow/providers/currency_provider.dart';
+import 'package:money_follow/services/bank_sms_service.dart';
 import 'package:money_follow/utils/app_localizations_temp.dart';
 import 'package:money_follow/view/pages/backup_page.dart';
 
@@ -116,6 +118,12 @@ class SettingsPage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 24),
+                  if (Platform.isAndroid) ...[
+                    _sectionTitle(context, 'Bank SMS'),
+                    const SizedBox(height: 8),
+                    const _BankSmsSettingsCard(),
+                    const SizedBox(height: 24),
+                  ],
                   _sectionTitle(context, l10n.about),
                   const SizedBox(height: 8),
                   _settingsCard(
@@ -282,4 +290,181 @@ class SettingsPage extends StatelessWidget {
     height: 1,
     color: AppTheme.getTextSecondary(context).withOpacity(0.1),
   );
+}
+
+class _BankSmsSettingsCard extends StatefulWidget {
+  const _BankSmsSettingsCard();
+
+  @override
+  State<_BankSmsSettingsCard> createState() => _BankSmsSettingsCardState();
+}
+
+class _BankSmsSettingsCardState extends State<_BankSmsSettingsCard> {
+  bool _captureEnabled = false;
+  bool _autoRecordEnabled = false;
+  int _pendingCount = 0;
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadState();
+  }
+
+  Future<void> _loadState() async {
+    try {
+      final capture = await BankSmsService.getCaptureEnabled();
+      final autoRecord = await BankSmsService.getAutoRecordEnabled();
+      final pending = await BankSmsService.getPendingTransactions();
+      if (!mounted) return;
+      setState(() {
+        _captureEnabled = capture;
+        _autoRecordEnabled = autoRecord;
+        _pendingCount = pending.length;
+        _loading = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _toggleCapture(bool value) async {
+    if (value) {
+      final granted = await BankSmsService.requestSmsPermissions();
+      if (!granted) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('SMS permission is required')),
+          );
+        }
+        return;
+      }
+    }
+
+    await BankSmsService.setCaptureEnabled(value);
+    if (!mounted) return;
+    setState(() => _captureEnabled = value);
+  }
+
+  Future<void> _toggleAutoRecord(bool value) async {
+    await BankSmsService.setAutoRecordEnabled(value);
+    if (!mounted) return;
+    setState(() => _autoRecordEnabled = value);
+  }
+
+  Future<void> _reviewPendingNow() async {
+    final pending = await BankSmsService.getPendingTransactions();
+    if (!mounted) return;
+    if (pending.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No pending bank transactions')),
+      );
+      setState(() => _pendingCount = 0);
+      return;
+    }
+
+    for (final tx in pending) {
+      if (!mounted) break;
+      final action = await showDialog<String>(
+        context: context,
+        barrierDismissible: false,
+        builder: (dialogContext) => AlertDialog(
+          title: Text(tx.isIncome ? 'Income from SMS' : 'Expense from SMS'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Amount: ${tx.amount}'),
+              const SizedBox(height: 8),
+              Text('Sender: ${tx.sender}'),
+              const SizedBox(height: 8),
+              Text(tx.body, maxLines: 4, overflow: TextOverflow.ellipsis),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, 'skip'),
+              child: const Text('Skip'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(dialogContext, 'save'),
+              child: const Text('Save'),
+            ),
+          ],
+        ),
+      );
+
+      if (action == 'save') {
+        await BankSmsService.confirmAndSave(tx);
+      } else {
+        await BankSmsService.removePendingById(tx.id);
+      }
+    }
+
+    await _loadState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_loading) {
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppTheme.getCardColor(context),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        color: AppTheme.getCardColor(context),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(
+              Theme.of(context).brightness == Brightness.dark ? 0.3 : 0.05,
+            ),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          ListTile(
+            leading: const Icon(Icons.sms_outlined, color: AppTheme.primaryBlue),
+            title: const Text('Read bank SMS'),
+            subtitle: const Text('Detect income/expense from incoming bank messages'),
+            trailing: Switch(
+              value: _captureEnabled,
+              onChanged: _toggleCapture,
+              activeColor: AppTheme.primaryBlue,
+            ),
+          ),
+          Divider(height: 1, color: AppTheme.getTextSecondary(context).withOpacity(0.1)),
+          ListTile(
+            leading: const Icon(Icons.flash_on_outlined, color: AppTheme.primaryBlue),
+            title: const Text('Auto record'),
+            subtitle: const Text('Save detected messages directly without confirmation'),
+            trailing: Switch(
+              value: _autoRecordEnabled,
+              onChanged: _captureEnabled ? _toggleAutoRecord : null,
+              activeColor: AppTheme.primaryBlue,
+            ),
+          ),
+          Divider(height: 1, color: AppTheme.getTextSecondary(context).withOpacity(0.1)),
+          ListTile(
+            leading: const Icon(Icons.pending_actions_outlined, color: AppTheme.primaryBlue),
+            title: Text('Pending transactions ($_pendingCount)'),
+            subtitle: const Text('Review and confirm detected bank messages'),
+            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+            onTap: _reviewPendingNow,
+          ),
+        ],
+      ),
+    );
+  }
 }
