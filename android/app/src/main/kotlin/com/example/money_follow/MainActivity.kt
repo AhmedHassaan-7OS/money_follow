@@ -9,6 +9,7 @@ import org.json.JSONObject
 class MainActivity : FlutterActivity() {
     companion object {
         private const val CHANNEL = "money_follow/bank_sms"
+        private const val WIDGET_CHANNEL = "money_follow/widgets"
     }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
@@ -49,6 +50,25 @@ class MainActivity : FlutterActivity() {
                         } else {
                             result.success(BankSmsStore.removePendingById(this, id))
                         }
+                    }
+
+                    else -> result.notImplemented()
+                }
+            }
+
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, WIDGET_CHANNEL)
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "refreshWidgets" -> {
+                        HomeWidgetSync.refreshAllWidgets(this)
+                        result.success(true)
+                    }
+
+                    "setQuickWithdrawAmount" -> {
+                        val amount = call.argument<Double>("amount") ?: 100.0
+                        HomeWidgetSync.setQuickWithdrawAmount(this, amount)
+                        HomeWidgetSync.refreshAllWidgets(this)
+                        result.success(true)
                     }
 
                     else -> result.notImplemented()

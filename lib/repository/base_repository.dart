@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:money_follow/control/sqlcontrol.dart';
+import 'package:money_follow/services/home_widget_service.dart';
 
 /// ============================================================
 /// BaseRepository<T> — Abstract base for all data access.
@@ -38,14 +41,20 @@ abstract class BaseRepository<T> {
   }
 
   Future<int> insert(T item) async {
-    return await _db.insertData(tableName, toMap(item));
+    final result = await _db.insertData(tableName, toMap(item));
+    unawaited(HomeWidgetService.refreshWidgets());
+    return result;
   }
 
   Future<int> update(T item, int id) async {
-    return await _db.updateData(tableName, toMap(item), id);
+    final result = await _db.updateData(tableName, toMap(item), id);
+    unawaited(HomeWidgetService.refreshWidgets());
+    return result;
   }
 
   Future<int> delete(int id) async {
-    return await _db.deleteData(tableName, id);
+    final result = await _db.deleteData(tableName, id);
+    unawaited(HomeWidgetService.refreshWidgets());
+    return result;
   }
 }

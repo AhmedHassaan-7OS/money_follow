@@ -75,9 +75,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     try {
       // Wait a bit for the UI to settle
       await Future.delayed(const Duration(milliseconds: 500));
-      
-      if (mounted) {
-        await PermissionService.requestPermissionsOnStartup(context);
+
+      final navContext = _navigatorKey.currentContext;
+      if (mounted && navContext != null && navContext.mounted) {
+        await PermissionService.requestPermissionsOnStartup(navContext);
       }
     } catch (e) {
       print('Error requesting permissions on startup: $e');
@@ -167,7 +168,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         builder: (context, themeProvider, localizationProvider, child) {
           return MaterialApp(
             navigatorKey: _navigatorKey,
-            title: AppLocalizations.of(context).appTitle,
+            title: 'Money Follow',
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
             themeMode: themeProvider.themeMode,

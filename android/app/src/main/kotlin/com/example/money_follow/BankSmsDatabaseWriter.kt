@@ -23,7 +23,7 @@ object BankSmsDatabaseWriter {
                 SQLiteDatabase.OPEN_READWRITE
             )
 
-            db.use {
+            val inserted = db.use {
                 val date = SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date(parsed.timestamp))
                 if (parsed.type == "income") {
                     val values = ContentValues().apply {
@@ -42,6 +42,10 @@ object BankSmsDatabaseWriter {
                     it.insert("expenses", null, values) > 0
                 }
             }
+            if (inserted) {
+                HomeWidgetSync.refreshAllWidgets(context)
+            }
+            inserted
         } catch (_: Exception) {
             false
         }

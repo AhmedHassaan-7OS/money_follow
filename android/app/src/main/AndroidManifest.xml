@@ -55,6 +55,29 @@
             android:value="2" />
 
         <receiver
+            android:name=".StatsAppWidgetProvider"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/stats_widget_info" />
+        </receiver>
+
+        <receiver
+            android:name=".QuickWithdrawAppWidgetProvider"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.example.money_follow.ACTION_QUICK_WITHDRAW" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/quick_withdraw_widget_info" />
+        </receiver>
+
+        <receiver
             android:name=".BankSmsReceiver"
             android:enabled="true"
             android:exported="true"
