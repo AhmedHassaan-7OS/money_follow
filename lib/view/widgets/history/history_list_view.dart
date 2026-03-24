@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:money_follow/config/app_theme.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:lottie/lottie.dart';
+import 'package:money_follow/view/widgets/animated_press_scale.dart';
 import 'package:money_follow/core/cubit/history/history_cubit.dart';
 import 'package:money_follow/core/cubit/history/history_state.dart';
 import 'package:money_follow/core/cubit/statistics/statistics_cubit.dart';
@@ -50,7 +53,7 @@ class HistoryListView extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.history, size: 64, color: Colors.grey[400]),
+            Lottie.asset('assets/lottie/empty.json', width: 150, height: 150, fit: BoxFit.contain),
             const SizedBox(height: 16),
             Text('No transactions yet', style: AppTheme.getHeadingSmall(context).copyWith(color: Colors.grey[600])),
             const SizedBox(height: 8),
@@ -65,7 +68,7 @@ class HistoryListView extends StatelessWidget {
         if (context.mounted) await context.read<StatisticsCubit>().loadStatistics();
       },
       child: ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 120),
         itemCount: state.filtered.length,
         itemBuilder: (context, index) {
           final item = state.filtered[index];
@@ -82,9 +85,12 @@ class HistoryListView extends StatelessWidget {
                 if (index > 0) const SizedBox(height: 16),
                 HistoryDateHeader(dateText: dateText, date: item.date),
               ],
-              HistoryListItem(item: item, onTap: () => _navigateToEdit(context, item)),
+              AnimatedPressScale(
+                onTap: () => _navigateToEdit(context, item),
+                child: HistoryListItem(item: item, onTap: () {}),
+              ),
             ],
-          );
+          ).animate(delay: (index * 35).ms).fadeIn(duration: 400.ms, curve: Curves.easeOut).slideY(begin: 0.1, end: 0);
         },
       ),
     );

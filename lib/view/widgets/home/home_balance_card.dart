@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:money_follow/config/app_theme.dart';
+import 'package:money_follow/view/widgets/animated_press_scale.dart';
 
 class HomeBalanceCard extends StatelessWidget {
   const HomeBalanceCard({super.key, required this.label, required this.amount});
@@ -8,8 +9,9 @@ class HomeBalanceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
+    return AnimatedPressScale(
+      child: Container(
+        width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: AppTheme.primaryGradient,
@@ -30,6 +32,6 @@ class HomeBalanceCard extends StatelessWidget {
           Text(amount, style: AppTheme.balanceText),
         ],
       ),
-    );
+    ));
   }
 }

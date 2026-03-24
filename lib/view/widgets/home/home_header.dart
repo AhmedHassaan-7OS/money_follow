@@ -13,7 +13,13 @@ class HomeHeader extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(l10n.overview, style: AppTheme.getHeadingMedium(context)),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Welcome back!', style: AppTheme.getBodySmall(context).copyWith(color: AppTheme.getTextSecondary(context))),
+            Text(l10n.overview, style: AppTheme.getHeadingMedium(context)),
+          ],
+        ),
         Row(
           children: [
             IconButton(

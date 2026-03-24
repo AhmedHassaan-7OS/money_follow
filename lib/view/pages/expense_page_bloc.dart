@@ -12,6 +12,7 @@ import 'package:money_follow/view/widgets/date_picker_field.dart'
     show DatePickerField;
 import 'package:money_follow/view/widgets/primary_button.dart'
     show PrimaryButton;
+import 'package:money_follow/view/pages/category_selector_page.dart';
 import 'package:money_follow/view/widgets/section_label.dart' show SectionLabel;
 import 'package:money_follow/core/cubit/expense/expense_cubit.dart';
 import 'package:money_follow/core/cubit/expense/expense_state.dart';
@@ -152,8 +153,21 @@ class _ExpensePageBlocState extends State<ExpensePageBloc> {
                       value: state is ExpenseLoaded
                           ? state.selectedCategory
                           : AppConstants.defaultExpenseCategory,
-                      onChanged: (v) =>
-                          context.read<ExpenseCubit>().changeCategory(v),
+                      onChanged: (v) async {
+                        if (v == 'Other') {
+                          final newCat = await Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const CategorySelectorPage()),
+                          );
+                          if (newCat != null && newCat is String) {
+                            if (context.mounted) context.read<ExpenseCubit>().changeCategory(newCat);
+                          } else {
+                            if (context.mounted) context.read<ExpenseCubit>().changeCategory(AppConstants.defaultExpenseCategory);
+                          }
+                        } else {
+                          context.read<ExpenseCubit>().changeCategory(v);
+                        }
+                      },
                     ),
                     if (state is ExpenseLoaded && state.isCustomCategory) ...[
                       const SizedBox(height: 16),

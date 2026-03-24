@@ -10,6 +10,7 @@ import 'package:money_follow/view/widgets/app_card.dart' show AppCard;
 import 'package:money_follow/view/widgets/app_snack_bar.dart' show AppSnackBar;
 import 'package:money_follow/view/widgets/category_dropdown.dart'
     show CategoryDropdown;
+import 'package:money_follow/view/pages/category_selector_page.dart';
 import 'package:money_follow/view/widgets/confirm_delete_dialog.dart'
     show ConfirmDeleteDialog;
 import 'package:money_follow/view/widgets/date_picker_field.dart'
@@ -162,7 +163,21 @@ class _EditExpensePageState extends State<EditExpensePage> {
                 SectionLabel(l10n.category),
                 CategoryDropdown(
                   value: _selectedCategory,
-                  onChanged: (v) => setState(() => _selectedCategory = v),
+                  onChanged: (v) async {
+                    if (v == 'Other') {
+                      final newCat = await Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const CategorySelectorPage()),
+                      );
+                      if (newCat != null && newCat is String) {
+                        setState(() => _selectedCategory = newCat);
+                      } else {
+                        setState(() => _selectedCategory = AppConstants.defaultExpenseCategory);
+                      }
+                    } else {
+                      setState(() => _selectedCategory = v);
+                    }
+                  },
                 ),
                 const SizedBox(height: 24),
 

@@ -42,11 +42,15 @@ class _CommitmentsPageState extends State<CommitmentsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.getBackgroundColor(context),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _showAddSheet,
-        icon: const Icon(Icons.add_task),
-        label: const Text('Add'),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 120),
+        child: FloatingActionButton.extended(
+          onPressed: _showAddSheet,
+          icon: const Icon(Icons.add_task),
+          label: const Text('Add'),
+        ),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: SafeArea(
         child: BlocConsumer<CommitmentCubit, CommitmentState>(
           listener: (context, state) {},

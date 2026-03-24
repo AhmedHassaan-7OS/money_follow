@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:lottie/lottie.dart';
+import 'package:money_follow/view/widgets/animated_press_scale.dart';
 import 'package:money_follow/config/app_theme.dart';
 import 'package:money_follow/models/commitment_model.dart';
 import 'package:money_follow/core/cubit/commitment/commitment_cubit.dart';
@@ -43,7 +46,7 @@ class CommitmentsListView extends StatelessWidget {
     final visible = state.filtered;
 
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 120),
       children: [
         Text('TODO ${l10n.commitments}', style: AppTheme.getHeadingMedium(context)),
         const SizedBox(height: 12),
@@ -63,9 +66,16 @@ class CommitmentsListView extends StatelessWidget {
                       key: const ValueKey('empty'),
                       padding: const EdgeInsets.all(24),
                       child: Center(
-                        child: Text(
-                          state.filter == CommitmentFilter.completed ? 'No completed commitments yet' : 'No commitments yet',
-                          style: AppTheme.getBodyMedium(context),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Lottie.asset('assets/lottie/empty.json', width: 120, height: 120, fit: BoxFit.contain),
+                            const SizedBox(height: 16),
+                            Text(
+                              state.filter == CommitmentFilter.completed ? 'No completed commitments yet' : 'No commitments yet',
+                              style: AppTheme.getBodyMedium(context),
+                            ),
+                          ],
                         ),
                       ),
                     )
@@ -73,8 +83,16 @@ class CommitmentsListView extends StatelessWidget {
                       key: ValueKey('list_${visible.length}_${state.filter.name}'),
                       children: List.generate(visible.length, (index) {
                         final item = visible[index];
-                        return AnimatedCommitmentTile(
-                          delayMs: 35 * index,
+                        return AnimatedPressScale(
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => EditCommitmentPage(
+                                commitment: item,
+                                onUpdated: () => context.read<CommitmentCubit>().load(),
+                              ),
+                            ),
+                          ),
                           child: Dismissible(
                             key: ValueKey('c_${item.id}_${item.dueDate}'),
                             direction: DismissDirection.endToStart,
@@ -94,18 +112,10 @@ class CommitmentsListView extends StatelessWidget {
                               item: item,
                               currency: currency,
                               onToggle: (v) => context.read<CommitmentCubit>().toggleStatus(item, v),
-                              onTap: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => EditCommitmentPage(
-                                    commitment: item,
-                                    onUpdated: () => context.read<CommitmentCubit>().load(),
-                                  ),
-                                ),
-                              ),
+                              onTap: () {},
                             ),
                           ),
-                        );
+                        ).animate(delay: (index * 35).ms).fadeIn(duration: 400.ms).slideY(begin: 0.1, end: 0);
                       }),
                     ),
         ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:money_follow/config/app_theme.dart';
 import 'package:money_follow/models/commitment_model.dart';
+import 'package:money_follow/view/widgets/animated_press_scale.dart';
 
 class HomeCommitmentCard extends StatelessWidget {
   const HomeCommitmentCard({super.key, required this.commitment, required this.formatAmount});
@@ -12,8 +13,9 @@ class HomeCommitmentCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final dueDate = DateTime.tryParse(commitment.dueDate);
     final isOverdue = dueDate != null && dueDate.isBefore(DateTime.now());
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+    return AnimatedPressScale(
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppTheme.getCardColor(context),
@@ -46,7 +48,7 @@ class HomeCommitmentCard extends StatelessWidget {
         Text(formatAmount(commitment.amount),
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: isOverdue ? AppTheme.errorColor : AppTheme.getTextPrimary(context))),
       ]),
-    );
+    ));
   }
 }
 

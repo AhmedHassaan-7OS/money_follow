@@ -32,7 +32,9 @@ class CategoryDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cats = categories ?? AppConstants.expenseCategories;
+    final List<String> cats = List.from(categories ?? AppConstants.expenseCategories);
+    if (!cats.contains(value) && value.isNotEmpty) cats.add(value);
+    if (!cats.contains('Other')) cats.add('Other');
 
     return AppCard(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),

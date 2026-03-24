@@ -7,6 +7,9 @@ import 'package:money_follow/view/pages/Income_page.dart';
 import 'package:money_follow/view/pages/commitments_page.dart';
 import 'package:money_follow/view/pages/history_page.dart';
 import 'package:money_follow/utils/app_localizations_temp.dart';
+import 'dart:ui';
+import 'package:money_follow/utils/app_localizations_temp.dart';
+import 'package:money_follow/view/widgets/glass_bottom_nav.dart';
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
@@ -29,7 +32,6 @@ class _MainNavigationState extends State<MainNavigation> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
 
     return PopScope(
       canPop: false,
@@ -55,76 +57,18 @@ class _MainNavigationState extends State<MainNavigation> {
         );
       },
       child: Scaffold(
-        body: _pages[_currentIndex],
-        bottomNavigationBar: _BottomNav(
+        extendBody: true,
+        body: IndexedStack(
+          index: _currentIndex,
+          children: _pages,
+        ),
+        bottomNavigationBar: GlassBottomNav(
           currentIndex: _currentIndex,
           onTap: (i) => setState(() => _currentIndex = i),
-          l10n: l10n,
         ),
       ),
     );
   }
 }
 
-class _BottomNav extends StatelessWidget {
-  const _BottomNav({
-    required this.currentIndex,
-    required this.onTap,
-    required this.l10n,
-  });
-
-  final int currentIndex;
-  final ValueChanged<int> onTap;
-  final AppLocalizations l10n;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: BottomNavigationBar(
-        currentIndex: currentIndex,
-        onTap: onTap,
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: AppTheme.getCardColor(context),
-        selectedItemColor: AppTheme.primaryBlue,
-        unselectedItemColor: AppTheme.getTextSecondary(context),
-        elevation: 0,
-        items: [
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.home_outlined),
-            activeIcon: const Icon(Icons.home),
-            label: l10n.overview,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.remove_circle_outline),
-            activeIcon: const Icon(Icons.remove_circle),
-            label: l10n.expenses,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.add_circle_outline),
-            activeIcon: const Icon(Icons.add_circle),
-            label: l10n.income,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.schedule_outlined),
-            activeIcon: const Icon(Icons.schedule),
-            label: l10n.commitments,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.history_outlined),
-            activeIcon: const Icon(Icons.history),
-            label: l10n.history,
-          ),
-        ],
-      ),
-    );
-  }
-}
+// Cleanly removed unused BottomNav

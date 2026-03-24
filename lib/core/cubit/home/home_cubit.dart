@@ -61,10 +61,55 @@ class HomeCubit extends Cubit<HomeState> {
         .fold(0.0, (s, e) => s + e.amount);
   }
 
+  void setChartTimeFilter(String f) => emit(state.copyWith(chartTimeFilter: f));
+  
+  void setCustomDateRange(DateTime? start, DateTime? end) {
+    emit(state.copyWith(chartTimeFilter: 'Custom', customStartDate: start, customEndDate: end));
+  }
+  
+  void setFilterCategory(String? cat) {
+    emit(state.copyWith(filterCategory: cat));
+  }
+
+  void setChartType(String type) => emit(state.copyWith(chartType: type));
+  
+  void toggleChartType() {
+    emit(state.copyWith(chartType: state.chartType == 'Pie' ? 'Bar' : 'Pie'));
+  }
+
   Map<String, double> getExpensesByCategory() {
     final map = <String, double>{};
+    final now = DateTime.now();
     for (final e in state.expenses) {
-      map[e.category] = (map[e.category] ?? 0) + e.amount;
+      final edate = DateTime.tryParse(e.date);
+      if (edate == null) continue;
+      
+      bool include = false;
+      if (state.chartTimeFilter == 'Week') {
+        include = edate.isAfter(now.subtract(const Duration(days: 7))) || 
+                  (edate.year == now.year && edate.month == now.month && edate.day == now.day);
+      } else if (state.chartTimeFilter == 'Month') {
+        include = edate.year == now.year && edate.month == now.month;
+      } else if (state.chartTimeFilter == 'Year') {
+        include = edate.year == now.year;
+      } else if (state.chartTimeFilter == 'Custom') {
+        if (state.customStartDate != null && state.customEndDate != null) {
+          include = edate.isAfter(state.customStartDate!.subtract(const Duration(days: 1))) && 
+                    edate.isBefore(state.customEndDate!.add(const Duration(days: 1)));
+        } else {
+          include = true;
+        }
+      } else {
+        include = true; // AllTime
+      }
+
+      if (state.filterCategory != null && state.filterCategory != 'All' && e.category != state.filterCategory) {
+        include = false;
+      }
+      
+      if (include) {
+        map[e.category] = (map[e.category] ?? 0) + e.amount;
+      }
     }
     return map;
   }

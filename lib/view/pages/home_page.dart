@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:money_follow/config/app_theme.dart';
 import 'package:money_follow/core/cubit/home/home_cubit.dart';
 import 'package:money_follow/core/cubit/home/home_state.dart';
@@ -10,11 +11,11 @@ import 'package:money_follow/view/widgets/home/home_header.dart';
 import 'package:money_follow/view/widgets/home/home_balance_card.dart';
 import 'package:money_follow/view/widgets/home/home_monthly_expense_card.dart';
 import 'package:money_follow/view/widgets/home/home_expense_chart.dart';
+import 'package:money_follow/view/widgets/home/home_chart_filter_chips.dart';
 import 'package:money_follow/view/widgets/home/home_commitment_card.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
-
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
@@ -25,6 +26,8 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     context.read<HomeCubit>().loadData();
   }
+
+  Widget _anm(Widget w, int i) => w.animate(delay: (i * 35).ms).fadeIn(duration: 400.ms).slideY(begin: 0.1, end: 0);
 
   @override
   Widget build(BuildContext context) {
@@ -38,27 +41,28 @@ class _HomeScreenState extends State<HomeScreen> {
           onRefresh: () => context.read<HomeCubit>().loadData(),
           child: BlocBuilder<HomeCubit, HomeState>(
             builder: (context, state) {
+              final hc = context.read<HomeCubit>();
               return ListView(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 120),
                 children: [
-                  HomeHeader(l10n: l10n),
+                  _anm(HomeHeader(l10n: l10n), 0),
                   const SizedBox(height: 20),
-                  HomeBalanceCard(label: l10n.totalBalance, amount: currency.formatAmount(state.totalBalance)),
+                  _anm(HomeBalanceCard(label: l10n.totalBalance, amount: currency.formatAmount(state.totalBalance)), 1),
                   const SizedBox(height: 24),
-                  HomeMonthlyExpenseCard(label: '${l10n.expenses} ${l10n.thisMonth}', amount: currency.formatAmount(state.monthlyExpenses)),
+                  _anm(HomeMonthlyExpenseCard(label: '${l10n.expenses} ${l10n.thisMonth}', amount: currency.formatAmount(state.monthlyExpenses)), 2),
                   const SizedBox(height: 24),
                   if (state.expenses.isNotEmpty) ...[
-                    Text('${l10n.expenses} by ${l10n.category}', style: AppTheme.getHeadingSmall(context)),
+                    _anm(HomeChartFilterChips(cubit: hc, state: state), 3),
                     const SizedBox(height: 16),
-                    HomeExpenseChart(data: context.read<HomeCubit>().getExpensesByCategory(), currencySymbol: currency.state.currencySymbol),
+                    _anm(HomeExpenseChart(data: hc.getExpensesByCategory(), currencySymbol: currency.state.currencySymbol, chartType: state.chartType, onTypeChanged: hc.setChartType), 4),
                     const SizedBox(height: 24),
                   ],
-                  Text('${l10n.upcoming} ${l10n.commitments}', style: AppTheme.getHeadingSmall(context)),
+                  _anm(Text('${l10n.upcoming} ${l10n.commitments}', style: AppTheme.getHeadingSmall(context)), 5),
                   const SizedBox(height: 16),
                   if (state.commitments.isEmpty)
-                    HomeEmptyCommitmentsCard(label: l10n.noCommitmentsYet)
+                    _anm(HomeEmptyCommitmentsCard(label: l10n.noCommitmentsYet), 6)
                   else
-                    ...state.commitments.take(3).map((c) => HomeCommitmentCard(commitment: c, formatAmount: currency.formatAmount)),
+                    ...state.commitments.take(3).map((c) => _anm(HomeCommitmentCard(commitment: c, formatAmount: currency.formatAmount), 7)),
                 ],
               );
             },
