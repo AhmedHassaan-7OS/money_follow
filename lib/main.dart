@@ -1,18 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:money_follow/core/cubit/theme/theme_cubit.dart';
+import 'package:money_follow/core/cubit/theme/theme_state.dart';
+import 'package:money_follow/core/cubit/localization/localization_cubit.dart';
+import 'package:money_follow/core/cubit/localization/localization_state.dart';
+import 'package:money_follow/core/cubit/currency/currency_cubit.dart';
+import 'package:money_follow/core/cubit/statistics/statistics_cubit.dart';
+import 'package:money_follow/core/cubit/home/home_cubit.dart';
+import 'package:money_follow/core/cubit/history/history_cubit.dart';
+import 'package:money_follow/core/cubit/expense/expense_cubit.dart';
+import 'package:money_follow/core/cubit/income/income_cubit.dart';
+import 'package:money_follow/core/cubit/commitment/commitment_cubit.dart';
+import 'package:money_follow/core/cubit/backup/backup_cubit.dart';
+import 'package:money_follow/core/cubit/bank_sms/bank_sms_cubit.dart';
+import 'package:money_follow/core/cubit/commitment_reminder/commitment_reminder_cubit.dart';
 import 'package:money_follow/config/app_theme.dart';
-import 'package:money_follow/providers/theme_provider.dart';
-import 'package:money_follow/providers/localization_provider.dart';
-import 'package:money_follow/providers/currency_provider.dart';
 import 'package:money_follow/view/pages/main_navigation.dart';
 import 'package:money_follow/utils/app_localizations_temp.dart';
 import 'package:money_follow/utils/system_detection_helper.dart';
 import 'package:money_follow/services/permission_service.dart';
 import 'package:money_follow/services/bank_sms_service.dart';
 import 'package:money_follow/services/commitment_reminder_service.dart';
-import 'package:money_follow/bloc/statistics/statistics_bloc.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,7 +30,6 @@ Future<void> main() async {
   } catch (e) {
     debugPrint('Commitment reminders plugin unavailable: $e');
   }
-  // Print system detection info for debugging
   SystemDetectionHelper.printSystemInfo();
   runApp(const MyApp());
 }
@@ -42,7 +50,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    // Request permissions after the first frame is built
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _requestPermissionsOnStartup();
       _checkPendingBankSmsAndPrompt();
@@ -71,37 +78,31 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   Future<void> _requestPermissionsOnStartup() async {
     if (_permissionsRequested) return;
     _permissionsRequested = true;
-
     try {
-      // Wait a bit for the UI to settle
       await Future.delayed(const Duration(milliseconds: 500));
-
       final navContext = _navigatorKey.currentContext;
       if (mounted && navContext != null && navContext.mounted) {
         await PermissionService.requestPermissionsOnStartup(navContext);
       }
     } catch (e) {
-      print('Error requesting permissions on startup: $e');
+      debugPrint('Error requesting permissions on startup: $e');
     }
   }
 
   Future<void> _checkPendingBankSmsAndPrompt() async {
     if (!mounted || _isShowingPendingDialog) return;
-
     try {
       final pending = await BankSmsService.getPendingTransactions();
       if (pending.isEmpty) return;
-
       _isShowingPendingDialog = true;
       for (final tx in pending) {
         if (!mounted) break;
         final context = _navigatorKey.currentContext;
         if (context == null) break;
-
         final action = await showDialog<String>(
           context: context,
           barrierDismissible: false,
-          builder: (dialogContext) => AlertDialog(
+          builder: (dc) => AlertDialog(
             title: Text(tx.isIncome ? 'Bank SMS Income' : 'Bank SMS Expense'),
             content: Column(
               mainAxisSize: MainAxisSize.min,
@@ -111,30 +112,25 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                 const SizedBox(height: 8),
                 Text('Sender: ${tx.sender}'),
                 const SizedBox(height: 8),
-                Text(
-                  tx.body,
-                  maxLines: 5,
-                  overflow: TextOverflow.ellipsis,
-                ),
+                Text(tx.body, maxLines: 5, overflow: TextOverflow.ellipsis),
               ],
             ),
             actions: [
               TextButton(
-                onPressed: () => Navigator.pop(dialogContext, 'skip'),
+                onPressed: () => Navigator.pop(dc, 'skip'),
                 child: const Text('Skip'),
               ),
               ElevatedButton(
-                onPressed: () => Navigator.pop(dialogContext, 'save'),
+                onPressed: () => Navigator.pop(dc, 'save'),
                 child: const Text('Save'),
               ),
             ],
           ),
         );
-
         if (action == 'save') {
           await BankSmsService.confirmAndSave(tx);
           if (mounted && context.mounted) {
-            context.read<StatisticsBloc>().add(LoadStatistics());
+            context.read<StatisticsCubit>().loadStatistics();
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Transaction saved from bank SMS')),
             );
@@ -144,7 +140,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         }
       }
     } catch (e) {
-      print('Error while processing pending bank SMS: $e');
+      debugPrint('Error while processing pending bank SMS: $e');
     } finally {
       _isShowingPendingDialog = false;
     }
@@ -154,46 +150,52 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<StatisticsBloc>(
-          create: (context) => StatisticsBloc()..add(LoadStatistics()),
-        ),
+        BlocProvider(create: (_) => ThemeCubit()),
+        BlocProvider(create: (_) => LocalizationCubit()),
+        BlocProvider(create: (_) => CurrencyCubit()),
+        BlocProvider(create: (_) => StatisticsCubit()..loadStatistics()),
+        BlocProvider(create: (_) => HomeCubit()),
+        BlocProvider(create: (_) => HistoryCubit()),
+        BlocProvider(create: (_) => ExpenseCubit()),
+        BlocProvider(create: (_) => IncomeCubit()),
+        BlocProvider(create: (_) => CommitmentCubit()),
+        BlocProvider(create: (_) => BackupCubit()),
+        BlocProvider(create: (_) => BankSmsCubit()),
+        BlocProvider(create: (_) => CommitmentReminderCubit()),
       ],
-      child: MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (context) => ThemeProvider()),
-          ChangeNotifierProvider(create: (context) => LocalizationProvider()),
-          ChangeNotifierProvider(create: (context) => CurrencyProvider()),
-        ],
-        child: Consumer2<ThemeProvider, LocalizationProvider>(
-        builder: (context, themeProvider, localizationProvider, child) {
-          return MaterialApp(
-            navigatorKey: _navigatorKey,
-            title: 'Money Follow',
-            theme: AppTheme.lightTheme,
-            darkTheme: AppTheme.darkTheme,
-            themeMode: themeProvider.themeMode,
-            locale: localizationProvider.locale,
-            localizationsDelegates: const [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            supportedLocales: LocalizationProvider.supportedLocales,
-            builder: (context, child) {
-              // Handle RTL for Arabic
-              return Directionality(
-                textDirection: localizationProvider.locale.languageCode == 'ar' 
-                    ? TextDirection.rtl 
-                    : TextDirection.ltr,
-                child: child!,
+      child: BlocBuilder<ThemeCubit, ThemeState>(
+        builder: (context, themeState) {
+          return BlocBuilder<LocalizationCubit, LocalizationState>(
+            builder: (context, locState) {
+              return MaterialApp(
+                navigatorKey: _navigatorKey,
+                title: 'Money Follow',
+                theme: AppTheme.lightTheme,
+                darkTheme: AppTheme.darkTheme,
+                themeMode: themeState.themeMode,
+                locale: locState.locale,
+                localizationsDelegates: const [
+                  AppLocalizations.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+                supportedLocales: LocalizationCubit.supportedLocales,
+                builder: (context, child) {
+                  return Directionality(
+                    textDirection:
+                        locState.locale.languageCode == 'ar'
+                            ? TextDirection.rtl
+                            : TextDirection.ltr,
+                    child: child!,
+                  );
+                },
+                home: const MainNavigation(),
+                debugShowCheckedModeBanner: false,
               );
             },
-            home: const MainNavigation(),
-            debugShowCheckedModeBanner: false,
           );
         },
-        ),
       ),
     );
   }

@@ -71,10 +71,24 @@
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="com.example.money_follow.ACTION_QUICK_WITHDRAW" />
+                <action android:name="com.example.money_follow.ACTION_QUICK_WITHDRAW_SET" />
+                <action android:name="com.example.money_follow.ACTION_QUICK_WITHDRAW_STEP" />
+                <action android:name="com.example.money_follow.ACTION_QUICK_WITHDRAW_SAVE_CURRENT" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/quick_withdraw_widget_info" />
+        </receiver>
+
+        <receiver
+            android:name=".CommitmentCalendarAppWidgetProvider"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/commitment_calendar_widget_info" />
         </receiver>
 
         <receiver

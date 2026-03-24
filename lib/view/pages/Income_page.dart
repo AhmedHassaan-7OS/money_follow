@@ -1,27 +1,21 @@
-﻿import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:money_follow/core/constants/app_constants.dart';
-import 'package:money_follow/repository/income_repository.dart';
 import 'package:money_follow/view/widgets/amount_input_field.dart';
 import 'package:money_follow/view/widgets/app_card.dart';
 import 'package:money_follow/view/widgets/app_snack_bar.dart';
 import 'package:money_follow/view/widgets/date_picker_field.dart';
 import 'package:money_follow/view/widgets/primary_button.dart';
 import 'package:money_follow/view/widgets/section_label.dart';
-import 'package:provider/provider.dart';
 import 'package:money_follow/config/app_theme.dart';
 import 'package:money_follow/models/income_model.dart';
-import 'package:money_follow/providers/currency_provider.dart';
+import 'package:money_follow/core/cubit/income/income_cubit.dart';
+import 'package:money_follow/core/cubit/income/income_state.dart';
+import 'package:money_follow/core/cubit/currency/currency_cubit.dart';
 import 'package:money_follow/utils/app_localizations_temp.dart';
 import 'package:money_follow/utils/validators.dart';
 import 'edit_income_page.dart';
 
-/// ============================================================
-/// IncomePage â€” ØµÙØ­Ø© Ø¥Ø¶Ø§ÙØ© ÙˆØ¹Ø±Ø¶ Ø§Ù„Ø¯Ø®Ù„.
-///
-/// Ù‚Ø¨Ù„ Ø§Ù„Ù€ Refactor: ~402 Ø³Ø·Ø±.
-/// Ø¨Ø¹Ø¯ Ø§Ù„Ù€ Refactor:  ~190 Ø³Ø·Ø±.
-/// ============================================================
 class IncomePage extends StatefulWidget {
   const IncomePage({super.key});
 
@@ -33,16 +27,11 @@ class _IncomePageState extends State<IncomePage> {
   final _formKey = GlobalKey<FormState>();
   final _amountController = TextEditingController();
   final _sourceController = TextEditingController();
-  final _repository = IncomeRepository();
-
-  DateTime _selectedDate = DateTime.now();
-  List<IncomeModel> _incomes = [];
-  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _loadIncomes();
+    context.read<IncomeCubit>().loadIncomes();
   }
 
   @override
@@ -52,186 +41,142 @@ class _IncomePageState extends State<IncomePage> {
     super.dispose();
   }
 
-  // â”€â”€â”€ Data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
-  Future<void> _loadIncomes() async {
-    setState(() => _isLoading = true);
-    try {
-      final items = await _repository.getAll();
-      items.sort((a, b) => b.date.compareTo(a.date));
-      setState(() => _incomes = items);
-    } catch (e) {
-      if (mounted) AppSnackBar.error(context, 'Error loading incomes: $e');
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
-    }
-  }
-
-  Future<void> _save() async {
+  void _save() {
     if (!_formKey.currentState!.validate()) return;
-
-    try {
-      final income = IncomeModel(
-        amount: double.parse(_amountController.text),
-        source: _sourceController.text.trim(),
-        date: DateFormat(AppConstants.dbDateFormat).format(_selectedDate),
-      );
-
-      await _repository.insert(income);
-
-      if (mounted) {
-        AppSnackBar.success(context, 'Income saved successfully!');
-        _amountController.clear();
-        _sourceController.clear();
-        setState(() => _selectedDate = DateTime.now());
-        _loadIncomes();
-      }
-    } catch (e) {
-      if (mounted) AppSnackBar.error(context, 'Error saving income: $e');
-    }
+    context.read<IncomeCubit>().saveIncome(
+          amount: double.parse(_amountController.text),
+          source: _sourceController.text.trim(),
+        );
   }
-
-  // â”€â”€â”€ Build â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final currency = Provider.of<CurrencyProvider>(context);
+    final currency = context.read<CurrencyCubit>();
 
     return Scaffold(
       backgroundColor: AppTheme.getBackgroundColor(context),
       body: SafeArea(
-        child: RefreshIndicator(
-          onRefresh: _loadIncomes,
-          child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header
-                Center(
-                  child: Text(
-                    'Add ${l10n.income}',
-                    style: AppTheme.getHeadingMedium(context),
-                  ),
-                ),
-                const SizedBox(height: 32),
-
-                // â”€â”€ Form â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-                Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Amount
-                      SectionLabel(l10n.amount),
-                      AmountInputField(
-                        controller: _amountController,
-                        currencySymbol: currency.currencySymbol,
-                        accentColor: AppTheme.accentGreen,
-                      ),
-                      const SizedBox(height: 24),
-
-                      // Source
-                      SectionLabel('Source'),
-                      AppCard(
-                        child: TextFormField(
-                          controller: _sourceController,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                            color: AppTheme.getTextPrimary(context),
+        child: BlocConsumer<IncomeCubit, IncomeState>(
+          listener: (context, state) {
+            if (state.isSuccess && state.message != null) {
+              AppSnackBar.success(context, state.message!);
+              _amountController.clear();
+              _sourceController.clear();
+            } else if (!state.isSuccess && state.message != null) {
+              AppSnackBar.error(context, state.message!);
+            }
+          },
+          builder: (context, state) {
+            return RefreshIndicator(
+              onRefresh: () => context.read<IncomeCubit>().loadIncomes(),
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(child: Text('Add ${l10n.income}',
+                        style: AppTheme.getHeadingMedium(context))),
+                    const SizedBox(height: 32),
+                    Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SectionLabel(l10n.amount),
+                          AmountInputField(
+                            controller: _amountController,
+                            currencySymbol: currency.state.currencySymbol,
+                            accentColor: AppTheme.accentGreen,
                           ),
-                          decoration: InputDecoration(
-                            hintText: 'e.g. Salary, Freelance',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              borderSide: BorderSide.none,
-                            ),
-                            filled: true,
-                            fillColor: Colors.transparent,
-                            contentPadding: const EdgeInsets.all(20),
-                          ),
-                          validator: AppValidators.incomeSource,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Quick source chips
-                      SectionLabel('Quick Select', bottomSpacing: 8),
-                      _SourceChips(
-                        selectedSource: _sourceController.text,
-                        onSelected: (s) =>
-                            setState(() => _sourceController.text = s),
-                      ),
-                      const SizedBox(height: 24),
-
-                      // Date
-                      SectionLabel(l10n.date),
-                      DatePickerField(
-                        selectedDate: _selectedDate,
-                        onDateChanged: (d) => setState(() => _selectedDate = d),
-                        accentColor: AppTheme.accentGreen,
-                      ),
-                      const SizedBox(height: 32),
-
-                      // Save Button
-                      PrimaryButton(
-                        label: '${l10n.save} ${l10n.income}',
-                        onPressed: _save,
-                        color: AppTheme.accentGreen,
-                      ),
-                    ],
-                  ),
-                ),
-
-                // â”€â”€ Income List â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-                if (_incomes.isNotEmpty) ...[
-                  const SizedBox(height: 40),
-                  Text(l10n.income, style: AppTheme.getHeadingSmall(context)),
-                  const SizedBox(height: 16),
-                  if (_isLoading)
-                    const Center(child: CircularProgressIndicator())
-                  else
-                    ..._incomes.map(
-                      (income) => _IncomeListItem(
-                        income: income,
-                        currency: currency,
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => EditIncomePage(
-                              income: income,
-                              onUpdated: _loadIncomes,
+                          const SizedBox(height: 24),
+                          SectionLabel('Source'),
+                          AppCard(
+                            child: TextFormField(
+                              controller: _sourceController,
+                              style: TextStyle(fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppTheme.getTextPrimary(context)),
+                              decoration: InputDecoration(
+                                hintText: 'e.g. Salary, Freelance',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide: BorderSide.none,
+                                ),
+                                filled: true, fillColor: Colors.transparent,
+                                contentPadding: const EdgeInsets.all(20),
+                              ),
+                              validator: AppValidators.incomeSource,
                             ),
                           ),
-                        ),
+                          const SizedBox(height: 16),
+                          SectionLabel('Quick Select', bottomSpacing: 8),
+                          _SourceChips(
+                            selectedSource: _sourceController.text,
+                            onSelected: (s) =>
+                                setState(() => _sourceController.text = s),
+                          ),
+                          const SizedBox(height: 24),
+                          SectionLabel(l10n.date),
+                          DatePickerField(
+                            selectedDate: state.selectedDate,
+                            onDateChanged: (d) =>
+                                context.read<IncomeCubit>().setDate(d),
+                            accentColor: AppTheme.accentGreen,
+                          ),
+                          const SizedBox(height: 32),
+                          PrimaryButton(
+                            label: '${l10n.save} ${l10n.income}',
+                            onPressed: _save,
+                            color: AppTheme.accentGreen,
+                          ),
+                        ],
                       ),
                     ),
-                ],
-              ],
-            ),
-          ),
+                    if (state.incomes.isNotEmpty) ...[
+                      const SizedBox(height: 40),
+                      Text(l10n.income,
+                          style: AppTheme.getHeadingSmall(context)),
+                      const SizedBox(height: 16),
+                      if (state.isLoading)
+                        const Center(child: CircularProgressIndicator())
+                      else
+                        ...state.incomes.map((income) =>
+                            _IncomeListItem(
+                              income: income,
+                              formatAmount: currency.formatAmount,
+                              onTap: () => Navigator.push(context,
+                                  MaterialPageRoute(
+                                    builder: (_) => EditIncomePage(
+                                      income: income,
+                                      onUpdated: () => context
+                                          .read<IncomeCubit>()
+                                          .loadIncomes(),
+                                    ),
+                                  )),
+                            )),
+                    ],
+                  ],
+                ),
+              ),
+            );
+          },
         ),
       ),
     );
   }
 }
 
-// â”€â”€â”€ Private Widgets â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
 class _SourceChips extends StatelessWidget {
   const _SourceChips({required this.selectedSource, required this.onSelected});
-
   final String selectedSource;
   final ValueChanged<String> onSelected;
 
   @override
   Widget build(BuildContext context) {
     return Wrap(
-      spacing: 8,
-      runSpacing: 8,
+      spacing: 8, runSpacing: 8,
       children: AppConstants.incomeSources.map((source) {
         final isSelected = selectedSource == source;
         return InkWell(
@@ -245,34 +190,20 @@ class _SourceChips extends StatelessWidget {
                   : AppTheme.getCardColor(context),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: isSelected ? AppTheme.accentGreen : Colors.grey[300]!,
-              ),
+                color: isSelected ? AppTheme.accentGreen : Colors.grey[300]!),
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  AppConstants.getIncomeSourceIcon(source),
-                  size: 16,
+            child: Row(mainAxisSize: MainAxisSize.min, children: [
+              Icon(AppConstants.getIncomeSourceIcon(source), size: 16,
+                  color: isSelected
+                      ? AppTheme.accentGreen
+                      : AppTheme.getTextSecondary(context)),
+              const SizedBox(width: 6),
+              Text(source, style: TextStyle(fontSize: 14,
                   color: isSelected
                       ? AppTheme.accentGreen
                       : AppTheme.getTextSecondary(context),
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  source,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: isSelected
-                        ? AppTheme.accentGreen
-                        : AppTheme.getTextSecondary(context),
-                    fontWeight: isSelected
-                        ? FontWeight.w600
-                        : FontWeight.normal,
-                  ),
-                ),
-              ],
-            ),
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal)),
+            ]),
           ),
         );
       }).toList(),
@@ -283,12 +214,11 @@ class _SourceChips extends StatelessWidget {
 class _IncomeListItem extends StatelessWidget {
   const _IncomeListItem({
     required this.income,
-    required this.currency,
+    required this.formatAmount,
     required this.onTap,
   });
-
   final IncomeModel income;
-  final CurrencyProvider currency;
+  final String Function(double) formatAmount;
   final VoidCallback onTap;
 
   @override
@@ -299,43 +229,31 @@ class _IncomeListItem extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
-        child: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: AppTheme.accentGreen.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(
-                AppConstants.getIncomeSourceIcon(income.source),
-                size: 20,
-                color: AppTheme.accentGreen,
-              ),
+        child: Row(children: [
+          Container(
+            width: 40, height: 40,
+            decoration: BoxDecoration(
+              color: AppTheme.accentGreen.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(income.source, style: AppTheme.getBodyLarge(context)),
-                  Text(income.date, style: AppTheme.getBodySmall(context)),
-                ],
-              ),
+            child: Icon(AppConstants.getIncomeSourceIcon(income.source),
+                size: 20, color: AppTheme.accentGreen),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(income.source, style: AppTheme.getBodyLarge(context)),
+                Text(income.date, style: AppTheme.getBodySmall(context)),
+              ],
             ),
-            Text(
-              currency.formatAmount(income.amount),
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: AppTheme.accentGreen,
-              ),
-            ),
-          ],
-        ),
+          ),
+          Text(formatAmount(income.amount),
+              style: const TextStyle(fontSize: 16,
+                  fontWeight: FontWeight.w600, color: AppTheme.accentGreen)),
+        ]),
       ),
     );
   }
 }
-

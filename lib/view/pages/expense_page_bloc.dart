@@ -13,28 +13,12 @@ import 'package:money_follow/view/widgets/date_picker_field.dart'
 import 'package:money_follow/view/widgets/primary_button.dart'
     show PrimaryButton;
 import 'package:money_follow/view/widgets/section_label.dart' show SectionLabel;
-import 'package:provider/provider.dart';
-import 'package:money_follow/bloc/expense/expense_bloc.dart';
-import 'package:money_follow/bloc/expense/expense_event.dart';
-import 'package:money_follow/bloc/expense/expense_state.dart';
+import 'package:money_follow/core/cubit/expense/expense_cubit.dart';
+import 'package:money_follow/core/cubit/expense/expense_state.dart';
+import 'package:money_follow/core/cubit/currency/currency_cubit.dart';
 import 'package:money_follow/config/app_theme.dart';
-import 'package:money_follow/providers/currency_provider.dart';
 import 'package:money_follow/utils/app_localizations_temp.dart';
 
-/// ============================================================
-/// ExpensePageBloc — صفحة إضافة المصاريف (النسخة النهائية).
-///
-/// هذا الملف يحل محل ملفين قديمين:
-///   ❌ Expense_page.dart      (بيتحذف)
-///   ❌ expense_page_bloc.dart (بيتحذف)
-///
-/// قبل الـ Refactor: ~394 + ~500 = ~894 سطر في ملفين.
-/// بعد الـ Refactor:  ~200 سطر في ملف واحد.
-///
-/// SOLID:
-///  • SRP : الصفحة مسئولة عن الـ UI فقط، الـ BLoC عن اللوجيك.
-///  • DIP : تتعامل مع ExpenseBloc (abstraction) مش DB مباشرةً.
-/// ============================================================
 class ExpensePageBloc extends StatefulWidget {
   const ExpensePageBloc({super.key});
 
@@ -51,7 +35,7 @@ class _ExpensePageBlocState extends State<ExpensePageBloc> {
   @override
   void initState() {
     super.initState();
-    context.read<ExpenseBloc>().add(LoadExpenses());
+    context.read<ExpenseCubit>().loadExpenses();
     _notesController.addListener(_onNotesChanged);
   }
 
@@ -63,43 +47,37 @@ class _ExpensePageBlocState extends State<ExpensePageBloc> {
     super.dispose();
   }
 
-  // ─── AI Category Suggestion ───────────────────────────────────────────────
-
   void _onNotesChanged() {
     final text = _notesController.text;
     if (text.length <= 3) return;
 
-    final bloc = context.read<ExpenseBloc>();
-    final suggested = bloc.suggestCategoryFromDescription(text);
-    final current = bloc.state;
+    final cubit = context.read<ExpenseCubit>();
+    final suggested = cubit.suggestCategory(text);
+    final current = cubit.state;
 
     if (current is ExpenseLoaded &&
         current.selectedCategory == AppConstants.defaultExpenseCategory &&
         suggested != AppConstants.defaultExpenseCategory &&
         suggested != 'Other') {
-      bloc.add(ChangeCategoryExpense(suggested));
-
+      cubit.changeCategory(suggested);
       AppSnackBar.info(
         context,
         '💡 AI suggests: $suggested',
         action: SnackBarAction(
           label: AppLocalizations.of(context).undo,
           textColor: Colors.white,
-          onPressed: () => bloc.add(
-            ChangeCategoryExpense(AppConstants.defaultExpenseCategory),
-          ),
+          onPressed: () =>
+              cubit.changeCategory(AppConstants.defaultExpenseCategory),
         ),
       );
     }
   }
 
-  // ─── Save ─────────────────────────────────────────────────────────────────
-
   void _save() {
     if (!_formKey.currentState!.validate()) return;
 
-    final bloc = context.read<ExpenseBloc>();
-    final state = bloc.state;
+    final cubit = context.read<ExpenseCubit>();
+    final state = cubit.state;
     if (state is! ExpenseLoaded) return;
 
     String category = state.selectedCategory;
@@ -108,15 +86,13 @@ class _ExpensePageBlocState extends State<ExpensePageBloc> {
       category = _customCategoryController.text.trim();
     }
 
-    bloc.add(
-      AddExpense(
-        amount: double.parse(_amountController.text),
-        category: category,
-        date: bloc.getFormattedDate(state.selectedDate),
-        note: _notesController.text.trim().isEmpty
-            ? null
-            : _notesController.text.trim(),
-      ),
+    cubit.addExpense(
+      amount: double.parse(_amountController.text),
+      category: category,
+      date: cubit.getFormattedDate(state.selectedDate),
+      note: _notesController.text.trim().isEmpty
+          ? null
+          : _notesController.text.trim(),
     );
   }
 
@@ -126,17 +102,15 @@ class _ExpensePageBlocState extends State<ExpensePageBloc> {
     _customCategoryController.clear();
   }
 
-  // ─── Build ────────────────────────────────────────────────────────────────
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final currency = Provider.of<CurrencyProvider>(context);
+    final currency = context.read<CurrencyCubit>();
 
     return Scaffold(
       backgroundColor: AppTheme.getBackgroundColor(context),
       body: SafeArea(
-        child: BlocConsumer<ExpenseBloc, ExpenseState>(
+        child: BlocConsumer<ExpenseCubit, ExpenseState>(
           listener: (context, state) {
             if (state is ExpenseSaved) {
               AppSnackBar.success(context, state.message);
@@ -160,7 +134,6 @@ class _ExpensePageBlocState extends State<ExpensePageBloc> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Header
                     Center(
                       child: Text(
                         'Add ${l10n.expenses}',
@@ -168,27 +141,20 @@ class _ExpensePageBlocState extends State<ExpensePageBloc> {
                       ),
                     ),
                     const SizedBox(height: 32),
-
-                    // Amount
                     SectionLabel(l10n.amount),
                     AmountInputField(
                       controller: _amountController,
-                      currencySymbol: currency.currencySymbol,
+                      currencySymbol: currency.state.currencySymbol,
                     ),
                     const SizedBox(height: 24),
-
-                    // Category
                     SectionLabel(l10n.category),
                     CategoryDropdown(
                       value: state is ExpenseLoaded
                           ? state.selectedCategory
                           : AppConstants.defaultExpenseCategory,
-                      onChanged: (v) => context.read<ExpenseBloc>().add(
-                        ChangeCategoryExpense(v),
-                      ),
+                      onChanged: (v) =>
+                          context.read<ExpenseCubit>().changeCategory(v),
                     ),
-
-                    // Custom category field
                     if (state is ExpenseLoaded && state.isCustomCategory) ...[
                       const SizedBox(height: 16),
                       AppCard(
@@ -223,19 +189,15 @@ class _ExpensePageBlocState extends State<ExpensePageBloc> {
                       ),
                     ],
                     const SizedBox(height: 24),
-
-                    // Date
                     SectionLabel(l10n.date),
                     DatePickerField(
                       selectedDate: state is ExpenseLoaded
                           ? state.selectedDate
                           : DateTime.now(),
                       onDateChanged: (d) =>
-                          context.read<ExpenseBloc>().add(ChangeDateExpense(d)),
+                          context.read<ExpenseCubit>().changeDate(d),
                     ),
                     const SizedBox(height: 24),
-
-                    // Notes
                     SectionLabel(l10n.notes),
                     AppCard(
                       child: TextFormField(
@@ -254,12 +216,8 @@ class _ExpensePageBlocState extends State<ExpensePageBloc> {
                       ),
                     ),
                     const SizedBox(height: 32),
-
-                    // AI Insights
                     _AIInsightsCard(state: state),
                     const SizedBox(height: 24),
-
-                    // Save Button
                     PrimaryButton(
                       label: '${l10n.save} ${l10n.expenses}',
                       onPressed: _save,
@@ -276,23 +234,19 @@ class _ExpensePageBlocState extends State<ExpensePageBloc> {
   }
 }
 
-// ─── Private Widget ────────────────────────────────────────────────────────
-
-/// بطاقة AI Insights — مفصولة كـ widget (SRP).
 class _AIInsightsCard extends StatelessWidget {
   const _AIInsightsCard({required this.state});
-
   final ExpenseState state;
 
   @override
   Widget build(BuildContext context) {
-    if (state is! ExpenseLoaded || (state as ExpenseLoaded).expenses.isEmpty) {
+    if (state is! ExpenseLoaded ||
+        (state as ExpenseLoaded).expenses.isEmpty) {
       return const SizedBox.shrink();
     }
-
-    final bloc = context.read<ExpenseBloc>();
-    final insights = bloc.getSpendingInsights();
-    final tips = bloc.getFinancialTips(3000);
+    final cubit = context.read<ExpenseCubit>();
+    final insights = cubit.getSpendingInsights();
+    final tips = cubit.getFinancialTips(3000);
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -311,50 +265,31 @@ class _AIInsightsCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              const Icon(
-                Icons.psychology,
-                color: AppTheme.primaryBlue,
-                size: 20,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                '🤖 AI Insights',
-                style: AppTheme.getHeadingSmall(
-                  context,
-                ).copyWith(color: AppTheme.primaryBlue),
-              ),
-            ],
-          ),
+          Row(children: [
+            const Icon(Icons.psychology,
+                color: AppTheme.primaryBlue, size: 20),
+            const SizedBox(width: 8),
+            Text('🤖 AI Insights',
+                style: AppTheme.getHeadingSmall(context)
+                    .copyWith(color: AppTheme.primaryBlue)),
+          ]),
           const SizedBox(height: 12),
-          ...insights.entries.map(
-            (e) => Padding(
-              padding: const EdgeInsets.only(bottom: 4),
-              child: Text(
-                '• ${e.value}',
-                style: AppTheme.getBodyMedium(context),
-              ),
-            ),
-          ),
+          ...insights.entries.map((e) => Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Text('• ${e.value}',
+                    style: AppTheme.getBodyMedium(context)),
+              )),
           if (tips.isNotEmpty) ...[
             const SizedBox(height: 8),
-            Text(
-              '💡 Smart Tips:',
-              style: AppTheme.getBodyMedium(context).copyWith(
-                fontWeight: FontWeight.w600,
-                color: AppTheme.accentGreen,
-              ),
-            ),
+            Text('💡 Smart Tips:',
+                style: AppTheme.getBodyMedium(context).copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.accentGreen)),
             const SizedBox(height: 4),
-            ...tips
-                .take(2)
-                .map(
-                  (tip) => Padding(
-                    padding: const EdgeInsets.only(bottom: 4),
-                    child: Text(tip, style: AppTheme.getBodySmall(context)),
-                  ),
-                ),
+            ...tips.take(2).map((tip) => Padding(
+                  padding: const EdgeInsets.only(bottom: 4),
+                  child: Text(tip, style: AppTheme.getBodySmall(context)),
+                )),
           ],
         ],
       ),
