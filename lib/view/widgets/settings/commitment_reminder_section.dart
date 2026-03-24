@@ -4,7 +4,7 @@ import 'package:money_follow/config/app_theme.dart';
 import 'package:money_follow/core/cubit/commitment_reminder/commitment_reminder_cubit.dart';
 import 'package:money_follow/core/cubit/commitment_reminder/commitment_reminder_state.dart';
 import 'package:money_follow/view/widgets/settings_toggle_tile.dart';
-import 'package:money_follow/view/pages/settings/widgets/settings_layout_helpers.dart';
+import 'package:money_follow/view/widgets/settings/settings_layout_helpers.dart';
 
 class CommitmentReminderSection extends StatelessWidget {
   const CommitmentReminderSection({super.key});

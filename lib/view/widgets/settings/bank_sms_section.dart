@@ -4,7 +4,7 @@ import 'package:money_follow/config/app_theme.dart';
 import 'package:money_follow/core/cubit/bank_sms/bank_sms_cubit.dart';
 import 'package:money_follow/core/cubit/bank_sms/bank_sms_state.dart';
 import 'package:money_follow/view/widgets/settings_toggle_tile.dart';
-import 'package:money_follow/view/pages/settings/widgets/settings_layout_helpers.dart';
+import 'package:money_follow/view/widgets/settings/settings_layout_helpers.dart';
 
 class BankSmsSection extends StatelessWidget {
   const BankSmsSection({super.key});

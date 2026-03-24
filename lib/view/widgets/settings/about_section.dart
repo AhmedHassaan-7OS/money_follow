@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:money_follow/utils/app_localizations_temp.dart';
-import 'package:money_follow/view/pages/settings/widgets/settings_layout_helpers.dart';
+import 'package:money_follow/view/widgets/settings/settings_layout_helpers.dart';
 
 class AboutSection extends StatelessWidget {
   const AboutSection({super.key, required this.l10n});

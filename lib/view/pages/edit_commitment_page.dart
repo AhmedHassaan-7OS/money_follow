@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:money_follow/repository/commitment_repository.dart'
     show CommitmentRepository;
@@ -23,10 +23,10 @@ import 'package:money_follow/utils/app_localizations_temp.dart';
 import 'package:money_follow/utils/validators.dart';
 
 /// ============================================================
-/// EditCommitmentPage â€” ØµÙØ­Ø© ØªØ¹Ø¯ÙŠÙ„/Ø­Ø°Ù Ø§Ù„ØªØ²Ø§Ù….
+/// EditCommitmentPage — صفحة تعديل/حذف التزام.
 ///
-/// Ù‚Ø¨Ù„ Ø§Ù„Ù€ Refactor: ~380 Ø³Ø·Ø±.
-/// Ø¨Ø¹Ø¯ Ø§Ù„Ù€ Refactor:  ~160 Ø³Ø·Ø±.
+/// قبل الـ Refactor: ~380 سطر.
+/// بعد الـ Refactor:  ~160 سطر.
 /// ============================================================
 class EditCommitmentPage extends StatefulWidget {
   const EditCommitmentPage({
@@ -66,7 +66,7 @@ class _EditCommitmentPageState extends State<EditCommitmentPage> {
     super.dispose();
   }
 
-  // â”€â”€â”€ Actions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─── Actions ──────────────────────────────────────────────────────────────
 
   Future<void> _update() async {
     if (!_formKey.currentState!.validate()) return;
@@ -132,7 +132,7 @@ class _EditCommitmentPageState extends State<EditCommitmentPage> {
     }
   }
 
-  // â”€â”€â”€ Build â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─── Build ────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -150,7 +150,7 @@ class _EditCommitmentPageState extends State<EditCommitmentPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Preview card â€” ÙŠØªØ­Ø¯Ø« Ù…Ø¹ ÙƒÙ„ ÙƒØªØ§Ø¨Ø©
+                // Preview card — يتحدث مع كل كتابة
                 _CommitmentPreviewCard(
                   titleController: _titleController,
                   amountController: _amountController,
@@ -201,7 +201,7 @@ class _EditCommitmentPageState extends State<EditCommitmentPage> {
                   selectedDate: _selectedDate,
                   onDateChanged: (d) => setState(() => _selectedDate = d),
                   accentColor: AppTheme.warningColor,
-                  // Ø§Ù„Ø§Ù„ØªØ²Ø§Ù…Ø§Øª Ù…Ù…ØªØ¯Ø© Ù„Ù„Ù…Ø³ØªÙ‚Ø¨Ù„
+                  // الالتزامات ممتدة للمستقبل
                   lastDate: DateTime.now().add(const Duration(days: 365 * 5)),
                   firstDate: DateTime.now(),
                 ),
@@ -246,10 +246,10 @@ class _EditCommitmentPageState extends State<EditCommitmentPage> {
   }
 }
 
-// â”€â”€â”€ Private Widget â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Private Widget ────────────────────────────────────────────────────────
 
-/// Ø¨Ø·Ø§Ù‚Ø© Preview ØªØ¹Ø±Ø¶ Ù…Ø¹Ø§ÙŠÙ†Ø© Ø§Ù„Ø§Ù„ØªØ²Ø§Ù… live Ø£Ø«Ù†Ø§Ø¡ Ø§Ù„ØªØ¹Ø¯ÙŠÙ„.
-/// Ù…ÙØµÙˆÙ„Ø© ÙƒÙ€ widget (SRP).
+/// بطاقة Preview تعرض معاينة الالتزام live أثناء التعديل.
+/// مفصولة كـ widget (SRP).
 class _CommitmentPreviewCard extends StatelessWidget {
   const _CommitmentPreviewCard({
     required this.titleController,

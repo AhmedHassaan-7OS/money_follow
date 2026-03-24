@@ -6,11 +6,11 @@ import 'package:money_follow/core/cubit/bank_sms/bank_sms_cubit.dart';
 import 'package:money_follow/core/cubit/commitment_reminder/commitment_reminder_cubit.dart';
 import 'package:money_follow/utils/app_localizations_temp.dart';
 
-import 'package:money_follow/view/pages/settings/widgets/appearance_section.dart';
-import 'package:money_follow/view/pages/settings/widgets/data_management_section.dart';
-import 'package:money_follow/view/pages/settings/widgets/bank_sms_section.dart';
-import 'package:money_follow/view/pages/settings/widgets/commitment_reminder_section.dart';
-import 'package:money_follow/view/pages/settings/widgets/about_section.dart';
+import 'package:money_follow/view/widgets/settings/appearance_section.dart';
+import 'package:money_follow/view/widgets/settings/data_management_section.dart';
+import 'package:money_follow/view/widgets/settings/bank_sms_section.dart';
+import 'package:money_follow/view/widgets/settings/commitment_reminder_section.dart';
+import 'package:money_follow/view/widgets/settings/about_section.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});

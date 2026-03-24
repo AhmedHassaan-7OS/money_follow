@@ -8,7 +8,7 @@ import 'package:money_follow/core/cubit/localization/localization_state.dart';
 import 'package:money_follow/core/cubit/currency/currency_cubit.dart';
 import 'package:money_follow/core/cubit/currency/currency_state.dart';
 import 'package:money_follow/utils/app_localizations_temp.dart';
-import 'package:money_follow/view/pages/settings/widgets/settings_layout_helpers.dart';
+import 'package:money_follow/view/widgets/settings/settings_layout_helpers.dart';
 
 class AppearanceSection extends StatelessWidget {
   const AppearanceSection({super.key, required this.l10n});
