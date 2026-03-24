@@ -168,4 +168,4 @@ If you have any questions or need help:
 
 ---
 
-**Made with ❤️ using Flutter and AI**
+**Made with ❤️**
