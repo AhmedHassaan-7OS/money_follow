@@ -37,6 +37,7 @@ class HomeState {
     DateTime? customStartDate,
     DateTime? customEndDate,
     String? filterCategory,
+    bool clearFilterCategory = false,
   }) {
     return HomeState(
       totalBalance: totalBalance ?? this.totalBalance,
@@ -48,7 +49,7 @@ class HomeState {
       chartType: chartType ?? this.chartType,
       customStartDate: customStartDate ?? this.customStartDate,
       customEndDate: customEndDate ?? this.customEndDate,
-      filterCategory: filterCategory ?? this.filterCategory,
+      filterCategory: clearFilterCategory ? null : (filterCategory ?? this.filterCategory),
     );
   }
 }

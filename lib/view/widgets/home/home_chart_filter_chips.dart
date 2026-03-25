@@ -25,10 +25,16 @@ class HomeChartFilterChips extends StatelessWidget {
             children: [
               ...filters.map((f) {
                 final isSelected = state.chartTimeFilter == f;
+                String displayLabel = f;
+                if (f == 'Week') displayLabel = l10n.filterWeek;
+                if (f == 'Month') displayLabel = l10n.filterMonth;
+                if (f == 'Year') displayLabel = l10n.filterYear;
+                if (f == 'AllTime') displayLabel = l10n.filterAllTime;
+                
                 return Padding(
                   padding: const EdgeInsets.only(right: 8),
                   child: FilterChip(
-                    label: Text(f, style: TextStyle(color: isSelected ? Colors.white : AppTheme.getTextPrimary(context), fontSize: 12)),
+                    label: Text(displayLabel, style: TextStyle(color: isSelected ? Colors.white : AppTheme.getTextPrimary(context), fontSize: 12)),
                     selected: isSelected,
                     onSelected: (_) => cubit.setChartTimeFilter(f),
                     backgroundColor: AppTheme.getCardColor(context),

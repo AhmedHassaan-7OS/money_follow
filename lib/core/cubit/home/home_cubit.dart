@@ -68,7 +68,7 @@ class HomeCubit extends Cubit<HomeState> {
   }
   
   void setFilterCategory(String? cat) {
-    emit(state.copyWith(filterCategory: cat));
+    emit(state.copyWith(filterCategory: cat, clearFilterCategory: cat == null));
   }
 
   void setChartType(String type) => emit(state.copyWith(chartType: type));

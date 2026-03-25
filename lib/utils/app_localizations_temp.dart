@@ -170,6 +170,10 @@ class AppLocalizations {
   String get all => _localizedStrings['all'] ?? 'All';
   String get selectCategory => _localizedStrings['selectCategory'] ?? 'Select Category';
   String get orTypeCustomCategory => _localizedStrings['orTypeCustomCategory'] ?? 'Or type custom category...';
+  String get filterWeek => _localizedStrings['filterWeek'] ?? 'Week';
+  String get filterMonth => _localizedStrings['filterMonth'] ?? 'Month';
+  String get filterYear => _localizedStrings['filterYear'] ?? 'Year';
+  String get filterAllTime => _localizedStrings['filterAllTime'] ?? 'AllTime';
 
   // English strings
   static const Map<String, String> _englishStrings = {
@@ -263,6 +267,10 @@ class AppLocalizations {
     'all': 'All',
     'selectCategory': 'Select Category',
     'orTypeCustomCategory': 'Or type custom category...',
+    'filterWeek': 'Week',
+    'filterMonth': 'Month',
+    'filterYear': 'Year',
+    'filterAllTime': 'All Time',
   };
 
   // Arabic strings
@@ -354,6 +362,10 @@ class AppLocalizations {
     'all': 'الكل',
     'selectCategory': 'اختر الفئة',
     'orTypeCustomCategory': 'أو اكتب فئة مخصصة...',
+    'filterWeek': 'أسبوع',
+    'filterMonth': 'شهر',
+    'filterYear': 'سنة',
+    'filterAllTime': 'كل الوقت',
   };
 
   // French strings
@@ -425,6 +437,10 @@ class AppLocalizations {
     'all': 'Tout',
     'selectCategory': 'Sélectionner la Catégorie',
     'orTypeCustomCategory': 'Ou tapez une catégorie personnalisée...',
+    'filterWeek': 'Semaine',
+    'filterMonth': 'Mois',
+    'filterYear': 'Année',
+    'filterAllTime': 'Tout le Temps',
   };
 
   // German strings
@@ -496,6 +512,10 @@ class AppLocalizations {
     'all': 'Alle',
     'selectCategory': 'Kategorie Auswählen',
     'orTypeCustomCategory': 'Oder tippen Sie eine benutzerdefinierte Kategorie ein...',
+    'filterWeek': 'Woche',
+    'filterMonth': 'Monat',
+    'filterYear': 'Jahr',
+    'filterAllTime': 'Gesamte Zeit',
   };
 
   // Japanese strings
@@ -564,6 +584,10 @@ class AppLocalizations {
     'all': 'すべて',
     'selectCategory': 'カテゴリを選択',
     'orTypeCustomCategory': 'またはカスタムカテゴリを入力します...',
+    'filterWeek': '週',
+    'filterMonth': '月',
+    'filterYear': '年',
+    'filterAllTime': '全期間',
   };
 }
 
