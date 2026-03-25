@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:money_follow/config/app_theme.dart';
 import 'package:money_follow/view/widgets/animated_press_scale.dart';
+import 'package:money_follow/utils/app_localizations_temp.dart';
 
 class CategorySelectorPage extends StatefulWidget {
   const CategorySelectorPage({super.key});
@@ -70,10 +71,12 @@ class _CategorySelectorPageState extends State<CategorySelectorPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       backgroundColor: AppTheme.getBackgroundColor(context),
       appBar: AppBar(
-        title: const Text('Select Category'),
+        title: Text(l10n.selectCategory),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -87,7 +90,7 @@ class _CategorySelectorPageState extends State<CategorySelectorPage> {
                   child: TextField(
                     controller: _controller,
                     decoration: InputDecoration(
-                      hintText: 'Or type custom category...',
+                      hintText: l10n.orTypeCustomCategory,
                       filled: true,
                       fillColor: AppTheme.getCardColor(context),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
@@ -109,7 +112,7 @@ class _CategorySelectorPageState extends State<CategorySelectorPage> {
                   onPressed: () {
                     if (_controller.text.trim().isNotEmpty) _select(_controller.text.trim());
                   },
-                  child: const Text('Add'),
+                  child: Text(l10n.add),
                 ),
               ],
             ),

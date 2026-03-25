@@ -163,6 +163,13 @@ class AppLocalizations {
         )
       : 'Error updating commitment: $error';
   String get undo => _localizedStrings['undo'] ?? 'Undo';
+  String get customDate => _localizedStrings['customDate'] ?? 'Custom Date';
+  String get pie => _localizedStrings['pie'] ?? 'Pie';
+  String get bar => _localizedStrings['bar'] ?? 'Bar';
+  String get line => _localizedStrings['line'] ?? 'Line';
+  String get all => _localizedStrings['all'] ?? 'All';
+  String get selectCategory => _localizedStrings['selectCategory'] ?? 'Select Category';
+  String get orTypeCustomCategory => _localizedStrings['orTypeCustomCategory'] ?? 'Or type custom category...';
 
   // English strings
   static const Map<String, String> _englishStrings = {
@@ -249,6 +256,13 @@ class AppLocalizations {
     'commitmentCompleted': 'Commitment marked as completed!',
     'commitmentPending': 'Commitment marked as pending!',
     'errorUpdatingCommitment': 'Error updating commitment: {error}',
+    'customDate': 'Custom Date',
+    'pie': 'Pie',
+    'bar': 'Bar',
+    'line': 'Line',
+    'all': 'All',
+    'selectCategory': 'Select Category',
+    'orTypeCustomCategory': 'Or type custom category...',
   };
 
   // Arabic strings
@@ -333,6 +347,13 @@ class AppLocalizations {
     'commitmentCompleted': 'تم تمييز الالتزام كمكتمل!',
     'commitmentPending': 'تم تمييز الالتزام كمعلق!',
     'errorUpdatingCommitment': 'خطأ في تحديث الالتزام: {error}',
+    'customDate': 'تاريخ مخصص',
+    'pie': 'دائري',
+    'bar': 'أعمدة',
+    'line': 'خط',
+    'all': 'الكل',
+    'selectCategory': 'اختر الفئة',
+    'orTypeCustomCategory': 'أو اكتب فئة مخصصة...',
   };
 
   // French strings
@@ -397,6 +418,13 @@ class AppLocalizations {
     'commitmentPending': 'Engagement marqué comme en attente!',
     'errorUpdatingCommitment':
         'Erreur lors de la mise à jour de l\'engagement: {error}',
+    'customDate': 'Date Personnalisée',
+    'pie': 'Camembert',
+    'bar': 'Barre',
+    'line': 'Ligne',
+    'all': 'Tout',
+    'selectCategory': 'Sélectionner la Catégorie',
+    'orTypeCustomCategory': 'Ou tapez une catégorie personnalisée...',
   };
 
   // German strings
@@ -461,6 +489,13 @@ class AppLocalizations {
     'commitmentPending': 'Verpflichtung als ausstehend markiert!',
     'errorUpdatingCommitment':
         'Fehler beim Aktualisieren der Verpflichtung: {error}',
+    'customDate': 'Benutzerdefiniertes Datum',
+    'pie': 'Torte',
+    'bar': 'Balken',
+    'line': 'Linie',
+    'all': 'Alle',
+    'selectCategory': 'Kategorie Auswählen',
+    'orTypeCustomCategory': 'Oder tippen Sie eine benutzerdefinierte Kategorie ein...',
   };
 
   // Japanese strings
@@ -522,6 +557,13 @@ class AppLocalizations {
     'commitmentCompleted': 'コミットメントが完了としてマークされました！',
     'commitmentPending': 'コミットメントが保留としてマークされました！',
     'errorUpdatingCommitment': 'コミットメントの更新エラー: {error}',
+    'customDate': 'カスタム日付',
+    'pie': '円',
+    'bar': '棒',
+    'line': '線',
+    'all': 'すべて',
+    'selectCategory': 'カテゴリを選択',
+    'orTypeCustomCategory': 'またはカスタムカテゴリを入力します...',
   };
 }
 

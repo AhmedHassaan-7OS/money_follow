@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:money_follow/config/app_theme.dart';
 import 'package:money_follow/core/cubit/home/home_cubit.dart';
 import 'package:money_follow/core/cubit/home/home_state.dart';
+import 'package:money_follow/utils/app_localizations_temp.dart';
 
 class HomeChartFilterChips extends StatelessWidget {
   const HomeChartFilterChips({super.key, required this.cubit, required this.state});
@@ -10,6 +11,7 @@ class HomeChartFilterChips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final filters = ['Week', 'Month', 'Year', 'AllTime'];
     final cats = state.expenses.map((e) => e.category).toSet().toList();
     cats.insert(0, 'All');
@@ -39,7 +41,7 @@ class HomeChartFilterChips extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(right: 8),
                 child: FilterChip(
-                  label: Text('Custom Date', style: TextStyle(color: state.chartTimeFilter == 'Custom' ? Colors.white : AppTheme.getTextPrimary(context), fontSize: 12)),
+                  label: Text(l10n.customDate, style: TextStyle(color: state.chartTimeFilter == 'Custom' ? Colors.white : AppTheme.getTextPrimary(context), fontSize: 12)),
                   selected: state.chartTimeFilter == 'Custom',
                   onSelected: (_) async {
                     final range = await showDateRangePicker(
@@ -76,9 +78,15 @@ class HomeChartFilterChips extends StatelessWidget {
               return Padding(
                 padding: const EdgeInsets.only(right: 8),
                 child: ChoiceChip(
-                  label: Text(c, style: TextStyle(color: isSelected ? Colors.white : AppTheme.getTextSecondary(context), fontSize: 11)),
+                  label: Text(c == 'All' ? l10n.all : c, style: TextStyle(color: isSelected ? Colors.white : AppTheme.getTextSecondary(context), fontSize: 11)),
                   selected: isSelected,
-                  onSelected: (_) => cubit.setFilterCategory(c == 'All' ? null : c),
+                  onSelected: (bool selected) {
+                    if (c == 'All') {
+                      cubit.setFilterCategory(null);
+                    } else {
+                      cubit.setFilterCategory(selected ? c : null);
+                    }
+                  },
                   selectedColor: AppTheme.accentGreen,
                   backgroundColor: AppTheme.getBackgroundColor(context),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: BorderSide(color: isSelected ? Colors.transparent : Colors.grey.withOpacity(0.2))),

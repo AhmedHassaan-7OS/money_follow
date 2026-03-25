@@ -30,7 +30,7 @@ class _HistoryPageState extends State<HistoryPage> {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      backgroundColor: AppTheme.getBackgroundColor(context),
+      backgroundColor: Colors.transparent,
       body: SafeArea(
         child: BlocBuilder<HistoryCubit, HistoryState>(
           builder: (context, state) {

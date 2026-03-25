@@ -35,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final currency = context.read<CurrencyCubit>();
 
     return Scaffold(
-      backgroundColor: AppTheme.getBackgroundColor(context),
+      backgroundColor: Colors.transparent,
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: () => context.read<HomeCubit>().loadData(),

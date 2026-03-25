@@ -55,7 +55,7 @@ class _IncomePageState extends State<IncomePage> {
     final currency = context.read<CurrencyCubit>();
 
     return Scaffold(
-      backgroundColor: AppTheme.getBackgroundColor(context),
+      backgroundColor: Colors.transparent,
       body: SafeArea(
         child: BlocConsumer<IncomeCubit, IncomeState>(
           listener: (context, state) {

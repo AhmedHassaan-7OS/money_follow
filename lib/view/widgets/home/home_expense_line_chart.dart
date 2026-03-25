@@ -18,7 +18,19 @@ class HomeExpenseLineChart extends StatelessWidget {
         maxY: maxVal * 1.2,
         minY: 0,
         titlesData: FlTitlesData(
-          leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 40,
+              getTitlesWidget: (val, meta) {
+                if (val == 0) return const SizedBox();
+                return Text(
+                  val >= 1000 ? '${(val / 1000).toStringAsFixed(1)}k' : val.toInt().toString(),
+                  style: TextStyle(color: AppTheme.getTextSecondary(context), fontSize: 10),
+                );
+              },
+            ),
+          ),
           topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
           rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
           bottomTitles: AxisTitles(
@@ -33,7 +45,12 @@ class HomeExpenseLineChart extends StatelessWidget {
             ),
           ),
         ),
-        gridData: const FlGridData(show: false),
+        gridData: FlGridData(
+          show: true,
+          drawVerticalLine: false,
+          horizontalInterval: maxVal > 0 ? (maxVal / 4 == 0 ? 1 : maxVal / 4) : 1,
+          getDrawingHorizontalLine: (value) => FlLine(color: AppTheme.getTextSecondary(context).withOpacity(0.1), strokeWidth: 1),
+        ),
         borderData: FlBorderData(show: false),
         lineBarsData: [
           LineChartBarData(

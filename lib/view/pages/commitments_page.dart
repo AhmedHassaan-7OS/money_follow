@@ -41,7 +41,7 @@ class _CommitmentsPageState extends State<CommitmentsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.getBackgroundColor(context),
+      backgroundColor: Colors.transparent,
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 120),
         child: FloatingActionButton.extended(

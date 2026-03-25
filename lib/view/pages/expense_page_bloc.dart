@@ -109,7 +109,7 @@ class _ExpensePageBlocState extends State<ExpensePageBloc> {
     final currency = context.read<CurrencyCubit>();
 
     return Scaffold(
-      backgroundColor: AppTheme.getBackgroundColor(context),
+      backgroundColor: Colors.transparent,
       body: SafeArea(
         child: BlocConsumer<ExpenseCubit, ExpenseState>(
           listener: (context, state) {
