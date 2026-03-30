@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:money_follow/config/app_theme.dart';
 import 'package:money_follow/view/pages/home_page.dart';
 import 'package:money_follow/view/pages/expense_page_bloc.dart';
 import 'package:money_follow/view/pages/Income_page.dart';
 import 'package:money_follow/view/pages/commitments_page.dart';
 import 'package:money_follow/view/pages/history_page.dart';
-import 'package:money_follow/utils/app_localizations_temp.dart';
-import 'dart:ui';
-import 'package:money_follow/utils/app_localizations_temp.dart';
 import 'package:money_follow/view/widgets/glass_bottom_nav.dart';
 
 class MainNavigation extends StatefulWidget {
@@ -58,13 +54,25 @@ class _MainNavigationState extends State<MainNavigation> {
       },
       child: Scaffold(
         extendBody: true,
-        body: IndexedStack(
-          index: _currentIndex,
-          children: _pages,
-        ),
-        bottomNavigationBar: GlassBottomNav(
-          currentIndex: _currentIndex,
-          onTap: (i) => setState(() => _currentIndex = i),
+        body: Stack(
+          children: [
+            Positioned.fill(
+              child: IndexedStack(
+                index: _currentIndex,
+                children: _pages,
+              ),
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: SafeArea(
+                top: false,
+                child: GlassBottomNav(
+                  currentIndex: _currentIndex,
+                  onTap: (i) => setState(() => _currentIndex = i),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
