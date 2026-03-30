@@ -4,20 +4,21 @@ import 'package:money_follow/config/app_theme.dart';
 import 'package:money_follow/core/cubit/history/history_state.dart';
 import 'package:money_follow/core/cubit/currency/currency_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:money_follow/utils/app_localizations_temp.dart';
+import 'package:money_follow/utils/localization_extensions.dart';
 
 class HistoryListItem extends StatelessWidget {
   const HistoryListItem({
     super.key,
     required this.item,
-    required this.onTap,
   });
 
   final HistoryItem item;
-  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final currency = context.read<CurrencyCubit>();
+    final l10n = AppLocalizations.of(context);
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
@@ -33,12 +34,9 @@ class HistoryListItem extends StatelessWidget {
           ),
         ],
       ),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
             children: [
               Container(
                 width: 48, height: 48,
@@ -53,7 +51,7 @@ class HistoryListItem extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(item.title, style: AppTheme.getBodyLarge(context)),
+                    Text(_localizedTitle(l10n), style: AppTheme.getBodyLarge(context)),
                     const SizedBox(height: 4),
                     Row(
                       children: [
@@ -66,7 +64,7 @@ class HistoryListItem extends StatelessWidget {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            item.type,
+                            l10n.historyTypeLabel(item.type),
                             style: TextStyle(
                               fontSize: 10,
                               color: item.color,
@@ -136,8 +134,18 @@ class HistoryListItem extends StatelessWidget {
               ),
             ],
           ),
-        ),
       ),
     );
+  }
+
+  String _localizedTitle(AppLocalizations l10n) {
+    switch (item.type) {
+      case 'Income':
+        return l10n.incomeSourceLabel(item.title);
+      case 'Expense':
+        return l10n.categoryLabel(item.title);
+      default:
+        return item.title;
+    }
   }
 }

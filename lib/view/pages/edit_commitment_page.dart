@@ -13,14 +13,14 @@ import 'package:money_follow/view/widgets/date_picker_field.dart'
 import 'package:money_follow/view/widgets/primary_button.dart'
     show PrimaryButton;
 import 'package:money_follow/view/widgets/section_label.dart' show SectionLabel;
-import 'package:provider/provider.dart';
 import 'package:money_follow/config/app_theme.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:money_follow/core/constants/app_constants.dart';
+import 'package:money_follow/core/cubit/currency/currency_cubit.dart';
 import 'package:money_follow/models/commitment_model.dart';
-import 'package:money_follow/providers/currency_provider.dart';
 import 'package:money_follow/services/commitment_reminder_service.dart';
 import 'package:money_follow/utils/app_localizations_temp.dart';
-import 'package:money_follow/utils/validators.dart';
+import 'package:money_follow/utils/localization_extensions.dart';
 
 /// ============================================================
 /// EditCommitmentPage — صفحة تعديل/حذف التزام.
@@ -70,6 +70,7 @@ class _EditCommitmentPageState extends State<EditCommitmentPage> {
 
   Future<void> _update() async {
     if (!_formKey.currentState!.validate()) return;
+    final l10n = AppLocalizations.of(context);
 
     setState(() => _isSaving = true);
 
@@ -99,7 +100,7 @@ class _EditCommitmentPageState extends State<EditCommitmentPage> {
       }
     } catch (e) {
       if (mounted) {
-        AppSnackBar.error(context, 'Error updating commitment: $e');
+        AppSnackBar.error(context, l10n.errorUpdatingCommitment('$e'));
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);
@@ -107,11 +108,13 @@ class _EditCommitmentPageState extends State<EditCommitmentPage> {
   }
 
   Future<void> _delete() async {
+    final l10n = AppLocalizations.of(context);
     final confirmed = await ConfirmDeleteDialog.show(
       context,
-      title: 'Delete Commitment',
-      message:
-          'Are you sure you want to delete this commitment? This action cannot be undone.',
+      title: l10n.deleteCommitmentTitleLabel,
+      message: l10n.deleteCommitmentConfirmLabel,
+      confirmLabel: l10n.delete,
+      cancelLabel: l10n.cancel,
     );
     if (!confirmed) return;
 
@@ -121,13 +124,13 @@ class _EditCommitmentPageState extends State<EditCommitmentPage> {
         widget.commitment.id!,
       );
       if (mounted) {
-        AppSnackBar.error(context, 'Commitment deleted successfully!');
+        AppSnackBar.error(context, l10n.commitmentDeletedSuccessLabel);
         widget.onUpdated?.call();
         Navigator.pop(context);
       }
     } catch (e) {
       if (mounted) {
-        AppSnackBar.error(context, 'Error deleting commitment: $e');
+        AppSnackBar.error(context, l10n.errorDeletingCommitmentLabel('$e'));
       }
     }
   }
@@ -137,7 +140,7 @@ class _EditCommitmentPageState extends State<EditCommitmentPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final currency = Provider.of<CurrencyProvider>(context);
+    final currency = context.read<CurrencyCubit>();
 
     return Scaffold(
       backgroundColor: AppTheme.getBackgroundColor(context),
@@ -160,7 +163,7 @@ class _EditCommitmentPageState extends State<EditCommitmentPage> {
                 const SizedBox(height: 24),
 
                 // Title
-                SectionLabel('Title'),
+                SectionLabel(l10n.title),
                 AppCard(
                   child: TextFormField(
                     controller: _titleController,
@@ -171,7 +174,7 @@ class _EditCommitmentPageState extends State<EditCommitmentPage> {
                       color: AppTheme.getTextPrimary(context),
                     ),
                     decoration: InputDecoration(
-                      hintText: 'e.g. Rent, Electricity Bill',
+                      hintText: l10n.titleHintLabel,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
                         borderSide: BorderSide.none,
@@ -180,23 +183,28 @@ class _EditCommitmentPageState extends State<EditCommitmentPage> {
                       fillColor: Colors.transparent,
                       contentPadding: const EdgeInsets.all(20),
                     ),
-                    validator: AppValidators.commitmentTitle,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return l10n.pleaseEnterTitleLabel;
+                      }
+                      return null;
+                    },
                   ),
                 ),
                 const SizedBox(height: 20),
 
                 // Amount
-                SectionLabel('Amount'),
+                SectionLabel(l10n.amount),
                 AmountInputField(
                   controller: _amountController,
-                  currencySymbol: currency.currencySymbol,
+                  currencySymbol: currency.state.currencySymbol,
                   accentColor: AppTheme.warningColor,
                   onChanged: (_) => setState(() {}),
                 ),
                 const SizedBox(height: 20),
 
                 // Due Date
-                SectionLabel('Due Date'),
+                SectionLabel(l10n.dueDate),
                 DatePickerField(
                   selectedDate: _selectedDate,
                   onDateChanged: (d) => setState(() => _selectedDate = d),
@@ -209,7 +217,7 @@ class _EditCommitmentPageState extends State<EditCommitmentPage> {
 
                 // Save Button
                 PrimaryButton(
-                  label: 'Update ${l10n.commitments}',
+                  label: l10n.updateCommitmentLabel,
                   onPressed: _update,
                   isLoading: _isSaving,
                   color: AppTheme.warningColor,
@@ -232,7 +240,7 @@ class _EditCommitmentPageState extends State<EditCommitmentPage> {
         color: AppTheme.getTextSecondary(context),
       ),
       title: Text(
-        'Edit ${l10n.commitments}',
+        '${l10n.edit} ${l10n.commitments}',
         style: AppTheme.getHeadingMedium(context),
       ),
       actions: [
@@ -261,10 +269,11 @@ class _CommitmentPreviewCard extends StatelessWidget {
   final TextEditingController titleController;
   final TextEditingController amountController;
   final DateTime selectedDate;
-  final CurrencyProvider currency;
+  final CurrencyCubit currency;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final amount = double.tryParse(amountController.text) ?? 0.0;
 
     return AppCard(
@@ -292,13 +301,18 @@ class _CommitmentPreviewCard extends StatelessWidget {
               children: [
                 Text(
                   titleController.text.isEmpty
-                      ? 'Commitment Title'
+                      ? l10n.commitmentPreviewTitleLabel
                       : titleController.text,
                   style: AppTheme.getBodyLarge(context),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Due: ${DateFormat(AppConstants.displayDateFormat).format(selectedDate)}',
+                  l10n.dueOnLabel(
+                    DateFormat(
+                      AppConstants.displayDateFormat,
+                      l10n.locale.languageCode,
+                    ).format(selectedDate),
+                  ),
                   style: TextStyle(
                     fontSize: 12,
                     color: AppTheme.warningColor,

@@ -406,17 +406,17 @@ class AppLocalizationsFr extends AppLocalizations {
       'Erreur lors du chargement des statistiques';
 
   @override
-  String get markAsCompleted => 'Mark as Completed';
+  String get markAsCompleted => 'Marquer comme termine';
 
   @override
-  String get markAsPending => 'Mark as Pending';
+  String get markAsPending => 'Marquer comme en attente';
 
   @override
-  String get commitmentCompleted => 'Commitment marked as completed!';
+  String get commitmentCompleted => 'Engagement marque comme termine!';
 
   @override
-  String get commitmentPending => 'Commitment marked as pending!';
+  String get commitmentPending => 'Engagement marque comme en attente!';
 
   @override
-  String get undo => 'Undo';
+  String get undo => 'Annuler';
 }

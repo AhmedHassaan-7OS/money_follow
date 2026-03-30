@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:money_follow/config/app_theme.dart';
 import 'package:money_follow/view/widgets/animated_press_scale.dart';
 import 'package:money_follow/utils/app_localizations_temp.dart';
+import 'package:money_follow/utils/localization_extensions.dart';
 
 class CategorySelectorPage extends StatefulWidget {
   const CategorySelectorPage({super.key});
@@ -129,7 +130,10 @@ class _CategorySelectorPageState extends State<CategorySelectorPage> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                      child: Text(group, style: AppTheme.getHeadingSmall(context)),
+                      child: Text(
+                        l10n.categoryGroupLabel(group),
+                        style: AppTheme.getHeadingSmall(context),
+                      ),
                     ),
                     GridView.builder(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -160,7 +164,7 @@ class _CategorySelectorPageState extends State<CategorySelectorPage> {
                                 Padding(
                                   padding: const EdgeInsets.symmetric(horizontal: 4),
                                   child: Text(
-                                    item['name'] as String,
+                                    l10n.categoryLabel(item['name'] as String),
                                     style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
                                     textAlign: TextAlign.center,
                                     maxLines: 1,

@@ -15,12 +15,12 @@ import 'package:money_follow/view/widgets/date_picker_field.dart'
 import 'package:money_follow/view/widgets/primary_button.dart'
     show PrimaryButton;
 import 'package:money_follow/view/widgets/section_label.dart' show SectionLabel;
-import 'package:provider/provider.dart';
 import 'package:money_follow/config/app_theme.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:money_follow/core/cubit/currency/currency_cubit.dart';
 import 'package:money_follow/models/income_model.dart';
-import 'package:money_follow/providers/currency_provider.dart';
 import 'package:money_follow/utils/app_localizations_temp.dart';
-import 'package:money_follow/utils/validators.dart';
+import 'package:money_follow/utils/localization_extensions.dart';
 
 /// ============================================================
 /// EditIncomePage — ???? ?????/??? ???.
@@ -66,6 +66,7 @@ class _EditIncomePageState extends State<EditIncomePage> {
 
   Future<void> _update() async {
     if (!_formKey.currentState!.validate()) return;
+    final l10n = AppLocalizations.of(context);
 
     setState(() => _isSaving = true);
 
@@ -89,7 +90,7 @@ class _EditIncomePageState extends State<EditIncomePage> {
       }
     } catch (e) {
       if (mounted) {
-        AppSnackBar.error(context, 'Error updating income: $e');
+        AppSnackBar.error(context, l10n.errorUpdatingIncomeLabel('$e'));
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);
@@ -97,24 +98,26 @@ class _EditIncomePageState extends State<EditIncomePage> {
   }
 
   Future<void> _delete() async {
+    final l10n = AppLocalizations.of(context);
     final confirmed = await ConfirmDeleteDialog.show(
       context,
-      title: 'Delete Income',
-      message:
-          'Are you sure you want to delete this income record? This action cannot be undone.',
+      title: l10n.deleteIncomeTitleLabel,
+      message: l10n.deleteIncomeConfirmLabel,
+      confirmLabel: l10n.delete,
+      cancelLabel: l10n.cancel,
     );
     if (!confirmed) return;
 
     try {
       await _repository.delete(widget.income.id!);
       if (mounted) {
-        AppSnackBar.error(context, 'Income deleted successfully!');
+        AppSnackBar.error(context, l10n.incomeDeletedSuccessLabel);
         widget.onUpdated?.call();
         Navigator.pop(context);
       }
     } catch (e) {
       if (mounted) {
-        AppSnackBar.error(context, 'Error deleting income: $e');
+        AppSnackBar.error(context, l10n.errorDeletingIncomeLabel('$e'));
       }
     }
   }
@@ -124,7 +127,7 @@ class _EditIncomePageState extends State<EditIncomePage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final currency = Provider.of<CurrencyProvider>(context);
+    final currency = context.read<CurrencyCubit>();
 
     return Scaffold(
       backgroundColor: AppTheme.getBackgroundColor(context),
@@ -141,13 +144,13 @@ class _EditIncomePageState extends State<EditIncomePage> {
                 SectionLabel(l10n.amount),
                 AmountInputField(
                   controller: _amountController,
-                  currencySymbol: currency.currencySymbol,
+                  currencySymbol: currency.state.currencySymbol,
                   accentColor: AppTheme.accentGreen,
                 ),
                 const SizedBox(height: 24),
 
                 // Source text field
-                SectionLabel('Source'),
+                SectionLabel(l10n.source),
                 AppCard(
                   child: TextFormField(
                     controller: _sourceController,
@@ -157,7 +160,7 @@ class _EditIncomePageState extends State<EditIncomePage> {
                       color: AppTheme.getTextPrimary(context),
                     ),
                     decoration: InputDecoration(
-                      hintText: 'e.g. Salary, Freelance',
+                      hintText: l10n.sourceHintLabel,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
                         borderSide: BorderSide.none,
@@ -166,13 +169,18 @@ class _EditIncomePageState extends State<EditIncomePage> {
                       fillColor: Colors.transparent,
                       contentPadding: const EdgeInsets.all(20),
                     ),
-                    validator: AppValidators.incomeSource,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return l10n.pleaseEnterIncomeSourceLabel;
+                      }
+                      return null;
+                    },
                   ),
                 ),
                 const SizedBox(height: 16),
 
                 // Quick source chips
-                SectionLabel('Quick Select', bottomSpacing: 8),
+                SectionLabel(l10n.quickSelect, bottomSpacing: 8),
                 _SourceChips(
                   selectedSource: _sourceController.text,
                   onSelected: (s) => setState(() => _sourceController.text = s),
@@ -190,7 +198,7 @@ class _EditIncomePageState extends State<EditIncomePage> {
 
                 // Save Button
                 PrimaryButton(
-                  label: 'Update ${l10n.income}',
+                  label: l10n.updateIncomeLabel,
                   onPressed: _update,
                   isLoading: _isSaving,
                   color: AppTheme.accentGreen,
@@ -213,7 +221,7 @@ class _EditIncomePageState extends State<EditIncomePage> {
         color: AppTheme.getTextSecondary(context),
       ),
       title: Text(
-        'Edit ${l10n.income}',
+        '${l10n.edit} ${l10n.income}',
         style: AppTheme.getHeadingMedium(context),
       ),
       actions: [
@@ -239,6 +247,7 @@ class _SourceChips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Wrap(
       spacing: 8,
       runSpacing: 8,
@@ -270,7 +279,7 @@ class _SourceChips extends StatelessWidget {
                 ),
                 const SizedBox(width: 6),
                 Text(
-                  source,
+                  l10n.incomeSourceLabel(source),
                   style: TextStyle(
                     fontSize: 14,
                     color: isSelected

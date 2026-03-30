@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:money_follow/config/app_theme.dart';
 import 'package:money_follow/utils/app_localizations_temp.dart';
+import 'package:money_follow/utils/localization_extensions.dart';
 
 class HistoryHeader extends StatelessWidget {
   const HistoryHeader({super.key, required this.itemCount, required this.l10n});
@@ -14,7 +15,7 @@ class HistoryHeader extends StatelessWidget {
       child: Row(
         children: [
           Text(
-            'Transaction ${l10n.history}',
+            l10n.transactionHistoryLabel,
             style: AppTheme.getHeadingMedium(context),
           ),
           const Spacer(),
@@ -34,7 +35,7 @@ class HistoryHeader extends StatelessWidget {
               ],
             ),
             child: Text(
-              '$itemCount items',
+              l10n.itemsLabel(itemCount),
               style: AppTheme.getBodyMedium(context),
             ),
           ),

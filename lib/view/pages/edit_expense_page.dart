@@ -18,10 +18,10 @@ import 'package:money_follow/view/widgets/date_picker_field.dart'
 import 'package:money_follow/view/widgets/primary_button.dart'
     show PrimaryButton;
 import 'package:money_follow/view/widgets/section_label.dart' show SectionLabel;
-import 'package:provider/provider.dart';
 import 'package:money_follow/config/app_theme.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:money_follow/core/cubit/currency/currency_cubit.dart';
 import 'package:money_follow/models/expense_model.dart';
-import 'package:money_follow/providers/currency_provider.dart';
 import 'package:money_follow/utils/app_localizations_temp.dart';
 
 /// ============================================================
@@ -138,7 +138,7 @@ class _EditExpensePageState extends State<EditExpensePage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final currency = Provider.of<CurrencyProvider>(context);
+    final currency = context.read<CurrencyCubit>();
 
     return Scaffold(
       backgroundColor: AppTheme.getBackgroundColor(context),
@@ -155,7 +155,7 @@ class _EditExpensePageState extends State<EditExpensePage> {
                 SectionLabel(l10n.amount),
                 AmountInputField(
                   controller: _amountController,
-                  currencySymbol: currency.currencySymbol,
+                  currencySymbol: currency.state.currencySymbol,
                 ),
                 const SizedBox(height: 24),
 

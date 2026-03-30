@@ -407,17 +407,17 @@ class AppLocalizationsDe extends AppLocalizations {
   String get errorLoadingStatistics => 'Fehler beim Laden der Statistiken';
 
   @override
-  String get markAsCompleted => 'Mark as Completed';
+  String get markAsCompleted => 'Als erledigt markieren';
 
   @override
-  String get markAsPending => 'Mark as Pending';
+  String get markAsPending => 'Als ausstehend markieren';
 
   @override
-  String get commitmentCompleted => 'Commitment marked as completed!';
+  String get commitmentCompleted => 'Verpflichtung als erledigt markiert!';
 
   @override
-  String get commitmentPending => 'Commitment marked as pending!';
+  String get commitmentPending => 'Verpflichtung als ausstehend markiert!';
 
   @override
-  String get undo => 'Undo';
+  String get undo => 'RÃ¼ckgÃ¤ngig';
 }

@@ -5,6 +5,8 @@ import 'package:money_follow/config/app_theme.dart';
 import 'package:money_follow/core/cubit/currency/currency_cubit.dart';
 import 'package:money_follow/core/cubit/statistics/statistics_cubit.dart';
 import 'package:money_follow/core/cubit/statistics/statistics_state.dart';
+import 'package:money_follow/utils/app_localizations_temp.dart';
+import 'package:money_follow/utils/localization_extensions.dart';
 
 class HistoryDateHeader extends StatelessWidget {
   const HistoryDateHeader({
@@ -19,6 +21,7 @@ class HistoryDateHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final currency = context.read<CurrencyCubit>();
+    final l10n = AppLocalizations.of(context);
     final dateKey = DateFormat('yyyy-MM-dd').format(date);
 
     return BlocBuilder<StatisticsCubit, StatisticsState>(
@@ -38,10 +41,18 @@ class HistoryDateHeader extends StatelessWidget {
                 Row(
                   children: [
                     if (state.dailySummaries[dateKey]!['expense']! > 0) ...[
-                      Icon(Icons.arrow_downward, size: 14, color: AppTheme.errorColor),
+                      Icon(
+                        Icons.arrow_downward,
+                        size: 14,
+                        color: AppTheme.errorColor,
+                      ),
                       const SizedBox(width: 4),
                       Text(
-                        'صرفت: ${currency.formatAmount(state.dailySummaries[dateKey]!['expense']!)}',
+                        l10n.spentLabel(
+                          currency.formatAmount(
+                            state.dailySummaries[dateKey]!['expense']!,
+                          ),
+                        ),
                         style: TextStyle(
                           fontSize: 12,
                           color: AppTheme.errorColor,
@@ -53,10 +64,18 @@ class HistoryDateHeader extends StatelessWidget {
                         state.dailySummaries[dateKey]!['income']! > 0)
                       const SizedBox(width: 16),
                     if (state.dailySummaries[dateKey]!['income']! > 0) ...[
-                      Icon(Icons.arrow_upward, size: 14, color: AppTheme.accentGreen),
+                      Icon(
+                        Icons.arrow_upward,
+                        size: 14,
+                        color: AppTheme.accentGreen,
+                      ),
                       const SizedBox(width: 4),
                       Text(
-                        'كسبت: ${currency.formatAmount(state.dailySummaries[dateKey]!['income']!)}',
+                        l10n.earnedLabel(
+                          currency.formatAmount(
+                            state.dailySummaries[dateKey]!['income']!,
+                          ),
+                        ),
                         style: TextStyle(
                           fontSize: 12,
                           color: AppTheme.accentGreen,

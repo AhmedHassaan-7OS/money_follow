@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:money_follow/config/app_theme.dart';
+import 'package:money_follow/utils/app_localizations_temp.dart';
 
 class HistoryFilterTabs extends StatelessWidget {
   const HistoryFilterTabs({
@@ -15,6 +16,7 @@ class HistoryFilterTabs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
@@ -52,7 +54,7 @@ class HistoryFilterTabs extends StatelessWidget {
                         ],
                 ),
                 child: Text(
-                  filter,
+                  _localizedLabel(filter, l10n),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: isSelected
@@ -68,5 +70,20 @@ class HistoryFilterTabs extends StatelessWidget {
         }).toList(),
       ),
     );
+  }
+
+  String _localizedLabel(String filter, AppLocalizations l10n) {
+    switch (filter) {
+      case 'All':
+        return l10n.all;
+      case 'Income':
+        return l10n.income;
+      case 'Expenses':
+        return l10n.expenses;
+      case 'Commitments':
+        return l10n.commitments;
+      default:
+        return filter;
+    }
   }
 }

@@ -397,17 +397,17 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorLoadingStatistics => '統計の読み込みエラー';
 
   @override
-  String get markAsCompleted => 'Mark as Completed';
+  String get markAsCompleted => '????????';
 
   @override
-  String get markAsPending => 'Mark as Pending';
+  String get markAsPending => '????????';
 
   @override
-  String get commitmentCompleted => 'Commitment marked as completed!';
+  String get commitmentCompleted => '?????????????????????!';
 
   @override
-  String get commitmentPending => 'Commitment marked as pending!';
+  String get commitmentPending => '?????????????????????!';
 
   @override
-  String get undo => 'Undo';
+  String get undo => '????';
 }

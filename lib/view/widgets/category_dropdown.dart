@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:money_follow/config/app_theme.dart';
 import 'package:money_follow/core/constants/app_constants.dart'
     show AppConstants;
+import 'package:money_follow/utils/app_localizations_temp.dart';
+import 'package:money_follow/utils/localization_extensions.dart';
 import 'package:money_follow/view/widgets/app_card.dart' show AppCard;
 
 /// ============================================================
@@ -32,6 +34,7 @@ class CategoryDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final List<String> cats = List.from(categories ?? AppConstants.expenseCategories);
     if (!cats.contains(value) && value.isNotEmpty) cats.add(value);
     if (!cats.contains('Other')) cats.add('Other');
@@ -74,7 +77,7 @@ class CategoryDropdown extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 12),
-                Text(category),
+                Text(l10n.categoryLabel(category)),
               ],
             ),
           );

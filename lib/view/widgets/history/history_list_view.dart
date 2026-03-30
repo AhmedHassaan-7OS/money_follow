@@ -13,6 +13,8 @@ import 'package:money_follow/view/pages/edit_expense_page.dart';
 import 'package:money_follow/view/pages/edit_commitment_page.dart';
 import 'package:money_follow/view/widgets/history/history_date_header.dart';
 import 'package:money_follow/view/widgets/history/history_list_item.dart';
+import 'package:money_follow/utils/app_localizations_temp.dart';
+import 'package:money_follow/utils/localization_extensions.dart';
 
 class HistoryListView extends StatelessWidget {
   const HistoryListView({super.key, required this.state});
@@ -45,6 +47,7 @@ class HistoryListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     if (state.isLoading) {
       return const Center(child: CircularProgressIndicator(color: AppTheme.primaryBlue));
     }
@@ -55,9 +58,9 @@ class HistoryListView extends StatelessWidget {
           children: [
             Lottie.asset('assets/lottie/empty.json', width: 150, height: 150, fit: BoxFit.contain),
             const SizedBox(height: 16),
-            Text('No transactions yet', style: AppTheme.getHeadingSmall(context).copyWith(color: Colors.grey[600])),
+            Text(l10n.noTransactionsYetLabel, style: AppTheme.getHeadingSmall(context).copyWith(color: Colors.grey[600])),
             const SizedBox(height: 8),
-            Text('Start adding transactions', style: AppTheme.getBodyMedium(context), textAlign: TextAlign.center),
+            Text(l10n.startAddingTransactionsLabel, style: AppTheme.getBodyMedium(context), textAlign: TextAlign.center),
           ],
         ),
       );
@@ -75,7 +78,11 @@ class HistoryListView extends StatelessWidget {
           final dFormat = DateFormat('yyyy-MM-dd');
           final isToday = dFormat.format(item.date) == dFormat.format(DateTime.now());
           final isYesterday = dFormat.format(item.date) == dFormat.format(DateTime.now().subtract(const Duration(days: 1)));
-          final dateText = isToday ? 'Today' : (isYesterday ? 'Yesterday' : DateFormat('MMM dd, yyyy').format(item.date));
+          final dateText = isToday
+              ? l10n.today
+              : (isYesterday
+                  ? l10n.yesterdayLabel
+                  : DateFormat.yMMMd(l10n.locale.languageCode).format(item.date));
           final showHeader = index == 0 || dFormat.format(item.date) != dFormat.format(state.filtered[index - 1].date);
           
           return Column(
@@ -87,7 +94,7 @@ class HistoryListView extends StatelessWidget {
               ],
               AnimatedPressScale(
                 onTap: () => _navigateToEdit(context, item),
-                child: HistoryListItem(item: item, onTap: () {}),
+                child: HistoryListItem(item: item),
               ),
             ],
           ).animate(delay: (index * 35).ms).fadeIn(duration: 400.ms, curve: Curves.easeOut).slideY(begin: 0.1, end: 0);
