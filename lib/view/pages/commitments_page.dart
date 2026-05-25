@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:money_follow/config/app_theme.dart';
 import 'package:money_follow/core/cubit/commitment/commitment_cubit.dart';
 import 'package:money_follow/core/cubit/commitment/commitment_state.dart';
 import 'package:money_follow/view/widgets/app_snack_bar.dart';

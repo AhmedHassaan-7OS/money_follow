@@ -1,6 +1,5 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:money_follow/config/app_theme.dart';
 import 'package:money_follow/core/cubit/history/history_cubit.dart';
 import 'package:money_follow/core/cubit/history/history_state.dart';
 import 'package:money_follow/core/cubit/statistics/statistics_cubit.dart';
@@ -39,7 +38,8 @@ class _HistoryPageState extends State<HistoryPage> {
                 HistoryHeader(itemCount: state.filtered.length, l10n: l10n),
                 HistoryFilterTabs(
                   selectedFilter: state.selectedFilter,
-                  onFilterSelected: (f) => context.read<HistoryCubit>().setFilter(f),
+                  onFilterSelected: (f) =>
+                      context.read<HistoryCubit>().setFilter(f),
                 ),
                 const SizedBox(height: 16),
                 Expanded(child: HistoryListView(state: state)),
