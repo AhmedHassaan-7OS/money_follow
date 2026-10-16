@@ -30,6 +30,7 @@ class CommitmentsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
+      resizeToAvoidBottomInset: false,
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 120),
         child: FloatingActionButton.extended(

@@ -67,10 +67,8 @@ class _AddCommitmentSheetState extends State<AddCommitmentSheet> {
   @override
   Widget build(BuildContext context) {
     final currency = context.read<CurrencyCubit>();
-    final viewInsets = MediaQuery.of(context).viewInsets.bottom;
-    return AnimatedPadding(
-      duration: const Duration(milliseconds: 180),
-      curve: Curves.easeOut,
+    final viewInsets = MediaQuery.viewInsetsOf(context).bottom;
+    return Padding(
       padding: EdgeInsets.only(left: 16, right: 16, top: 24, bottom: viewInsets + 12),
       child: SafeArea(top: false, child: _buildForm(currency)),
     );
@@ -78,7 +76,7 @@ class _AddCommitmentSheetState extends State<AddCommitmentSheet> {
 
   Widget _buildForm(CurrencyCubit currency) {
     return Container(
-      constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.88),
+      constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * 0.88),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: AppTheme.getCardColor(context),
@@ -86,43 +84,46 @@ class _AddCommitmentSheetState extends State<AddCommitmentSheet> {
       ),
       child: Form(
         key: _formKey,
-        child: ListView(
-          shrinkWrap: true,
-          children: [
-            Text('New commitment', style: AppTheme.getHeadingSmall(context)),
-            const SizedBox(height: 16),
-            const SectionLabel('Title', bottomSpacing: 8),
-            TextFormField(
-              controller: _titleController,
-              decoration: const InputDecoration(hintText: 'e.g. Rent, Internet bill'),
-              validator: AppValidators.commitmentTitle,
-            ),
-            const SizedBox(height: 16),
-            const SectionLabel('Amount', bottomSpacing: 8),
-            AmountInputField(
-              controller: _amountController,
-              currencySymbol: currency.state.currencySymbol,
-              accentColor: AppTheme.warningColor,
-            ),
-            const SizedBox(height: 16),
-            const SectionLabel('Due date', bottomSpacing: 8),
-            DatePickerField(
-              selectedDate: _dueDate,
-              onDateChanged: (date) => setState(() => _dueDate = date),
-              accentColor: AppTheme.warningColor,
-              firstDate: DateTime.now(),
-              lastDate: DateTime.now().add(const Duration(days: 365 * 5)),
-            ),
-            const SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton.icon(
-                onPressed: _isSaving ? null : _save,
-                icon: const Icon(Icons.add),
-                label: Text(_isSaving ? 'Saving...' : 'Add commitment'),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text('New commitment', style: AppTheme.getHeadingSmall(context)),
+              const SizedBox(height: 16),
+              const SectionLabel('Title', bottomSpacing: 8),
+              TextFormField(
+                controller: _titleController,
+                decoration: const InputDecoration(hintText: 'e.g. Rent, Internet bill'),
+                validator: AppValidators.commitmentTitle,
               ),
-            ),
-          ],
+              const SizedBox(height: 16),
+              const SectionLabel('Amount', bottomSpacing: 8),
+              AmountInputField(
+                controller: _amountController,
+                currencySymbol: currency.state.currencySymbol,
+                accentColor: AppTheme.warningColor,
+              ),
+              const SizedBox(height: 16),
+              const SectionLabel('Due date', bottomSpacing: 8),
+              DatePickerField(
+                selectedDate: _dueDate,
+                onDateChanged: (date) => setState(() => _dueDate = date),
+                accentColor: AppTheme.warningColor,
+                firstDate: DateTime.now(),
+                lastDate: DateTime.now().add(const Duration(days: 365 * 5)),
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton.icon(
+                  onPressed: _isSaving ? null : _save,
+                  icon: const Icon(Icons.add),
+                  label: Text(_isSaving ? 'Saving...' : 'Add commitment'),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

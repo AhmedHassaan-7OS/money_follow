@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:money_follow/core/cubit/statistics/statistics_cubit.dart';
-import 'package:money_follow/services/permission_service.dart';
 import 'package:money_follow/services/bank_sms_service.dart';
 import 'package:money_follow/services/commitment_reminder_service.dart';
 
@@ -16,16 +15,13 @@ class AppLifecycleManager extends StatefulWidget {
 }
 
 class _AppLifecycleManagerState extends State<AppLifecycleManager> with WidgetsBindingObserver {
-  bool _permissionsRequested = false;
   bool _isShowingPendingDialog = false;
-  Timer? _permTimer;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _requestPermissions();
       _checkBankSms();
       CommitmentReminderService.checkAndNotifyDueCommitments().catchError((_) {});
     });
@@ -33,7 +29,6 @@ class _AppLifecycleManagerState extends State<AppLifecycleManager> with WidgetsB
 
   @override
   void dispose() {
-    _permTimer?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -44,17 +39,6 @@ class _AppLifecycleManagerState extends State<AppLifecycleManager> with WidgetsB
       _checkBankSms();
       CommitmentReminderService.checkAndNotifyDueCommitments().catchError((_) {});
     }
-  }
-
-  void _requestPermissions() {
-    if (_permissionsRequested) return;
-    _permissionsRequested = true;
-    _permTimer = Timer(const Duration(milliseconds: 500), () async {
-      final ctx = widget.navigatorKey.currentContext;
-      if (mounted && ctx != null && ctx.mounted) {
-        await PermissionService.requestPermissionsOnStartup(ctx);
-      }
-    });
   }
 
   Future<void> _checkBankSms() async {
