@@ -36,15 +36,15 @@ class HistoryFilterTabs extends StatelessWidget {
                   boxShadow: isSelected
                       ? [
                           BoxShadow(
-                            color: AppTheme.primaryBlue.withOpacity(0.3),
+                            color: AppTheme.primaryBlue.withValues(alpha: 0.3),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
                         ]
                       : [
                           BoxShadow(
-                            color: Colors.black.withOpacity(
-                              Theme.of(context).brightness == Brightness.dark
+                            color: Colors.black.withValues(
+                              alpha: Theme.of(context).brightness == Brightness.dark
                                   ? 0.3
                                   : 0.05,
                             ),

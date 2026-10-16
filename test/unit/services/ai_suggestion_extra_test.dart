@@ -77,14 +77,16 @@ void main() {
   });
 
   group('getSpendingInsights', () {
-    test('B9: total should use the app currency symbol, مش دولار ثابت', () {
-      final insights = AISuggestionService.getSpendingInsights(
+    test('B9: total uses default \$ without backslash and supports custom currencySymbol', () {
+      final defaultInsights = AISuggestionService.getSpendingInsights(
           {'Food': 300.0, 'Transport': 150.0});
-      // المطلوب بالخطة: تتمرر رمز العملة بدل الدولار الثابت.
-      // حالياً الدولار hard-coded => ده B9.
-      expect(insights['total']!, contains('Total expenses'));
-      expect(insights['total']!, contains(r'\$'), reason:
-          'B9: الدولار hard-coded في getSpendingInsights — لازم يتقبل رمز عملة من اللي اوتر');
+      expect(defaultInsights['total'], 'Total expenses: \$450.00');
+
+      final egpInsights = AISuggestionService.getSpendingInsights(
+        {'Food': 300.0, 'Transport': 150.0},
+        currencySymbol: 'EGP ',
+      );
+      expect(egpInsights['total'], 'Total expenses: EGP 450.00');
     });
 
     test('highest category detection', () {

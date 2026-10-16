@@ -174,7 +174,7 @@ class _ExpensePageBlocState extends State<ExpensePageBloc> {
                       const SizedBox(height: 16),
                       AppCard(
                         border: Border.all(
-                          color: AppTheme.primaryBlue.withOpacity(0.4),
+                          color: AppTheme.primaryBlue.withValues(alpha: 0.4),
                           width: 2,
                         ),
                         child: TextFormField(
@@ -271,14 +271,14 @@ class _AIInsightsCard extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppTheme.primaryBlue.withOpacity(0.08),
-            AppTheme.accentGreen.withOpacity(0.08),
+            AppTheme.primaryBlue.withValues(alpha: 0.08),
+            AppTheme.accentGreen.withValues(alpha: 0.08),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.primaryBlue.withOpacity(0.2)),
+        border: Border.all(color: AppTheme.primaryBlue.withValues(alpha: 0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

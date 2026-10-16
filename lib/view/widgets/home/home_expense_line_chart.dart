@@ -49,7 +49,7 @@ class HomeExpenseLineChart extends StatelessWidget {
           show: true,
           drawVerticalLine: false,
           horizontalInterval: maxVal > 0 ? (maxVal / 4 == 0 ? 1 : maxVal / 4) : 1,
-          getDrawingHorizontalLine: (value) => FlLine(color: AppTheme.getTextSecondary(context).withOpacity(0.1), strokeWidth: 1),
+          getDrawingHorizontalLine: (value) => FlLine(color: AppTheme.getTextSecondary(context).withValues(alpha: 0.1), strokeWidth: 1),
         ),
         borderData: FlBorderData(show: false),
         lineBarsData: [
@@ -62,7 +62,7 @@ class HomeExpenseLineChart extends StatelessWidget {
             dotData: const FlDotData(show: true),
             belowBarData: BarAreaData(
               show: true,
-              color: AppTheme.primaryBlue.withOpacity(0.15),
+              color: AppTheme.primaryBlue.withValues(alpha: 0.15),
             ),
           ),
         ],

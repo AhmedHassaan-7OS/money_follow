@@ -30,11 +30,13 @@ class HistoryState extends Equatable {
   final List<HistoryItem> items;
   final String selectedFilter;
   final bool isLoading;
+  final String? errorMessage;
 
   const HistoryState({
     this.items = const [],
     this.selectedFilter = 'All',
     this.isLoading = true,
+    this.errorMessage,
   });
 
   List<HistoryItem> get filtered {
@@ -52,14 +54,17 @@ class HistoryState extends Equatable {
     List<HistoryItem>? items,
     String? selectedFilter,
     bool? isLoading,
+    String? errorMessage,
+    bool clearErrorMessage = false,
   }) {
     return HistoryState(
       items: items ?? this.items,
       selectedFilter: selectedFilter ?? this.selectedFilter,
       isLoading: isLoading ?? this.isLoading,
+      errorMessage: clearErrorMessage ? null : (errorMessage ?? this.errorMessage),
     );
   }
 
   @override
-  List<Object?> get props => [items, selectedFilter, isLoading];
+  List<Object?> get props => [items, selectedFilter, isLoading, errorMessage];
 }

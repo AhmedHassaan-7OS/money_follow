@@ -37,6 +37,33 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   _anm(HomeHeader(l10n: l10n), 0),
                   const SizedBox(height: 20),
+                  if (state.errorMessage != null) ...[
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: AppTheme.errorColor.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: AppTheme.errorColor.withValues(alpha: 0.3)),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.error_outline, color: AppTheme.errorColor),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              state.errorMessage!,
+                              style: AppTheme.getBodyMedium(context).copyWith(color: AppTheme.errorColor),
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: hc.loadData,
+                            child: const Text('Retry'),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
                   _anm(HomeBalanceCard(label: l10n.totalBalance, amount: currency.formatAmount(state.totalBalance)), 1),
                   const SizedBox(height: 24),
                   _anm(HomeMonthlyExpenseCard(label: '${l10n.expenses} ${l10n.thisMonth}', amount: currency.formatAmount(state.monthlyExpenses)), 2),

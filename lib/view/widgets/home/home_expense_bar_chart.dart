@@ -43,7 +43,7 @@ class HomeExpenseBarChart extends StatelessWidget {
               BarChartRodData(
                 toY: data[k]!,
                 gradient: LinearGradient(
-                  colors: [colors[idx % colors.length].withOpacity(0.4), colors[idx % colors.length]],
+                  colors: [colors[idx % colors.length].withValues(alpha: 0.4), colors[idx % colors.length]],
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
                 ),

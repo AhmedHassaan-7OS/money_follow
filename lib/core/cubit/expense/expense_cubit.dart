@@ -141,7 +141,7 @@ class ExpenseCubit extends Cubit<ExpenseState> {
     }
     return AISuggestionService.getSpendingInsights(
       spending,
-      currencySymbol: currencySymbol ?? r'\$',
+      currencySymbol: currencySymbol ?? r'$',
     );
   }
 }

@@ -26,7 +26,7 @@ class HomeCommitmentCard extends StatelessWidget {
         Container(
           width: 40, height: 40,
           decoration: BoxDecoration(
-            color: (isOverdue ? AppTheme.errorColor : AppTheme.primaryBlue).withOpacity(0.1),
+            color: (isOverdue ? AppTheme.errorColor : AppTheme.primaryBlue).withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(Icons.schedule, color: isOverdue ? AppTheme.errorColor : AppTheme.primaryBlue, size: 20),

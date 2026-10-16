@@ -95,7 +95,7 @@ class HomeChartFilterChips extends StatelessWidget {
                   },
                   selectedColor: AppTheme.accentGreen,
                   backgroundColor: AppTheme.getBackgroundColor(context),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: BorderSide(color: isSelected ? Colors.transparent : Colors.grey.withOpacity(0.2))),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: BorderSide(color: isSelected ? Colors.transparent : Colors.grey.withValues(alpha: 0.2))),
                 ),
               );
             }).toList(),

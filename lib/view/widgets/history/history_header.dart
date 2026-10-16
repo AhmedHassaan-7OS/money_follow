@@ -26,8 +26,8 @@ class HistoryHeader extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(
-                    Theme.of(context).brightness == Brightness.dark ? 0.3 : 0.05,
+                  color: Colors.black.withValues(
+                    alpha: Theme.of(context).brightness == Brightness.dark ? 0.3 : 0.05,
                   ),
                   blurRadius: 8,
                   offset: const Offset(0, 2),

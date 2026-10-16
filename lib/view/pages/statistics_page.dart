@@ -203,8 +203,8 @@ class _StatCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(
-                Theme.of(context).brightness == Brightness.dark
+            color: Colors.black.withValues(
+                alpha: Theme.of(context).brightness == Brightness.dark
                     ? 0.3 : 0.05),
             blurRadius: 10, offset: const Offset(0, 2),
           ),
@@ -214,7 +214,7 @@ class _StatCard extends StatelessWidget {
         Container(
           width: 48, height: 48,
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(icon, color: color, size: 24),
@@ -276,7 +276,7 @@ class _MonthlyReport extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Container(height: 1,
-                color: AppTheme.getTextSecondary(context).withOpacity(0.2)),
+                color: AppTheme.getTextSecondary(context).withValues(alpha: 0.2)),
             const SizedBox(height: 16),
             Row(children: [
               Icon(Icons.info_outline, size: 16,
@@ -397,7 +397,7 @@ class _DailyActivity extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
                 border: isToday
                     ? Border.all(
-                        color: AppTheme.primaryBlue.withOpacity(0.3),
+                        color: AppTheme.primaryBlue.withValues(alpha: 0.3),
                         width: 2)
                     : null,
               ),

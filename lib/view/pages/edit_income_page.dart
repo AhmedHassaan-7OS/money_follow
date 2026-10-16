@@ -260,7 +260,7 @@ class _SourceChips extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
               color: isSelected
-                  ? AppTheme.accentGreen.withOpacity(0.1)
+                  ? AppTheme.accentGreen.withValues(alpha: 0.1)
                   : AppTheme.getCardColor(context),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(

@@ -160,8 +160,40 @@ class CommitmentsListView extends StatelessWidget {
                     child: CommitmentTodoTile(
                       item: item,
                       currency: currency,
-                      onToggle: (v) =>
-                          context.read<CommitmentCubit>().toggleStatus(item, v),
+                      onToggle: (v) async {
+                        if (v) {
+                          final record = await showDialog<bool>(
+                            context: context,
+                            builder: (ctx) => AlertDialog(
+                              title: const Text('Record as expense?'),
+                              content: Text(
+                                'Marked "${item.title}" as done. Would you like to record $currency ${item.amount} as an expense in Bills?',
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(ctx, false),
+                                  child: const Text('No, just complete'),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () => Navigator.pop(ctx, true),
+                                  child: const Text('Yes, record expense'),
+                                ),
+                              ],
+                            ),
+                          );
+                          if (context.mounted) {
+                            await context.read<CommitmentCubit>().toggleStatus(
+                                  item,
+                                  true,
+                                  recordAsExpense: record ?? false,
+                                );
+                          }
+                        } else {
+                          await context
+                              .read<CommitmentCubit>()
+                              .toggleStatus(item, false);
+                        }
+                      },
                       onTap: () {},
                     ),
                   ),

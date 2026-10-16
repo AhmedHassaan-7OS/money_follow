@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:money_follow/config/app_theme.dart';
@@ -21,13 +22,20 @@ class AnimatedCommitmentTile extends StatefulWidget {
 
 class _AnimatedCommitmentTileState extends State<AnimatedCommitmentTile> {
   bool _visible = false;
+  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(milliseconds: widget.delayMs), () {
+    _timer = Timer(Duration(milliseconds: widget.delayMs), () {
       if (mounted) setState(() => _visible = true);
     });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
   }
 
   @override
@@ -79,7 +87,7 @@ class CommitmentTodoTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppTheme.getCardColor(context),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: accent.withOpacity(0.25)),
+        border: Border.all(color: accent.withValues(alpha: 0.25)),
       ),
       child: Material(
         color: Colors.transparent,

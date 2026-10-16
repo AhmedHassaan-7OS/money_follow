@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:money_follow/core/cubit/statistics/statistics_cubit.dart';
@@ -17,6 +18,7 @@ class AppLifecycleManager extends StatefulWidget {
 class _AppLifecycleManagerState extends State<AppLifecycleManager> with WidgetsBindingObserver {
   bool _permissionsRequested = false;
   bool _isShowingPendingDialog = false;
+  Timer? _permTimer;
 
   @override
   void initState() {
@@ -31,6 +33,7 @@ class _AppLifecycleManagerState extends State<AppLifecycleManager> with WidgetsB
 
   @override
   void dispose() {
+    _permTimer?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -43,12 +46,15 @@ class _AppLifecycleManagerState extends State<AppLifecycleManager> with WidgetsB
     }
   }
 
-  Future<void> _requestPermissions() async {
+  void _requestPermissions() {
     if (_permissionsRequested) return;
     _permissionsRequested = true;
-    await Future.delayed(const Duration(milliseconds: 500));
-    final ctx = widget.navigatorKey.currentContext;
-    if (mounted && ctx != null && ctx.mounted) await PermissionService.requestPermissionsOnStartup(ctx);
+    _permTimer = Timer(const Duration(milliseconds: 500), () async {
+      final ctx = widget.navigatorKey.currentContext;
+      if (mounted && ctx != null && ctx.mounted) {
+        await PermissionService.requestPermissionsOnStartup(ctx);
+      }
+    });
   }
 
   Future<void> _checkBankSms() async {
@@ -60,13 +66,14 @@ class _AppLifecycleManagerState extends State<AppLifecycleManager> with WidgetsB
       for (final tx in pending) {
         if (!mounted) break;
         final ctx = widget.navigatorKey.currentContext;
-        if (ctx == null) break;
+        if (ctx == null || !ctx.mounted) break;
         final action = await _showSmsDialog(ctx, tx);
         if (action == 'save') {
           await BankSmsService.confirmAndSave(tx);
-          if (mounted && ctx.mounted) {
-            ctx.read<StatisticsCubit>().loadStatistics();
-            ScaffoldMessenger.of(ctx).showSnackBar(const SnackBar(content: Text('Transaction saved')));
+          final saveCtx = widget.navigatorKey.currentContext;
+          if (mounted && saveCtx != null && saveCtx.mounted) {
+            saveCtx.read<StatisticsCubit>().loadStatistics();
+            ScaffoldMessenger.of(saveCtx).showSnackBar(const SnackBar(content: Text('Transaction saved')));
           }
         } else {
           await BankSmsService.removePendingById(tx.id);

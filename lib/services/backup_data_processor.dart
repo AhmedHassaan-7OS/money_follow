@@ -82,7 +82,7 @@ class BackupDataProcessor {
         'commitments': commitments,
       };
     } catch (_) {
-      return {};
+      rethrow;
     }
   }
 
@@ -95,51 +95,76 @@ class BackupDataProcessor {
     );
   }
 
-  /// Restore backup data to database
+  /// Restore backup data to database atomically inside a transaction (B3 fix)
   static Future<bool> restoreBackup(
     Map<String, dynamic> data, {
     bool clearExisting = false,
   }) async {
     try {
-      // Clear existing data if requested
-      if (clearExisting) {
-        await _clearAllData();
-      }
+      await _sqlControl.transaction((_) async {
+        // Clear existing data if requested
+        if (clearExisting) {
+          await _clearAllData();
+        }
 
-      int successCount = 0;
-      int errorCount = 0;
+        int errorCount = 0;
 
-      // Import incomes
-      if (data.containsKey('incomes')) {
-        final result = await _importIncomes(data['incomes'] as List);
-        successCount += result['success'] as int;
-        errorCount += result['errors'] as int;
-      }
+        // Import incomes
+        if (data.containsKey('incomes')) {
+          final result = await _importIncomes(
+            data['incomes'] as List,
+            clearExisting: clearExisting,
+          );
+          errorCount += result['errors'] as int;
+        }
 
-      // Import expenses
-      if (data.containsKey('expenses')) {
-        final result = await _importExpenses(data['expenses'] as List);
-        successCount += result['success'] as int;
-        errorCount += result['errors'] as int;
-      }
+        // Import expenses
+        if (data.containsKey('expenses')) {
+          final result = await _importExpenses(
+            data['expenses'] as List,
+            clearExisting: clearExisting,
+          );
+          errorCount += result['errors'] as int;
+        }
 
-      // Import commitments
-      if (data.containsKey('commitments')) {
-        final result = await _importCommitments(data['commitments'] as List);
-        successCount += result['success'] as int;
-        errorCount += result['errors'] as int;
-      }
+        // Import commitments
+        if (data.containsKey('commitments')) {
+          final result = await _importCommitments(
+            data['commitments'] as List,
+            clearExisting: clearExisting,
+          );
+          errorCount += result['errors'] as int;
+        }
 
-      return errorCount == 0;
+        if (errorCount > 0) {
+          throw StateError(
+            'Backup restore encountered $errorCount invalid records; rolling back transaction.',
+          );
+        }
+      });
+
+      return true;
     } catch (_) {
       return false;
     }
   }
 
   /// Import incomes from backup data
-  static Future<Map<String, int>> _importIncomes(List incomes) async {
+  static Future<Map<String, int>> _importIncomes(
+    List incomes, {
+    bool clearExisting = false,
+  }) async {
     int successCount = 0;
     int errorCount = 0;
+
+    final existingKeys = <String>{};
+    if (!clearExisting) {
+      final existingRows = await _sqlControl.getData(BackupConstants.incomesTable);
+      for (var row in existingRows) {
+        final amt = (row['amount'] as num?)?.toDouble() ?? 0.0;
+        existingKeys.add('${amt}_${row['source']}_${row['date']}');
+      }
+    }
 
     for (var incomeData in incomes) {
       try {
@@ -149,9 +174,18 @@ class BackupDataProcessor {
         }
 
         final income = IncomeModel.fromMap(incomeData);
+        final map = income.toMap();
+        if (!clearExisting) {
+          map.remove('id');
+          final key = '${income.amount}_${income.source}_${income.date}';
+          if (existingKeys.contains(key)) {
+            continue;
+          }
+          existingKeys.add(key);
+        }
         await _sqlControl.insertData(
           BackupConstants.incomesTable,
-          income.toMap(),
+          map,
         );
         successCount++;
       } catch (_) {
@@ -163,16 +197,37 @@ class BackupDataProcessor {
   }
 
   /// Import expenses from backup data
-  static Future<Map<String, int>> _importExpenses(List expenses) async {
+  static Future<Map<String, int>> _importExpenses(
+    List expenses, {
+    bool clearExisting = false,
+  }) async {
     int successCount = 0;
     int errorCount = 0;
+
+    final existingKeys = <String>{};
+    if (!clearExisting) {
+      final existingRows = await _sqlControl.getData(BackupConstants.expensesTable);
+      for (var row in existingRows) {
+        final amt = (row['amount'] as num?)?.toDouble() ?? 0.0;
+        existingKeys.add('${amt}_${row['category']}_${row['date']}_${row['note'] ?? ''}');
+      }
+    }
 
     for (var expenseData in expenses) {
       try {
         final expense = ExpenseModel.fromMap(expenseData);
+        final map = expense.toMap();
+        if (!clearExisting) {
+          map.remove('id');
+          final key = '${expense.amount}_${expense.category}_${expense.date}_${expense.note ?? ''}';
+          if (existingKeys.contains(key)) {
+            continue;
+          }
+          existingKeys.add(key);
+        }
         await _sqlControl.insertData(
           BackupConstants.expensesTable,
-          expense.toMap(),
+          map,
         );
         successCount++;
       } catch (_) {
@@ -184,16 +239,37 @@ class BackupDataProcessor {
   }
 
   /// Import commitments from backup data
-  static Future<Map<String, int>> _importCommitments(List commitments) async {
+  static Future<Map<String, int>> _importCommitments(
+    List commitments, {
+    bool clearExisting = false,
+  }) async {
     int successCount = 0;
     int errorCount = 0;
+
+    final existingKeys = <String>{};
+    if (!clearExisting) {
+      final existingRows = await _sqlControl.getData(BackupConstants.commitmentsTable);
+      for (var row in existingRows) {
+        final amt = (row['amount'] as num?)?.toDouble() ?? 0.0;
+        existingKeys.add('${row['title']}_${amt}_${row['dueDate']}');
+      }
+    }
 
     for (var commitmentData in commitments) {
       try {
         final commitment = CommitmentModel.fromMap(commitmentData);
+        final map = commitment.toMap();
+        if (!clearExisting) {
+          map.remove('id');
+          final key = '${commitment.title}_${commitment.amount}_${commitment.dueDate}';
+          if (existingKeys.contains(key)) {
+            continue;
+          }
+          existingKeys.add(key);
+        }
         await _sqlControl.insertData(
           BackupConstants.commitmentsTable,
-          commitment.toMap(),
+          map,
         );
         successCount++;
       } catch (_) {
@@ -204,33 +280,22 @@ class BackupDataProcessor {
     return {'success': successCount, 'errors': errorCount};
   }
 
-  /// Clear all data from database
+  /// Clear all data from database (rethrows on error so transaction rolls back)
   static Future<void> _clearAllData() async {
-    try {
-      for (String tableName in BackupConstants.allTableNames) {
-        final data = await _sqlControl.getData(tableName);
-        for (var item in data) {
-          await _sqlControl.deleteData(tableName, item['id']);
-        }
-      }
-    } catch (_) {
-      return;
+    for (String tableName in BackupConstants.allTableNames) {
+      await _sqlControl.clearTable(tableName);
     }
   }
 
   /// Get backup file size in MB
   static Future<double> getBackupSize() async {
-    try {
-      final data = await getAllData();
-      final backupData = createBackupData(data);
+    final data = await getAllData();
+    final backupData = createBackupData(data);
 
-      // Encode on a background isolate; the payload can be large.
-      final jsonString = await encodeJsonInBackground(backupData.toMap());
-      final sizeInBytes = utf8.encode(jsonString).length;
-      return sizeInBytes / (1024 * 1024); // Convert to MB
-    } catch (_) {
-      return 0.0;
-    }
+    // Encode on a background isolate; the payload can be large.
+    final jsonString = await encodeJsonInBackground(backupData.toMap());
+    final sizeInBytes = utf8.encode(jsonString).length;
+    return sizeInBytes / (1024 * 1024); // Convert to MB
   }
 
   /// Validate JSON format

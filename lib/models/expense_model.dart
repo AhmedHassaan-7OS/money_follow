@@ -31,8 +31,12 @@ class ExpenseModel {
   /// الافتراضي الفاسد بيرمي ArgumentError فالاستيراد يعدّه error بدل ما يكري غامض.
   factory ExpenseModel.fromMap(Map<String, dynamic> map) {
     final amountValue = map['amount'];
-    if (amountValue is! num || !amountValue.isFinite) {
-      throw ArgumentError('amount is required and must be a valid number');
+    if (amountValue is! num || !amountValue.isFinite || amountValue <= 0) {
+      throw ArgumentError('amount is required and must be a positive number');
+    }
+    final categoryValue = map['category'];
+    if (categoryValue is! String || categoryValue.isEmpty) {
+      throw ArgumentError('category is required');
     }
     final dateValue = map['date'];
     if (dateValue is! String || dateValue.isEmpty) {
@@ -41,7 +45,7 @@ class ExpenseModel {
     return ExpenseModel(
       id: map['id'] as int?,
       amount: amountValue.toDouble(),
-      category: map['category'] as String? ?? '',
+      category: categoryValue,
       date: dateValue,
       note: map['note'] as String?,
     );

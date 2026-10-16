@@ -4,7 +4,7 @@ import 'package:money_follow/control/sqlcontrol.dart';
 import 'package:money_follow/services/home_widget_service.dart';
 
 /// ============================================================
-/// BaseRepository<T> — Abstract base for all data access.
+/// `BaseRepository<T>` — Abstract base for all data access.
 ///
 /// SOLID:
 ///  • SRP : الـ Repository مسئول فقط عن عمليات البيانات،
@@ -15,11 +15,13 @@ import 'package:money_follow/services/home_widget_service.dart';
 ///  • OCP : كل Repository بيـ extend البيس ويضيف ما يحتاجه.
 ///
 /// الاستخدام:
-///   class ExpenseRepository extends BaseRepository<ExpenseModel> {
-///     @override String get tableName => 'expenses';
-///     @override ExpenseModel fromMap(map) => ExpenseModel.fromMap(map);
-///     @override Map<String, dynamic> toMap(item) => item.toMap();
-///   }
+/// ```dart
+/// class ExpenseRepository extends BaseRepository<ExpenseModel> {
+///   @override String get tableName => 'expenses';
+///   @override ExpenseModel fromMap(map) => ExpenseModel.fromMap(map);
+///   @override Map<String, dynamic> toMap(item) => item.toMap();
+/// }
+/// ```
 /// ============================================================
 abstract class BaseRepository<T> {
   final SqlControl _db = SqlControl();

@@ -28,8 +28,12 @@ class CommitmentModel {
   /// B2 fix: نفس منظرس Expense FromMap — قبول int/double وتحرير المطلوب.
   factory CommitmentModel.fromMap(Map<String, dynamic> map) {
     final amountValue = map['amount'];
-    if (amountValue is! num || !amountValue.isFinite) {
-      throw ArgumentError('amount is required and must be a valid number');
+    if (amountValue is! num || !amountValue.isFinite || amountValue <= 0) {
+      throw ArgumentError('amount is required and must be a positive number');
+    }
+    final titleValue = map['title'];
+    if (titleValue is! String || titleValue.isEmpty) {
+      throw ArgumentError('title is required');
     }
     final dueDateValue = map['dueDate'];
     if (dueDateValue is! String || dueDateValue.isEmpty) {
@@ -37,7 +41,7 @@ class CommitmentModel {
     }
     return CommitmentModel(
       id: map['id'] as int?,
-      title: map['title'] as String? ?? '',
+      title: titleValue,
       amount: amountValue.toDouble(),
       dueDate: dueDateValue,
       isCompleted: (map['isCompleted'] ?? 0) == 1,

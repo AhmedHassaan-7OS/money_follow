@@ -27,27 +27,30 @@ class HistoryListView extends StatelessWidget {
     switch (item.type) {
       case 'Income':
         final income = await cubit.getIncomeById(item.id);
-        if (income != null)
+        if (income != null) {
           editPage = EditIncomePage(
             income: income,
             onUpdated: cubit.loadHistory,
           );
+        }
         break;
       case 'Expense':
         final expense = await cubit.getExpenseById(item.id);
-        if (expense != null)
+        if (expense != null) {
           editPage = EditExpensePage(
             expense: expense,
             onUpdated: cubit.loadHistory,
           );
+        }
         break;
       case 'Commitment':
         final commitment = await cubit.getCommitmentById(item.id);
-        if (commitment != null)
+        if (commitment != null) {
           editPage = EditCommitmentPage(
             commitment: commitment,
             onUpdated: cubit.loadHistory,
           );
+        }
         break;
     }
 
@@ -66,6 +69,31 @@ class HistoryListView extends StatelessWidget {
     if (state.isLoading) {
       return const Center(
         child: CircularProgressIndicator(color: AppTheme.primaryBlue),
+      );
+    }
+    if (state.errorMessage != null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, color: AppTheme.errorColor, size: 48),
+              const SizedBox(height: 12),
+              Text(
+                state.errorMessage!,
+                style: AppTheme.getBodyMedium(context),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton.icon(
+                onPressed: () => context.read<HistoryCubit>().loadHistory(),
+                icon: const Icon(Icons.refresh),
+                label: const Text('Retry'),
+              ),
+            ],
+          ),
+        ),
       );
     }
     if (state.filtered.isEmpty) {
@@ -101,14 +129,15 @@ class HistoryListView extends StatelessWidget {
     final dFormat = DateFormat('yyyy-MM-dd');
     final now = DateTime.now();
     final todayStr = dFormat.format(now);
-    final yesterdayStr = dFormat.format(now.subtract(const Duration(days: 1)));
+    final yesterdayStr = dFormat.format(DateTime(now.year, now.month, now.day - 1));
     final localeCode = l10n.locale.languageCode;
 
     return RefreshIndicator(
       onRefresh: () async {
         await context.read<HistoryCubit>().loadHistory();
-        if (context.mounted)
+        if (context.mounted) {
           await context.read<StatisticsCubit>().loadStatistics();
+        }
       },
       child: ListView.builder(
         padding: const EdgeInsets.only(

@@ -4,9 +4,14 @@ import 'package:money_follow/control/sqlcontrol.dart';
 import 'package:money_follow/models/expense_model.dart';
 import 'package:money_follow/models/income_model.dart';
 import 'package:money_follow/models/commitment_model.dart';
+import 'package:money_follow/utils/date_ranges.dart';
 import 'home_state.dart';
 
 /// Handles data loading for the home screen.
+///
+/// Phase B decisions (user-approved):
+///  • التواريخ المستقبلية مبتدخلش في الرصيد الحالي ولا "مصروفات الشهر".
+///  • فلتر الأسبوع = أسبوع تقويمي بدايته حسب لغة الجهاز (مختلف عن آخر 7 أيام).
 class HomeCubit extends Cubit<HomeState> {
   final SqlControl _sql;
 
@@ -33,19 +38,29 @@ class HomeCubit extends Cubit<HomeState> {
         expenses: expenses,
         commitments: commitments,
         isLoading: false,
+        clearErrorMessage: true,
       ));
-    } catch (_) {
-      emit(state.copyWith(isLoading: false));
+    } catch (e) {
+      emit(state.copyWith(
+        isLoading: false,
+        errorMessage: 'Failed to load home data: $e',
+      ));
     }
   }
 
+  /// الرصيد = دخل لحد النهاردة − مصاريف لحد النهاردة (القرار: المستقبلي مستبعد).
   Future<double> _calculateBalance() async {
+    final today = fmtDay(_now());
     final incomeData = await _sql.getData('incomes');
     final incomes = incomeData.map((e) => IncomeModel.fromMap(e));
     final expenseData = await _sql.getData('expenses');
     final allExp = expenseData.map((e) => ExpenseModel.fromMap(e));
-    final totalIn = incomes.fold(0.0, (s, i) => s + i.amount);
-    final totalEx = allExp.fold(0.0, (s, e) => s + e.amount);
+    final totalIn = incomes
+        .where((i) => isOnOrBefore(i.date, today))
+        .fold(0.0, (s, i) => s + i.amount);
+    final totalEx = allExp
+        .where((e) => isOnOrBefore(e.date, today))
+        .fold(0.0, (s, e) => s + e.amount);
     return totalIn - totalEx;
   }
 
@@ -61,10 +76,15 @@ class HomeCubit extends Cubit<HomeState> {
     return list;
   }
 
+  /// مصروفات الشهر = الشهر التقويمي لحد النهاردة فقط (B4 fix —
+  /// بيطابق رقم StatisticsCubit بالتعريف مش بالصدفة).
   double _monthlyExpenses(List<ExpenseModel> expenses) {
-    final currentMonth = DateFormat('yyyy-MM').format(_now());
+    final now = _now();
+    final monthPrefix = DateFormat('yyyy-MM').format(now);
+    final today = fmtDay(now);
     return expenses
-        .where((e) => e.date.startsWith(currentMonth))
+        .where((e) =>
+            e.date.startsWith(monthPrefix) && isOnOrBefore(e.date, today))
         .fold(0.0, (s, e) => s + e.amount);
   }
 
@@ -87,18 +107,25 @@ class HomeCubit extends Cubit<HomeState> {
   Map<String, double> getExpensesByCategory() {
     final map = <String, double>{};
     final now = _now();
+    final today = fmtDay(now);
     for (final e in state.expenses) {
       final edate = DateTime.tryParse(e.date);
       if (edate == null) continue;
       
       bool include = false;
       if (state.chartTimeFilter == 'Week') {
-        include = edate.isAfter(now.subtract(const Duration(days: 7))) || 
-                  (edate.year == now.year && edate.month == now.month && edate.day == now.day);
+        // B5 fix: أسبوع تقويمي حسب لغة الجهاز مع استبعاد التواريخ المستقبلية داخل نفس الأسبوع
+        include = !edate.isBefore(DateTime.parse('${weekStartForSystemLocale(now)}T00:00')) &&
+            edate.isBefore(DateTime.parse('${weekEndExclusiveForSystemLocale(now)}T00:00')) &&
+            isOnOrBefore(e.date, today);
       } else if (state.chartTimeFilter == 'Month') {
-        include = edate.year == now.year && edate.month == now.month;
+        // B4 fix: الشهر لكن من غير التواريخ المستقبلية
+        include = edate.year == now.year &&
+            edate.month == now.month &&
+            isOnOrBefore(e.date, today);
       } else if (state.chartTimeFilter == 'Year') {
-        include = edate.year == now.year;
+        // B4 fix: السنة لكن من غير المستقبلي
+        include = edate.year == now.year && isOnOrBefore(e.date, today);
       } else if (state.chartTimeFilter == 'Custom') {
         if (state.customStartDate != null && state.customEndDate != null) {
           include = edate.isAfter(state.customStartDate!.subtract(const Duration(days: 1))) && 

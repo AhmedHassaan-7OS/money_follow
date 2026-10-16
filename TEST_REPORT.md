@@ -1,9 +1,9 @@
 # تقرير تنفيذ خطة الاختبار — Money Follow
 
 **التاريخ:** 2026-10-16
-**النطاق:** المرحلتان 1 و2 (من 8) — البنية التحتية + اختبارات الحسابات الحرجة (B1–B6, B9–B12)
-**الخطة المرجعية:** test_plan.md المرفق في الطلب
-**نتيجة التشغيل النهائية:** `flutter test` → EXIT=1، **69 نجاح / 18 فشل** — وكل فشل إثبات خطأ حقيقي (bug) وليس تعطلَ في الاختبار نفسه.
+**النطاق:** تنفيذ وإغلاق كافة مراحل الإصلاح (Phase A, B, C, D) لجميع الـ 12 مشكلة المؤكدة.
+**الخطة المرجعية:** test_plan.md + fix_plan.md
+**نتيجة التشغيل الحالية:** `flutter test` → EXIT=0، **93 نجاح / 0 فشل (100% أخضر)** — تم تحويل كافة اختبارات إثبات الأخطاء إلى regression tests ناجحة، وحل تسريب الـ Timers في widget_test.
 
 ---
 
@@ -231,14 +231,20 @@ getBackupSize يرجع 0.0 من غير إشعار
 | [test/integration/sqlcontrol_test.dart](test/integration/sqlcontrol_test.dart) | B6 + migration + CRUD + concurrency |
 | [test/integration/backup_processor_test.dart](test/integration/backup_processor_test.dart) | B2/B3 + round trip + validation |
 | [test/cubits/home_statistics_test.dart](test/cubits/home_statistics_test.dart) | B4/B5/B11 + ثوابت §4.5 |
+| [test/cubits/history_cubit_test.dart](test/cubits/history_cubit_test.dart) | B11 + فلترة وتخطي التواريخ الفاسدة |
 
 ---
 
-## 9. الحالة النهائية
+## 9. الحالة النهائية بعد اكتمال خطة الإصلاحات (Phases A, B, C, D)
 
-- ✅ **69 اختبار ناجح** لتغطية مرحلتي 1–2 من الخطة.
-- ❌ **18 اختبار فاشل كوثيقة إثبات bugs حقيقية** — مطلوب إصلاح الكود (قسم 7) بعدها الاختبارات تتحول لكلها خضرا.
-- ✅ الكود الإنتاجي لم يفسد — فقط 3 ملفات refactors ضيّفة للاختبارات، ومفيش أي تغيير في السلوك.
-- ✅ `flutter analyze lib/control` = صفر issues بعد التعديلات.
-- ⚠️ الـ smoke test (widget_test.dart) كان فاشلاً قبل التنفيذ — مستني إصلاح منفصل.
-- 🔴 **B1/B2/B3/B6 (والتجميع الجديد) مخاطر فعلية على بيانات مالية** — أنصح بمعالجتها فوراً.
+- ✅ **93 اختباراً ناجحاً بنسبة 100% (صفر فشل)**.
+- ✅ **B1 (رفض NaN/Infinity):** تم تفعيله واختباره بالكامل في `AppValidators.amount`.
+- ✅ **B2 (قبول int كمبلغ):** تم توحيد `(map['amount'] as num).toDouble()` في كافة النماذج.
+- ✅ **B3 (استعادة النسخ الاحتياطية):** عزل الـ IDs عند الاستيراد مع ميزة إزالة التكرارات (`deduplication`) واختبارها.
+- ✅ **B4 & B5 (المستقبلي وتوحيد الأسبوع التقويمي):** إنشاء `lib/utils/date_ranges.dart` وتوحيد الحسابات بين `HomeCubit` و`StatisticsCubit`.
+- ✅ **B6 & باغ التجميع:** اعتماد المدى نصف المفتوح وتجميع `+=` للمبالغ في نفس اليوم.
+- ✅ **B7 (الالتزامات المكتملة):** إضافة حوار تأكيد للمستخدم عند إكمال الالتزام لتسجيله كمصروف اختياري تحت "Bills".
+- ✅ **B9 & B10 (الذكاء الاصطناعي والتصنيف):** تخصيص رمز العملة والتحول لمطابقة الكلمات الكاملة ومنع الإيجابيات الكاذبة.
+- ✅ **B11 & B12 (معالجة الأخطاء):** إضافة `errorMessage` في `HomeCubit` و`HistoryCubit` و`StatisticsCubit` وتخطي التواريخ غير الصالحة بدلاً من إخفاء القائمة.
+- ✅ **Phase D (Smoke Test & Timers):** تم حل تسريب الـ Timers في `AppLifecycleManager` و`commitments_list_tile.dart` و`widget_test.dart` يعمل بنجاح تام.
+- ✅ التحليل الثابت (`flutter analyze`): **صفر أخطاء وصفر تحذيرات**، وتم تحديث التعيينات القديمة بميكانيكية كاملة.

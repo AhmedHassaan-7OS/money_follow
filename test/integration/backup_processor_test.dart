@@ -168,8 +168,15 @@ void main() {
       await db.close();
     });
 
-    test('باسدة داخل النسخة => restore جزئي (سجل الخطا محفوظ)', () async {
+    test('B3 fix: سجل فاسد داخل النسخة => rollback كامل عبر transaction (إما كله أو ولا حاجة)', () async {
       final db = await openGoldenDb();
+      // نضع سجل مسبق لنتأكد أنه لا يضيع حتى مع clearExisting: true إذا فشل الاستيراد في المنتصف
+      await SqlControl().insertData('expenses', {
+        'amount': 99.0,
+        'category': 'Bills',
+        'date': '2026-09-15',
+      });
+
       final json = jsonEncode({
         'version': BackupConstants.backupVersion,
         'timestamp': '2026-10-16T12:00:00',
@@ -182,11 +189,51 @@ void main() {
         },
       });
       final parsed = await BackupDataProcessor.processBackupData(json);
-      final ok = await BackupDataProcessor.restoreBackup(parsed.data!);
-      expect(ok, isFalse, reason: 'سجل واحد فاسد يخلي الباك أب false');
+      final ok = await BackupDataProcessor.restoreBackup(parsed.data!, clearExisting: true);
+      expect(ok, isFalse, reason: 'سجل واحد فاسد يخلي الباك أب false ويعمل rollback');
       final rows = await SqlControl().getData('expenses');
-      expect(rows.length, 1, reason:
-          'سلوك حالي موثّق: السجل السليم بيتستورد والفاسد بيتعدّى (restore جزئي بدون transaction)');
+      expect(rows.length, 1, reason: 'البيانات القديمة رجعت بالـ rollback ومفيش استيراد جزئي');
+      expect(rows.first['amount'], 99.0);
+      await db.close();
+    });
+
+    test('deduplication: استيراد متكرر بدون clearExisting لا يضاعف السجلات المتطابقة', () async {
+      final db = await openGoldenDb();
+      final json = jsonEncode({
+        'version': BackupConstants.backupVersion,
+        'timestamp': '2026-10-16T12:00:00',
+        'app_name': BackupConstants.appName,
+        'data': {
+          'incomes': [
+            {'amount': 500.0, 'source': 'Freelance', 'date': '2026-10-05'},
+          ],
+          'expenses': [
+            {'amount': 50.0, 'category': 'Food', 'date': '2026-10-05', 'note': 'lunch'},
+          ],
+          'commitments': [
+            {'title': 'Internet', 'amount': 100.0, 'dueDate': '2026-10-20'},
+          ],
+        },
+      });
+
+      final parsed = await BackupDataProcessor.processBackupData(json);
+      // First restore
+      final ok1 = await BackupDataProcessor.restoreBackup(parsed.data!, clearExisting: false);
+      expect(ok1, isTrue);
+
+      // Second restore of the exact same data
+      final ok2 = await BackupDataProcessor.restoreBackup(parsed.data!, clearExisting: false);
+      expect(ok2, isTrue);
+
+      // Verify no duplicates created
+      final incomes = await SqlControl().getData('incomes');
+      final expenses = await SqlControl().getData('expenses');
+      final commitments = await SqlControl().getData('commitments');
+
+      expect(incomes.length, 1);
+      expect(expenses.length, 1);
+      expect(commitments.length, 1);
+
       await db.close();
     });
   });

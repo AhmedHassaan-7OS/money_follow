@@ -23,9 +23,12 @@ class HistoryCubit extends Cubit<HistoryState> {
       await _loadIncomes(items);
       await _loadCommitments(items);
       items.sort((a, b) => b.date.compareTo(a.date));
-      emit(state.copyWith(items: items, isLoading: false));
-    } catch (_) {
-      emit(state.copyWith(isLoading: false));
+      emit(state.copyWith(items: items, isLoading: false, clearErrorMessage: true));
+    } catch (e) {
+      emit(state.copyWith(
+        isLoading: false,
+        errorMessage: 'Failed to load history: $e',
+      ));
     }
   }
 
@@ -37,12 +40,14 @@ class HistoryCubit extends Cubit<HistoryState> {
     final data = await _sql.getData('expenses');
     for (final row in data) {
       final m = ExpenseModel.fromMap(row);
+      final date = DateTime.tryParse(m.date);
+      if (date == null) continue;
       out.add(HistoryItem(
         id: m.id.toString(),
         type: 'Expense',
         title: m.category,
         amount: -m.amount,
-        date: DateTime.parse(m.date),
+        date: date,
         note: m.note,
         icon: AppConstants.getCategoryIcon(m.category),
         color: AppTheme.errorColor,
@@ -54,12 +59,14 @@ class HistoryCubit extends Cubit<HistoryState> {
     final data = await _sql.getData('incomes');
     for (final row in data) {
       final m = IncomeModel.fromMap(row);
+      final date = DateTime.tryParse(m.date);
+      if (date == null) continue;
       out.add(HistoryItem(
         id: m.id.toString(),
         type: 'Income',
         title: m.source,
         amount: m.amount,
-        date: DateTime.parse(m.date),
+        date: date,
         icon: AppConstants.getIncomeSourceIcon(m.source),
         color: AppTheme.accentGreen,
       ));
@@ -70,12 +77,14 @@ class HistoryCubit extends Cubit<HistoryState> {
     final data = await _sql.getData('commitments');
     for (final row in data) {
       final m = CommitmentModel.fromMap(row);
+      final date = DateTime.tryParse(m.dueDate);
+      if (date == null) continue;
       out.add(HistoryItem(
         id: m.id.toString(),
         type: 'Commitment',
         title: m.title,
         amount: -m.amount,
-        date: DateTime.parse(m.dueDate),
+        date: date,
         icon: AppConstants.getCommitmentIcon(m.title),
         color: AppTheme.warningColor,
       ));

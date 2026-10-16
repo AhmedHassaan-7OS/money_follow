@@ -131,7 +131,7 @@ class BackupPage extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppTheme.warningColor.withOpacity(0.1),
+                color: AppTheme.warningColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(children: [
@@ -182,7 +182,7 @@ class _InfoHeader extends StatelessWidget {
         gradient: AppTheme.primaryGradient,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
-          BoxShadow(color: AppTheme.primaryBlue.withOpacity(0.3),
+          BoxShadow(color: AppTheme.primaryBlue.withValues(alpha: 0.3),
               blurRadius: 15, offset: const Offset(0, 8)),
         ],
       ),
@@ -197,11 +197,11 @@ class _InfoHeader extends StatelessWidget {
           ]),
           const SizedBox(height: 12),
           Text('Keep your financial data safe by creating backups.',
-              style: TextStyle(color: Colors.white.withOpacity(0.9),
+              style: TextStyle(color: Colors.white.withValues(alpha: 0.9),
                   fontSize: 14)),
           const SizedBox(height: 8),
           Text('Current backup size: ${backupSize.toStringAsFixed(2)} MB',
-              style: TextStyle(color: Colors.white.withOpacity(0.8),
+              style: TextStyle(color: Colors.white.withValues(alpha: 0.8),
                   fontSize: 12)),
         ],
       ),
@@ -232,7 +232,7 @@ class _ActionCard extends StatelessWidget {
           Container(
             width: 50, height: 50,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, color: color, size: 24),

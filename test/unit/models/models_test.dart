@@ -105,5 +105,36 @@ void main() {
       expect(back.title, 'Phone');
       expect(back.dueDate, '2026-10-01');
     });
+
+    test('fromMap throws ArgumentError on non-positive amount or missing required fields (release-safe)', () {
+      expect(
+        () => ExpenseModel.fromMap({'amount': 0, 'category': 'Food', 'date': '2026-10-01'}),
+        throwsArgumentError,
+      );
+      expect(
+        () => ExpenseModel.fromMap({'amount': -10, 'category': 'Food', 'date': '2026-10-01'}),
+        throwsArgumentError,
+      );
+      expect(
+        () => ExpenseModel.fromMap({'amount': 10, 'category': '', 'date': '2026-10-01'}),
+        throwsArgumentError,
+      );
+      expect(
+        () => IncomeModel.fromMap({'amount': 0, 'source': 'Salary', 'date': '2026-10-01'}),
+        throwsArgumentError,
+      );
+      expect(
+        () => IncomeModel.fromMap({'amount': 10, 'source': '', 'date': '2026-10-01'}),
+        throwsArgumentError,
+      );
+      expect(
+        () => CommitmentModel.fromMap({'amount': -5, 'title': 'Rent', 'dueDate': '2026-10-01'}),
+        throwsArgumentError,
+      );
+      expect(
+        () => CommitmentModel.fromMap({'amount': 10, 'title': '', 'dueDate': '2026-10-01'}),
+        throwsArgumentError,
+      );
+    });
   });
 }

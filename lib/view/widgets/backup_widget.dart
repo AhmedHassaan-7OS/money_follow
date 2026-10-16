@@ -4,6 +4,8 @@ import 'package:money_follow/view/pages/backup_page.dart';
 
 /// Simple backup widget that can be added to settings or main screen
 class BackupWidget extends StatelessWidget {
+  const BackupWidget({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -36,6 +38,8 @@ class BackupWidget extends StatelessWidget {
 
 /// Quick backup actions widget for dashboard
 class QuickBackupActions extends StatelessWidget {
+  const QuickBackupActions({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Card(

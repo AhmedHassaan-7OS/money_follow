@@ -51,7 +51,7 @@ class _ThemeTile extends StatelessWidget {
           trailing: Switch(
             value: state.isDarkMode,
             onChanged: (_) => context.read<ThemeCubit>().toggleTheme(),
-            activeColor: AppTheme.primaryBlue,
+            activeThumbColor: AppTheme.primaryBlue,
           ),
         );
       },

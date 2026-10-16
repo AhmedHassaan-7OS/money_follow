@@ -1,19 +1,26 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:money_follow/control/sqlcontrol.dart';
+import 'package:money_follow/core/constants/app_constants.dart';
 import 'package:money_follow/models/commitment_model.dart';
+import 'package:money_follow/models/expense_model.dart';
 import 'package:money_follow/repository/commitment_repository.dart';
+import 'package:money_follow/repository/expense_repository.dart';
 import 'package:money_follow/services/commitment_reminder_service.dart';
 import 'commitment_state.dart';
 
 /// Handles commitment CRUD, filtering, and reminders.
 class CommitmentCubit extends Cubit<CommitmentState> {
   final CommitmentRepository _repo;
+  final ExpenseRepository _expenseRepo;
   final SqlControl _sql;
 
   CommitmentCubit({
     CommitmentRepository? repo,
+    ExpenseRepository? expenseRepo,
     SqlControl? sql,
   })  : _repo = repo ?? CommitmentRepository(),
+        _expenseRepo = expenseRepo ?? ExpenseRepository(),
         _sql = sql ?? SqlControl(),
         super(const CommitmentState());
 
@@ -35,7 +42,12 @@ class CommitmentCubit extends Cubit<CommitmentState> {
     emit(state.copyWith(filter: filter));
   }
 
-  Future<void> toggleStatus(CommitmentModel item, bool value) async {
+  Future<void> toggleStatus(
+    CommitmentModel item,
+    bool value, {
+    bool recordAsExpense = false,
+  }) async {
+    if (item.id == null) return;
     try {
       final updated = CommitmentModel(
         id: item.id,
@@ -45,9 +57,17 @@ class CommitmentCubit extends Cubit<CommitmentState> {
         isCompleted: value,
       );
       await _repo.update(updated, item.id!);
-      if (value && item.id != null) {
+      if (value) {
         await CommitmentReminderService
             .clearReminderMarkersForCommitment(item.id!);
+        if (recordAsExpense) {
+          await _expenseRepo.insert(ExpenseModel(
+            amount: item.amount,
+            category: 'Bills',
+            date: DateFormat(AppConstants.dbDateFormat).format(DateTime.now()),
+            note: 'Paid commitment: ${item.title}',
+          ));
+        }
       }
       await load();
     } catch (e) {
@@ -56,12 +76,11 @@ class CommitmentCubit extends Cubit<CommitmentState> {
   }
 
   Future<void> delete(CommitmentModel item) async {
+    if (item.id == null) return;
     try {
       await _repo.delete(item.id!);
-      if (item.id != null) {
-        await CommitmentReminderService
-            .clearReminderMarkersForCommitment(item.id!);
-      }
+      await CommitmentReminderService
+          .clearReminderMarkersForCommitment(item.id!);
       emit(state.copyWith(
         message: 'Commitment deleted',
         isSuccess: true,

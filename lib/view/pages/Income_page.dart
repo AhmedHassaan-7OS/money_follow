@@ -185,7 +185,7 @@ class _SourceChips extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
               color: isSelected
-                  ? AppTheme.accentGreen.withOpacity(0.1)
+                  ? AppTheme.accentGreen.withValues(alpha: 0.1)
                   : AppTheme.getCardColor(context),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
@@ -232,7 +232,7 @@ class _IncomeListItem extends StatelessWidget {
           Container(
             width: 40, height: 40,
             decoration: BoxDecoration(
-              color: AppTheme.accentGreen.withOpacity(0.1),
+              color: AppTheme.accentGreen.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(AppConstants.getIncomeSourceIcon(income.source),

@@ -1,5 +1,6 @@
 /// Models for backup operations
 /// Contains all data structures used in backup and restore functionality
+library;
 
 /// Result class for backup import operations
 class BackupImportResult {

@@ -17,6 +17,16 @@ class AISuggestionService {
       return 'Transport';
     }
     
+    // فواتير ثابتة بفوز قبل Shopping عشان `phone bill` دائماً Bills (B10)،
+    // لكنها بعد الطيران وHealthcare عشان `Hospital bill` بترجع Healthcare.
+    if (_containsAny(tokens, ['hospital'])) {
+      return 'Healthcare';
+    }
+    if (_containsAny(tokens, ['bill', 'insurance', 'rent', 'mortgage', 'loan',
+                              'internet', 'electricity', 'water', 'utility'])) {
+      return 'Bills';
+    }
+
     // Food related keywords
     if (_containsAny(tokens, ['restaurant', 'food', 'meal', 'lunch', 'dinner', 'breakfast', 
                            'pizza', 'burger', 'coffee', 'tea', 'snack', 'grocery', 'supermarket',
@@ -129,7 +139,7 @@ class AISuggestionService {
   /// B9 fix: رمز العملة دلوقتي باراميتر (افتراضي الرمز الدولار).
   static Map<String, String> getSpendingInsights(
     Map<String, double> categorySpending, {
-    String currencySymbol = r'\$',
+    String currencySymbol = r'$',
   }) {
     Map<String, String> insights = {};
     
@@ -163,15 +173,23 @@ class AISuggestionService {
   /// يجزئ النص لكلمات (tokens): يفصل على غير الأحرف/الأرقام،
   /// وبيرفع بسيط للجمع (cars → car, taxis → taxi).
   static List<String> _tokenize(String text) {
-    final words = text.toLowerCase().split(RegExp(r'[^a-z0-9]+'))
-        .where((w) => w.isNotEmpty).toList();
-    return [for (final w in words) w.length > 3 && w.endsWith('s') ? w.substring(0, w.length - 1) : w];
+    return text.toLowerCase()
+        .split(RegExp(r'[^a-z0-9]+'))
+        .where((w) => w.isNotEmpty)
+        .toList();
   }
 
-  /// مطابقة على مستوى الكلمة: tokens جاهزة مقابل keyword list —
-  /// بدل substring اللي كان بيسبب false positives (B10).
+  /// مطابقة على مستوى الكلمة — بدل substring اللي كان بيسبب false positives (B10).
+  /// بيتحمل الجمع البسيط: `meals` يطابق `meal`، و`mcdonalds` يطابق `mcdonalds` نفسها.
   static bool _containsAny(List<String> tokens, List<String> keywords) {
-    return tokens.any((t) => keywords.contains(t));
+    for (final t in tokens) {
+      if (keywords.contains(t)) return true;
+      if (t.endsWith('s') && keywords.contains(t.substring(0, t.length - 1))) {
+        return true;
+      }
+      if (keywords.contains('${t}s')) return true;
+    }
+    return false;
   }
   
   /// Suggest budget allocation percentages
@@ -195,7 +213,7 @@ class AISuggestionService {
   static List<String> getPersonalizedRecommendations(
     Map<String, double> monthlySpending,
     double monthlyIncome, {
-    String currencySymbol = r'\$',
+    String currencySymbol = r'$',
   }) {
     List<String> recommendations = [];
     

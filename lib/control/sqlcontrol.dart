@@ -103,10 +103,14 @@ class SqlControl {
     }
   }
 
+  static Transaction? _activeTxn;
+
+  Future<DatabaseExecutor> get _executor async => _activeTxn ?? await db;
+
   /// Insert
   Future<int> insertData(String table, Map<String, dynamic> data) async {
     try {
-      Database dbClient = await db;
+      final dbClient = await _executor;
       return await dbClient.insert(table, data);
     } catch (_) {
       rethrow;
@@ -116,7 +120,7 @@ class SqlControl {
   /// Read
   Future<List<Map<String, dynamic>>> getData(String table) async {
     try {
-      Database dbClient = await db;
+      final dbClient = await _executor;
       return await dbClient.query(table);
     } catch (_) {
       rethrow;
@@ -130,7 +134,7 @@ class SqlControl {
     int id,
   ) async {
     try {
-      Database dbClient = await db;
+      final dbClient = await _executor;
       return await dbClient.update(table, data, where: 'id = ?', whereArgs: [id]);
     } catch (_) {
       rethrow;
@@ -140,25 +144,34 @@ class SqlControl {
   /// Delete
   Future<int> deleteData(String table, int id) async {
     try {
-      Database dbClient = await db;
+      final dbClient = await _executor;
       return await dbClient.delete(table, where: 'id = ?', whereArgs: [id]);
     } catch (_) {
       rethrow;
     }
   }
 
+  /// Clear all rows in a table
+  Future<int> clearTable(String table) async {
+    try {
+      final dbClient = await _executor;
+      return await dbClient.delete(table);
+    } catch (_) {
+      rethrow;
+    }
+  }
+
   // Get total amount for a specific date range.
-  // B6 fix: المدى نص مفتوح [startDate, endDate + 1 يوم) — النفس مقارنة يدف
+  // B6 fix: المدى نص مفتوح [startDate, endDate + 1 يوم)
   // بيشمل تواريخ فيها وقت (2026-10-16T23:59) وبيستبعد 2026-10-17،
-  // وبيحافظ على إمكانية استفادة الـ index.
-  // endDate لازم بصيغة yyyy-MM-dd (أو yyyy-MM-ddTHH:mm — بنزبطها هنا).
+  // وبيحافظ على إمكانية استفادة الـ index، وآمن ضد التوقيت الصيفي (DST).
   Future<double> getTotalAmountForDateRange(String table, String startDate, String endDate) async {
     try {
-      // نطبيء الحد الأعلى: ناخد أول 10 حروف (yyyy-MM-dd) ونزوّد يوم واحد.
       final endDay = endDate.length > 10 ? endDate.substring(0, 10) : endDate;
-      final endDateExclusive = DateTime.parse('$endDay' 'T00:00').add(const Duration(days: 1));
+      final parsedEnd = DateTime.parse('${endDay}T00:00');
+      final endDateExclusive = DateTime(parsedEnd.year, parsedEnd.month, parsedEnd.day + 1);
       final endDateNext = endDateExclusive.toIso8601String().substring(0, 10);
-      Database dbClient = await db;
+      final dbClient = await _executor;
       final result = await dbClient.rawQuery('''
         SELECT SUM(amount) as total
         FROM $table
@@ -170,14 +183,14 @@ class SqlControl {
       }
       return 0.0;
     } catch (_) {
-      return 0.0;
+      rethrow;
     }
   }
 
   // Get daily summaries for all transaction days
   Future<Map<String, Map<String, double>>> getDailySummaries() async {
     try {
-      Database dbClient = await db;
+      final dbClient = await _executor;
 
       final expensesResult = await dbClient.rawQuery('''
         SELECT date, SUM(amount) as total
@@ -211,7 +224,22 @@ class SqlControl {
 
       return summaries;
     } catch (_) {
-      return {};
+      rethrow;
     }
+  }
+
+  Future<T> transaction<T>(Future<T> Function(Transaction txn) action) async {
+    if (_activeTxn != null) {
+      return action(_activeTxn!);
+    }
+    final client = await db;
+    return client.transaction((txn) async {
+      _activeTxn = txn;
+      try {
+        return await action(txn);
+      } finally {
+        _activeTxn = null;
+      }
+    });
   }
 }

@@ -29,7 +29,7 @@ class GlassBottomNav extends StatelessWidget {
         borderRadius: BorderRadius.circular(40),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withValues(alpha: 0.2),
             blurRadius: 30,
             offset: const Offset(0, 10),
           ),
@@ -43,7 +43,7 @@ class GlassBottomNav extends StatelessWidget {
             height: 75,
             color: AppTheme.getCardColor(
               context,
-            ).withOpacity(0.65), // Soft, theme-aware transparent glass
+            ).withValues(alpha: 0.65), // Soft, theme-aware transparent glass
             padding: const EdgeInsets.symmetric(horizontal: 12),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -59,7 +59,7 @@ class GlassBottomNav extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? AppTheme.primaryBlue.withOpacity(0.15)
+                          ? AppTheme.primaryBlue.withValues(alpha: 0.15)
                           : Colors.transparent,
                       borderRadius: BorderRadius.circular(24),
                     ),

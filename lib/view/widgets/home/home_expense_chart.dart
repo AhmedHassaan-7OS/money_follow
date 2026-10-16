@@ -24,7 +24,7 @@ class HomeExpenseChart extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(Theme.of(context).brightness == Brightness.dark ? 0.3 : 0.05),
+            color: Colors.black.withValues(alpha: Theme.of(context).brightness == Brightness.dark ? 0.3 : 0.05),
             blurRadius: 10, offset: const Offset(0, 2),
           ),
         ],
@@ -42,7 +42,7 @@ class HomeExpenseChart extends StatelessWidget {
                     duration: const Duration(milliseconds: 200),
                     margin: const EdgeInsets.symmetric(horizontal: 4),
                     padding: const EdgeInsets.symmetric(vertical: 8),
-                    decoration: BoxDecoration(color: active ? AppTheme.primaryBlue.withOpacity(0.15) : Colors.transparent, borderRadius: BorderRadius.circular(12)),
+                    decoration: BoxDecoration(color: active ? AppTheme.primaryBlue.withValues(alpha: 0.15) : Colors.transparent, borderRadius: BorderRadius.circular(12)),
                     child: Center(child: Text(type, style: TextStyle(color: active ? AppTheme.primaryBlue : AppTheme.getTextSecondary(context), fontWeight: FontWeight.bold, fontSize: 12))),
                   ),
                 ),

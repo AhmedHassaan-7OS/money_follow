@@ -22,8 +22,8 @@ class SettingsCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(16),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withOpacity(
-            Theme.of(context).brightness == Brightness.dark ? 0.3 : 0.05,
+          color: Colors.black.withValues(
+            alpha: Theme.of(context).brightness == Brightness.dark ? 0.3 : 0.05,
           ),
           blurRadius: 10,
           offset: const Offset(0, 2),
@@ -57,7 +57,7 @@ class SettingsTile extends StatelessWidget {
       width: 40,
       height: 40,
       decoration: BoxDecoration(
-        color: AppTheme.primaryBlue.withOpacity(0.1),
+        color: AppTheme.primaryBlue.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Icon(icon, color: AppTheme.primaryBlue, size: 20),
@@ -74,6 +74,6 @@ class SettingsDivider extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Divider(
     height: 1,
-    color: AppTheme.getTextSecondary(context).withOpacity(0.1),
+    color: AppTheme.getTextSecondary(context).withValues(alpha: 0.1),
   );
 }

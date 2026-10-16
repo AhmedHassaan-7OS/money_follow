@@ -23,11 +23,11 @@ void main() {
   });
 
   group('HomeCubit — الحسابات الأساسية', () {
-    test('الرصيد على Golden Dataset = 4800.51', () async {
+    test('الرصيد على Golden Dataset = 5100.51 (المستقبلي مستبعد)', () async {
       await seedGoldenDataset(sql);
       final cubit = HomeCubit(sql: sql, now: fixedClock())..loadData();
       await Future<void>.delayed(const Duration(milliseconds: 50));
-      expect(cubit.state.totalBalance, closeTo(4800.51, 0.001));
+      expect(cubit.state.totalBalance, closeTo(5100.51, 0.001));
       expect(cubit.state.isLoading, isFalse);
     });
 
@@ -48,22 +48,21 @@ void main() {
       expect(cubit.state.totalBalance, -500.0);
     });
 
-    test('B4: Home monthlyExpenses بتحسب كامل الشهر (بما فيه المستقبلي) = 1300', () async {
-      // حسب الخطة §3: كارت الشهر في Home بيحسب كل الشهر (300 Shopping بـ 10-20 داخل)
+    test('B4 fix: Home monthlyExpenses بتحسب الشهر حتى اليوم فقط = 1000', () async {
       await seedGoldenDataset(sql);
       final cubit = HomeCubit(sql: sql, now: fixedClock())..loadData();
       await Future<void>.delayed(const Duration(milliseconds: 50));
-      expect(cubit.state.monthlyExpenses, closeTo(1300.00, 0.001));
+      expect(cubit.state.monthlyExpenses, closeTo(1000.00, 0.001));
     });
 
-    test('عند خطأ قاعدة بيانات بيبلع الخطأ بلا رسالة (B11)', () async {
+    test('B11 fix: عند خطأ قاعدة بيانات يظهر errorMessage بدل الصمت', () async {
       await seedGoldenDataset(sql);
       await db.close(); // DB error source
       final cubit = HomeCubit(sql: sql, now: fixedClock())..loadData();
       await Future<void>.delayed(const Duration(milliseconds: 50));
       expect(cubit.state.isLoading, isFalse);
-      // B11: الخطا مضبوط، لا رسالة لا حالة error — شاشة فاضية
-      expect(cubit.state.totalBalance, 0.0);
+      expect(cubit.state.errorMessage, isNotNull);
+      expect(cubit.state.errorMessage, contains('Failed to load home data'));
     });
   });
 
@@ -76,21 +75,23 @@ void main() {
       await Future<void>.delayed(const Duration(milliseconds: 50));
     });
 
-    test('Month (تلقائي): كل الشهر بالمستقبل = 1300', () {
+    test('Month (تلقائي): الشهر حتى اليوم = 1000 ويستبعد المستقبلي', () {
       final map = cubit.getExpensesByCategory();
       expect(map['Food'], closeTo(150.25, 0.001));
       expect(map['Transport'], closeTo(49.75, 0.001));
       expect(map['Bills'], closeTo(800.00, 0.001));
-      expect(map['Shopping'], closeTo(300.00, 0.001));
+      expect(map['Shopping'], isNull, reason: 'المستقبلي مستبعد');
+      expect(map.length, 3);
     });
 
-    test('Year: نفسه + Food = 250.24 (يوصل 99.99 من سبتمبر)', () {
+    test('Year: السنة حتى اليوم = 1099.99 ويستبعد المستقبلي', () {
       cubit.setChartTimeFilter('Year');
       final map = cubit.getExpensesByCategory();
       expect(map['Food'], closeTo(150.25 + 99.99, 0.001));
       expect(map['Transport'], closeTo(49.75, 0.001));
       expect(map['Bills'], closeTo(800.00, 0.001));
-      expect(map['Shopping'], closeTo(300.00, 0.001));
+      expect(map['Shopping'], isNull, reason: 'المستقبلي مستبعد');
+      expect(map.length, 3);
     });
 
     test('All: Food 250.24، Transport 49.75، Bills 800، Shopping 300', () {
@@ -100,14 +101,24 @@ void main() {
       expect(map.length, 4);
     });
 
-    test('Week (آخر 7 أيام): تواريخ مستقبلية بتندخل (مشكلة B5)', () {
+    test('Week (أسبوع تقويمي): يستبعد التواريخ المستقبلية حتى لو داخل نفس الأسبوع (B5 fix)', () async {
+      // إضافة مصروف غداً السبت 2026-10-17 (داخل نفس الأسبوع التقويمي لكن بعد اليوم)
+      await sql.insertData('expenses', {
+        'amount': 75.0,
+        'category': 'Entertainment',
+        'date': '2026-10-17',
+      });
+      await cubit.loadData();
+
       cubit.setChartTimeFilter('Week');
       final map = cubit.getExpensesByCategory();
       expect(map['Food'], closeTo(150.25, 0.001));
       expect(map['Transport'], closeTo(49.75, 0.001));
-      expect(map['Shopping'], closeTo(300.00, 0.001),
-          reason:
-              'B5: فلتر Week في Home بيدخل تواريخ مستقبلية (بعد اليوم) لأنه مقارنة isAfter بس من غير حد أعلى');
+      expect(map['Shopping'], isNull,
+          reason: 'B5 fix: فلتر Week يستبعد التواريخ بعد اليوم');
+      expect(map['Entertainment'], isNull,
+          reason: 'B5 fix: مصروف غداً داخل نفس الأسبوع لازم يُستبعد برضه ليطابق StatisticsCubit');
+      expect(map.length, 2);
     });
   });
 
@@ -146,6 +157,7 @@ void main() {
     });
 
     test("فلتر 'All' للفئة بيرجع كل الفئات", () {
+      cubit.setChartTimeFilter('All');
       cubit.setFilterCategory('All');
       final map = cubit.getExpensesByCategory();
       expect(map.length, 4);
@@ -173,11 +185,11 @@ void main() {
           reason: 'أسبوع تقويمي من الاتنين 12-10 — نفس قيمة اليوم لأن 12→16 فيه 16 بس');
       expect(loaded.totalSpentThisMonth, closeTo(1000.00, 0.001));
 
-      // B4: نفس الشهر بيرجع رقمين مختلفين في المكانين
+      // B4 fix: نفس الشهر يرجع نفس الرقم في المكانين
       final home = HomeCubit(sql: sql, now: fixedClock())..loadData();
       await Future<void>.delayed(const Duration(milliseconds: 50));
-      expect(home.state.monthlyExpenses, isNot(closeTo(loaded.totalSpentThisMonth, 0.5)),
-          reason: 'B4: Home 1300 مقابل Statistics 1000 لنفس الشهر');
+      expect(home.state.monthlyExpenses, closeTo(loaded.totalSpentThisMonth, 0.001),
+          reason: 'B4 fix: Home 1000 يطابق Statistics 1000 لنفس الشهر');
     });
 
     test('أول يوم في الشهر: اليوم = الأسبوع = الشهر = نفس القيمة', () async {
@@ -217,16 +229,17 @@ void main() {
     test('عشر عمليات متبادلة: الرصيد = مجموع الدخل − مجموع المصروف', () async {
       double incTotal = 0.0, expTotal = 0.0;
       for (var i = 0; i < 10; i++) {
+        final dayStr = (i + 1).toString().padLeft(2, '0');
         if (i.isEven) {
           final a = (i + 1) * 10.25;
           incTotal += a;
           await sql.insertData(
-              'incomes', {'amount': a, 'source': 'S$i', 'date': '2026-10-1${i % 10}'});
+              'incomes', {'amount': a, 'source': 'S$i', 'date': '2026-10-$dayStr'});
         } else {
           final a = (i + 1) * 5.5;
           expTotal += a;
           await sql.insertData(
-              'expenses', {'amount': a, 'category': 'Food', 'date': '2026-10-1${i % 10}'});
+              'expenses', {'amount': a, 'category': 'Food', 'date': '2026-10-$dayStr'});
         }
       }
       final cubit = HomeCubit(sql: sql, now: fixedClock())..loadData();

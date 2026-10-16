@@ -13,6 +13,7 @@ class HomeState extends Equatable {
   final DateTime? customStartDate;
   final DateTime? customEndDate;
   final String? filterCategory;
+  final String? errorMessage;
 
   const HomeState({
     this.totalBalance = 0.0,
@@ -25,6 +26,7 @@ class HomeState extends Equatable {
     this.customStartDate,
     this.customEndDate,
     this.filterCategory,
+    this.errorMessage,
   });
 
   HomeState copyWith({
@@ -39,6 +41,8 @@ class HomeState extends Equatable {
     DateTime? customEndDate,
     String? filterCategory,
     bool clearFilterCategory = false,
+    String? errorMessage,
+    bool clearErrorMessage = false,
   }) {
     return HomeState(
       totalBalance: totalBalance ?? this.totalBalance,
@@ -51,6 +55,7 @@ class HomeState extends Equatable {
       customStartDate: customStartDate ?? this.customStartDate,
       customEndDate: customEndDate ?? this.customEndDate,
       filterCategory: clearFilterCategory ? null : (filterCategory ?? this.filterCategory),
+      errorMessage: clearErrorMessage ? null : (errorMessage ?? this.errorMessage),
     );
   }
 
@@ -66,5 +71,6 @@ class HomeState extends Equatable {
         customStartDate,
         customEndDate,
         filterCategory,
+        errorMessage,
       ];
 }

@@ -1,6 +1,6 @@
 /// Constants and configuration for backup operations.
 /// Contains all static values used across backup functionality.
-library backup_constants;
+library;
 
 class BackupConstants {
   // Private constructor to prevent instantiation
