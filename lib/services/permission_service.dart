@@ -62,8 +62,7 @@ class PermissionService {
 
       await savePermissionStatus(hasPermission);
       return hasPermission;
-    } catch (e) {
-      debugPrint('Error requesting permissions on startup: $e');
+    } catch (_) {
       await savePermissionStatus(false);
       return false;
     }
@@ -80,8 +79,7 @@ class PermissionService {
       }
 
       return await _checkIOSPermissions();
-    } catch (e) {
-      debugPrint('Error checking permission status: $e');
+    } catch (_) {
       return false;
     }
   }
@@ -106,8 +104,7 @@ class PermissionService {
 
       await savePermissionStatus(hasPermission);
       return hasPermission;
-    } catch (e) {
-      debugPrint('Error requesting permissions for backup: $e');
+    } catch (_) {
       return false;
     }
   }
@@ -143,8 +140,7 @@ class PermissionService {
       }
 
       return hasPermission;
-    } catch (e) {
-      debugPrint('Error requesting Android permissions: $e');
+    } catch (_) {
       return false;
     }
   }
@@ -163,8 +159,7 @@ class PermissionService {
       }
 
       return hasPermission;
-    } catch (e) {
-      debugPrint('Error requesting iOS permissions: $e');
+    } catch (_) {
       return false;
     }
   }
@@ -186,8 +181,7 @@ class PermissionService {
       }
 
       return await Permission.storage.status.isGranted;
-    } catch (e) {
-      debugPrint('Error checking Android permissions: $e');
+    } catch (_) {
       return false;
     }
   }
@@ -195,8 +189,7 @@ class PermissionService {
   static Future<bool> _checkIOSPermissions() async {
     try {
       return await Permission.photos.status.isGranted;
-    } catch (e) {
-      debugPrint('Error checking iOS permissions: $e');
+    } catch (_) {
       return false;
     }
   }

@@ -1,4 +1,6 @@
-class CurrencyState {
+import 'package:equatable/equatable.dart';
+
+class CurrencyState extends Equatable {
   final String currencyCode;
 
   const CurrencyState({this.currencyCode = 'USD'});
@@ -14,6 +16,9 @@ class CurrencyState {
       currencyCode: currencyCode ?? this.currencyCode,
     );
   }
+
+  @override
+  List<Object?> get props => [currencyCode];
 }
 
 /// Static currency data — separated from state.

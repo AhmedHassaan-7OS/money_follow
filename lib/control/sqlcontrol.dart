@@ -78,8 +78,7 @@ class SqlControl {
     try {
       Database dbClient = await db;
       return await dbClient.insert(table, data);
-    } catch (e) {
-      print('Error inserting data into $table: $e');
+    } catch (_) {
       rethrow;
     }
   }
@@ -89,8 +88,7 @@ class SqlControl {
     try {
       Database dbClient = await db;
       return await dbClient.query(table);
-    } catch (e) {
-      print('Error reading data from $table: $e');
+    } catch (_) {
       rethrow;
     }
   }
@@ -104,8 +102,7 @@ class SqlControl {
     try {
       Database dbClient = await db;
       return await dbClient.update(table, data, where: 'id = ?', whereArgs: [id]);
-    } catch (e) {
-      print('Error updating data in $table: $e');
+    } catch (_) {
       rethrow;
     }
   }
@@ -115,8 +112,7 @@ class SqlControl {
     try {
       Database dbClient = await db;
       return await dbClient.delete(table, where: 'id = ?', whereArgs: [id]);
-    } catch (e) {
-      print('Error deleting data from $table: $e');
+    } catch (_) {
       rethrow;
     }
   }
@@ -135,8 +131,7 @@ class SqlControl {
         return result.first['total'] as double;
       }
       return 0.0;
-    } catch (e) {
-      print('Error getting total amount for $table: $e');
+    } catch (_) {
       return 0.0;
     }
   }
@@ -175,8 +170,7 @@ class SqlControl {
       }
 
       return summaries;
-    } catch (e) {
-      print('Error getting daily summaries: $e');
+    } catch (_) {
       return {};
     }
   }

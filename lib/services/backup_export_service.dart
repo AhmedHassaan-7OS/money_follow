@@ -8,6 +8,7 @@ import 'package:money_follow/models/backup_models.dart';
 import 'package:money_follow/constants/backup_constants.dart';
 import 'package:money_follow/services/backup_data_processor.dart';
 import 'package:money_follow/services/permission_service.dart';
+import 'package:money_follow/utils/isolate_json.dart';
 
 /// Service for exporting backup data
 /// Handles backup creation, file saving, and sharing operations
@@ -23,7 +24,6 @@ class BackupExportService {
       // Check permissions first
       final hasPermissions = await _checkPermissions(context);
       if (!hasPermissions) {
-        print('تم رفض صلاحيات التخزين - لا يمكن تصدير النسخة الاحتياطية');
         return null;
       }
 
@@ -33,16 +33,14 @@ class BackupExportService {
       // Create backup data structure
       final backupData = BackupDataProcessor.createBackupData(allData);
 
-      // Convert to JSON
-      final jsonString = jsonEncode(backupData.toMap());
+      // Convert to JSON on a background isolate to avoid UI jank.
+      final jsonString = await encodeJsonInBackground(backupData.toMap());
 
       // Save to file
       final filePath = await _saveBackupToFile(jsonString);
 
-      print('Backup exported to: $filePath');
       return filePath;
-    } catch (e) {
-      print('Error creating backup: $e');
+    } catch (_) {
       return null;
     }
   }
@@ -52,15 +50,11 @@ class BackupExportService {
     try {
       final filePath = await exportBackup(context);
       if (filePath != null) {
-        await Share.shareXFiles(
-          [XFile(filePath)],
-          text: _generateShareText(),
-        );
+        await Share.shareXFiles([XFile(filePath)], text: _generateShareText());
         return true;
       }
       return false;
-    } catch (e) {
-      print('Error sharing backup: $e');
+    } catch (_) {
       return false;
     }
   }
@@ -68,22 +62,16 @@ class BackupExportService {
   /// Copy backup data to clipboard
   static Future<bool> copyBackupToClipboard([BuildContext? context]) async {
     try {
-      // Note: Clipboard operations don't require storage permissions
-      // but we check permissions to ensure user is aware of backup functionality
-      final hasPermissions = await _checkPermissions(context);
-      if (!hasPermissions && context != null) {
-        // Show warning but still allow clipboard copy
-        print('تحذير: لم يتم منح صلاحيات التخزين - ستكون ميزات النسخ الاحتياطي محدودة');
-      }
-
+      // Note: Clipboard operations don't require storage permissions, but this
+      // keeps the existing permission prompt flow for backup features.
+      await _checkPermissions(context);
       // Get backup data
       final backupJson = await _createBackupJson();
-      
+
       // Copy to clipboard
       await Clipboard.setData(ClipboardData(text: backupJson));
       return true;
-    } catch (e) {
-      print('Error copying backup to clipboard: $e');
+    } catch (_) {
       return false;
     }
   }
@@ -111,7 +99,7 @@ class BackupExportService {
   static Future<String> _createBackupJson() async {
     final allData = await BackupDataProcessor.getAllData();
     final backupData = BackupDataProcessor.createBackupData(allData);
-    return jsonEncode(backupData.toMap());
+    return encodeJsonInBackground(backupData.toMap());
   }
 
   /// Save backup to file in app directory
@@ -145,8 +133,7 @@ class BackupExportService {
     try {
       final allData = await BackupDataProcessor.getAllData();
       return allData.isNotEmpty;
-    } catch (e) {
-      print('Error validating backup data: $e');
+    } catch (_) {
       return false;
     }
   }
@@ -161,14 +148,8 @@ class BackupExportService {
         'commitments': (allData['commitments'] as List?)?.length ?? 0,
         'total': BackupDataProcessor.countBackupItems(allData),
       };
-    } catch (e) {
-      print('Error getting backup statistics: $e');
-      return {
-        'incomes': 0,
-        'expenses': 0,
-        'commitments': 0,
-        'total': 0,
-      };
+    } catch (_) {
+      return {'incomes': 0, 'expenses': 0, 'commitments': 0, 'total': 0};
     }
   }
 
@@ -177,7 +158,7 @@ class BackupExportService {
     try {
       final stats = await getBackupStatistics();
       return stats['total']! > 0;
-    } catch (e) {
+    } catch (_) {
       return false;
     }
   }

@@ -1,4 +1,6 @@
-class BackupState {
+import 'package:equatable/equatable.dart';
+
+class BackupState extends Equatable {
   final bool isLoading;
   final double backupSize;
   final String? message;
@@ -24,4 +26,7 @@ class BackupState {
       isSuccess: isSuccess ?? false,
     );
   }
+
+  @override
+  List<Object?> get props => [isLoading, backupSize, message, isSuccess];
 }

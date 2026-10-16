@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:money_follow/models/backup_models.dart';
@@ -48,8 +47,6 @@ class FilePickerService {
         return BackupFileResult.failure(BackupConstants.invalidFormatMessage);
       }
 
-      debugPrint('Successfully read backup file: ${pickedFile.name}');
-      
       return BackupFileResult.success(
         filePath: pickedFile.path,
         fileName: pickedFile.name,
@@ -57,7 +54,6 @@ class FilePickerService {
       );
       
     } catch (e) {
-      debugPrint('File picker error: $e');
       return BackupFileResult.failure(
         'خطأ في اختيار الملف: $e. يرجى استخدام الإدخال اليدوي كبديل.'
       );
@@ -83,9 +79,7 @@ class FilePickerService {
         withData: true, // Important for reading file content
         allowMultiple: false,
       );
-    } catch (e) {
-      debugPrint('JSON filter failed, trying with any file type: $e');
-      
+    } catch (_) {
       // Fallback: Allow any file type
       try {
         return await FilePicker.platform.pickFiles(
@@ -93,8 +87,7 @@ class FilePickerService {
           withData: true,
           allowMultiple: false,
         );
-      } catch (e2) {
-        debugPrint('File picker completely failed: $e2');
+      } catch (_) {
         return null;
       }
     }
@@ -108,13 +101,11 @@ class FilePickerService {
       if (pickedFile.bytes != null && pickedFile.bytes!.isNotEmpty) {
         // Primary method: Read from bytes (works with scoped storage)
         fileContent = utf8.decode(pickedFile.bytes!);
-        debugPrint('Successfully read file from bytes');
       } else if (pickedFile.path != null) {
         // Fallback method: Read from file path
         final file = File(pickedFile.path!);
         if (await file.exists()) {
           fileContent = await file.readAsString(encoding: utf8);
-          debugPrint('Successfully read file from path: ${pickedFile.path}');
         } else {
           throw Exception('File does not exist at path: ${pickedFile.path}');
         }
@@ -124,7 +115,6 @@ class FilePickerService {
 
       return BackupFileResult.success(content: fileContent);
     } catch (e) {
-      debugPrint('Error reading file content: $e');
       return BackupFileResult.failure('خطأ في قراءة محتوى الملف: $e');
     }
   }

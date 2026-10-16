@@ -27,7 +27,6 @@ class BackupImportService {
       return await BackupDataProcessor.processBackupData(fileResult.content!);
       
     } catch (e) {
-      print('File picker error: $e');
       return BackupImportResult.failure(
         'خطأ في اختيار الملف: $e. يرجى استخدام الإدخال اليدوي كبديل.'
       );

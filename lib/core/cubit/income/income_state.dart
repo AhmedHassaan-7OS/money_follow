@@ -1,6 +1,7 @@
+import 'package:equatable/equatable.dart';
 import 'package:money_follow/models/income_model.dart';
 
-class IncomeState {
+class IncomeState extends Equatable {
   final List<IncomeModel> incomes;
   final DateTime selectedDate;
   final bool isLoading;
@@ -30,4 +31,7 @@ class IncomeState {
       isSuccess: isSuccess ?? false,
     );
   }
+
+  @override
+  List<Object?> get props => [incomes, selectedDate, isLoading, message, isSuccess];
 }

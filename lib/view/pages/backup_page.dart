@@ -7,19 +7,8 @@ import 'package:money_follow/models/backup_models.dart';
 import 'package:money_follow/utils/app_localizations_temp.dart';
 import 'package:money_follow/view/widgets/app_snack_bar.dart';
 
-class BackupPage extends StatefulWidget {
+class BackupPage extends StatelessWidget {
   const BackupPage({super.key});
-
-  @override
-  State<BackupPage> createState() => _BackupPageState();
-}
-
-class _BackupPageState extends State<BackupPage> {
-  @override
-  void initState() {
-    super.initState();
-    context.read<BackupCubit>().loadBackupSize();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +71,7 @@ class _BackupPageState extends State<BackupPage> {
                   title: 'Import from File',
                   subtitle: 'Pick backup.json file',
                   color: AppTheme.accentGreen,
-                  onTap: () => _importFromFile(),
+                  onTap: () => _importFromFile(context),
                 ),
                 const SizedBox(height: 12),
                 _ActionCard(
@@ -90,7 +79,7 @@ class _BackupPageState extends State<BackupPage> {
                   title: 'Paste from Clipboard',
                   subtitle: 'Import backup data from clipboard',
                   color: AppTheme.primaryBlue,
-                  onTap: () => _importFromClipboard(),
+                  onTap: () => _importFromClipboard(context),
                 ),
                 const SizedBox(height: 24),
                 _NotesCard(),
@@ -102,26 +91,28 @@ class _BackupPageState extends State<BackupPage> {
     );
   }
 
-  Future<void> _importFromFile() async {
+  Future<void> _importFromFile(BuildContext context) async {
     final result =
         await context.read<BackupCubit>().pickAndImportFile(context);
-    if (result.success && result.data != null && mounted) {
-      _showImportDialog(result);
-    } else if (mounted && result.message.isNotEmpty) {
+    if (!context.mounted) return;
+    if (result.success && result.data != null) {
+      _showImportDialog(context, result);
+    } else if (result.message.isNotEmpty) {
       AppSnackBar.error(context, result.message);
     }
   }
 
-  Future<void> _importFromClipboard() async {
+  Future<void> _importFromClipboard(BuildContext context) async {
     final result = await context.read<BackupCubit>().importFromClipboard();
-    if (result.success && result.data != null && mounted) {
-      _showImportDialog(result);
-    } else if (mounted && result.message.isNotEmpty) {
+    if (!context.mounted) return;
+    if (result.success && result.data != null) {
+      _showImportDialog(context, result);
+    } else if (result.message.isNotEmpty) {
       AppSnackBar.error(context, result.message);
     }
   }
 
-  void _showImportDialog(BackupImportResult result) {
+  void _showImportDialog(BuildContext context, BackupImportResult result) {
     showDialog(
       context: context,
       builder: (dc) => AlertDialog(

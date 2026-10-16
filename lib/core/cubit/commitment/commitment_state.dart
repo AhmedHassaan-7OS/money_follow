@@ -1,8 +1,9 @@
+import 'package:equatable/equatable.dart';
 import 'package:money_follow/models/commitment_model.dart';
 
 enum CommitmentFilter { all, pending, completed }
 
-class CommitmentState {
+class CommitmentState extends Equatable {
   final List<CommitmentModel> commitments;
   final CommitmentFilter filter;
   final bool isLoading;
@@ -49,4 +50,13 @@ class CommitmentState {
       isSuccess: isSuccess ?? false,
     );
   }
+
+  @override
+  List<Object?> get props => [
+        commitments,
+        filter,
+        isLoading,
+        message,
+        isSuccess,
+      ];
 }

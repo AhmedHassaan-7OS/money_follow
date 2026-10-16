@@ -14,18 +14,8 @@ import 'package:money_follow/view/widgets/home/home_expense_chart.dart';
 import 'package:money_follow/view/widgets/home/home_chart_filter_chips.dart';
 import 'package:money_follow/view/widgets/home/home_commitment_card.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  @override
-  void initState() {
-    super.initState();
-    context.read<HomeCubit>().loadData();
-  }
 
   Widget _anm(Widget w, int i) => w.animate(delay: (i * 35).ms).fadeIn(duration: 400.ms).slideY(begin: 0.1, end: 0);
 

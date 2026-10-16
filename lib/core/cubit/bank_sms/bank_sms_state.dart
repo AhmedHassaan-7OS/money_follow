@@ -1,4 +1,6 @@
-class BankSmsState {
+import 'package:equatable/equatable.dart';
+
+class BankSmsState extends Equatable {
   final bool captureEnabled;
   final bool autoRecordEnabled;
   final int pendingCount;
@@ -28,4 +30,13 @@ class BankSmsState {
       pendingTransactions: pendingTransactions ?? this.pendingTransactions,
     );
   }
+
+  @override
+  List<Object?> get props => [
+        captureEnabled,
+        autoRecordEnabled,
+        pendingCount,
+        isLoading,
+        pendingTransactions,
+      ];
 }

@@ -36,7 +36,6 @@ class _ExpensePageBlocState extends State<ExpensePageBloc> {
   @override
   void initState() {
     super.initState();
-    context.read<ExpenseCubit>().loadExpenses();
     _notesController.addListener(_onNotesChanged);
   }
 
@@ -237,6 +236,7 @@ class _ExpensePageBlocState extends State<ExpensePageBloc> {
                       onPressed: _save,
                       isLoading: state is ExpenseSaving,
                     ),
+                    const SizedBox(height: 120),
                   ],
                 ),
               ),

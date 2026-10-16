@@ -7,21 +7,10 @@ import 'package:money_follow/view/widgets/app_snack_bar.dart';
 import 'package:money_follow/view/widgets/commitments/add_commitment_sheet.dart';
 import 'package:money_follow/view/widgets/commitments/commitments_list_view.dart';
 
-class CommitmentsPage extends StatefulWidget {
+class CommitmentsPage extends StatelessWidget {
   const CommitmentsPage({super.key});
 
-  @override
-  State<CommitmentsPage> createState() => _CommitmentsPageState();
-}
-
-class _CommitmentsPageState extends State<CommitmentsPage> {
-  @override
-  void initState() {
-    super.initState();
-    context.read<CommitmentCubit>().load();
-  }
-
-  void _showAddSheet() {
+  void _showAddSheet(BuildContext context) {
     showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
@@ -30,7 +19,7 @@ class _CommitmentsPageState extends State<CommitmentsPage> {
         onSave: (c) => context.read<CommitmentCubit>().insertSafe(c),
       ),
     ).then((saved) {
-      if (saved == true && mounted) {
+      if (saved == true && context.mounted) {
         AppSnackBar.success(context, 'Commitment added');
         context.read<CommitmentCubit>().load();
       }
@@ -44,7 +33,7 @@ class _CommitmentsPageState extends State<CommitmentsPage> {
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 120),
         child: FloatingActionButton.extended(
-          onPressed: _showAddSheet,
+          onPressed: () => _showAddSheet(context),
           icon: const Icon(Icons.add_task),
           label: const Text('Add'),
         ),

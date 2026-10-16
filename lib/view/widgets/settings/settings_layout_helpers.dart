@@ -6,9 +6,9 @@ class SectionTitle extends StatelessWidget {
   final String title;
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(bottom: 8),
-        child: Text(title, style: AppTheme.getHeadingSmall(context)),
-      );
+    padding: const EdgeInsets.only(bottom: 8),
+    child: Text(title, style: AppTheme.getHeadingSmall(context)),
+  );
 }
 
 class SettingsCard extends StatelessWidget {
@@ -16,21 +16,24 @@ class SettingsCard extends StatelessWidget {
   final Widget child;
   @override
   Widget build(BuildContext context) => Container(
-        decoration: BoxDecoration(
-          color: AppTheme.getCardColor(context),
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(
-                Theme.of(context).brightness == Brightness.dark ? 0.3 : 0.05,
-              ),
-              blurRadius: 10,
-              offset: const Offset(0, 2),
-            ),
-          ],
+    clipBehavior: Clip.antiAlias,
+    decoration: BoxDecoration(
+      color: AppTheme.getCardColor(context),
+      borderRadius: BorderRadius.circular(16),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(
+            Theme.of(context).brightness == Brightness.dark ? 0.3 : 0.05,
+          ),
+          blurRadius: 10,
+          offset: const Offset(0, 2),
         ),
-        child: child,
-      );
+      ],
+    ),
+    // ListTiles paint their background/ink on the nearest Material ancestor.
+    // A transparent Material lets those effects show above the card color.
+    child: Material(color: Colors.transparent, child: child),
+  );
 }
 
 class SettingsTile extends StatelessWidget {
@@ -50,26 +53,27 @@ class SettingsTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ListTile(
-        leading: Container(
-          width: 40, height: 40,
-          decoration: BoxDecoration(
-            color: AppTheme.primaryBlue.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(icon, color: AppTheme.primaryBlue, size: 20),
-        ),
-        title: Text(title, style: AppTheme.getBodyLarge(context)),
-        subtitle: Text(subtitle, style: AppTheme.getBodyMedium(context)),
-        trailing: trailing,
-        onTap: onTap,
-      );
+    leading: Container(
+      width: 40,
+      height: 40,
+      decoration: BoxDecoration(
+        color: AppTheme.primaryBlue.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Icon(icon, color: AppTheme.primaryBlue, size: 20),
+    ),
+    title: Text(title, style: AppTheme.getBodyLarge(context)),
+    subtitle: Text(subtitle, style: AppTheme.getBodyMedium(context)),
+    trailing: trailing,
+    onTap: onTap,
+  );
 }
 
 class SettingsDivider extends StatelessWidget {
   const SettingsDivider({super.key});
   @override
   Widget build(BuildContext context) => Divider(
-        height: 1,
-        color: AppTheme.getTextSecondary(context).withOpacity(0.1),
-      );
+    height: 1,
+    color: AppTheme.getTextSecondary(context).withOpacity(0.1),
+  );
 }

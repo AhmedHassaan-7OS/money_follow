@@ -6,7 +6,11 @@ import 'package:money_follow/models/commitment_model.dart';
 import 'package:money_follow/core/cubit/currency/currency_cubit.dart';
 
 class AnimatedCommitmentTile extends StatefulWidget {
-  const AnimatedCommitmentTile({super.key, required this.child, required this.delayMs});
+  const AnimatedCommitmentTile({
+    super.key,
+    required this.child,
+    required this.delayMs,
+  });
 
   final Widget child;
   final int delayMs;
@@ -64,48 +68,56 @@ class CommitmentTodoTile extends StatelessWidget {
 
     final accent = item.isCompleted
         ? AppTheme.accentGreen
-        : isOverdue ? AppTheme.errorColor : AppTheme.warningColor;
+        : isOverdue
+        ? AppTheme.errorColor
+        : AppTheme.warningColor;
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
       margin: const EdgeInsets.only(bottom: 10),
+      clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: AppTheme.getCardColor(context),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: accent.withOpacity(0.25)),
       ),
-      child: ListTile(
-        onTap: onTap,
-        leading: Checkbox(
-          value: item.isCompleted,
-          onChanged: (value) => onToggle(value ?? false),
-        ),
-        title: Text(
-          item.title,
-          style: AppTheme.getBodyLarge(context).copyWith(
-            decoration: item.isCompleted ? TextDecoration.lineThrough : null,
-            fontWeight: FontWeight.w600,
+      child: Material(
+        color: Colors.transparent,
+        child: ListTile(
+          onTap: onTap,
+          leading: Checkbox(
+            value: item.isCompleted,
+            onChanged: (value) => onToggle(value ?? false),
           ),
-        ),
-        subtitle: Text(
-          dueDate == null ? item.dueDate : 'Due ${DateFormat(AppConstants.displayDateFormat).format(dueDate)}${isOverdue ? ' (Overdue)' : ''}',
-          style: TextStyle(color: accent),
-        ),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text(
-              currency.formatAmount(item.amount),
-              style: TextStyle(color: accent, fontWeight: FontWeight.w700),
+          title: Text(
+            item.title,
+            style: AppTheme.getBodyLarge(context).copyWith(
+              decoration: item.isCompleted ? TextDecoration.lineThrough : null,
+              fontWeight: FontWeight.w600,
             ),
-            const SizedBox(height: 4),
-            Icon(
-              AppConstants.getCommitmentIcon(item.title),
-              size: 16,
-              color: accent,
-            ),
-          ],
+          ),
+          subtitle: Text(
+            dueDate == null
+                ? item.dueDate
+                : 'Due ${DateFormat(AppConstants.displayDateFormat).format(dueDate)}${isOverdue ? ' (Overdue)' : ''}',
+            style: TextStyle(color: accent),
+          ),
+          trailing: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                currency.formatAmount(item.amount),
+                style: TextStyle(color: accent, fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 4),
+              Icon(
+                AppConstants.getCommitmentIcon(item.title),
+                size: 16,
+                color: accent,
+              ),
+            ],
+          ),
         ),
       ),
     );

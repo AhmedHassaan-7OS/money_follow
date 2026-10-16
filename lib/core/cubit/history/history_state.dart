@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:equatable/equatable.dart';
 
-class HistoryItem {
+class HistoryItem extends Equatable {
   final String id;
   final String type;
   final String title;
@@ -20,9 +21,12 @@ class HistoryItem {
     required this.icon,
     required this.color,
   });
+
+  @override
+  List<Object?> get props => [id, type, title, amount, date, note, icon, color];
 }
 
-class HistoryState {
+class HistoryState extends Equatable {
   final List<HistoryItem> items;
   final String selectedFilter;
   final bool isLoading;
@@ -55,4 +59,7 @@ class HistoryState {
       isLoading: isLoading ?? this.isLoading,
     );
   }
+
+  @override
+  List<Object?> get props => [items, selectedFilter, isLoading];
 }

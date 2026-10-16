@@ -1,4 +1,6 @@
-class CommitmentReminderState {
+import 'package:equatable/equatable.dart';
+
+class CommitmentReminderState extends Equatable {
   final bool enabled;
   final int hoursBefore;
   final bool isLoading;
@@ -20,4 +22,7 @@ class CommitmentReminderState {
       isLoading: isLoading ?? this.isLoading,
     );
   }
+
+  @override
+  List<Object?> get props => [enabled, hoursBefore, isLoading];
 }

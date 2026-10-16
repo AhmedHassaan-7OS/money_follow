@@ -7,19 +7,8 @@ import 'package:money_follow/core/cubit/statistics/statistics_state.dart';
 import 'package:money_follow/core/cubit/currency/currency_cubit.dart';
 import 'package:money_follow/utils/app_localizations_temp.dart';
 
-class StatisticsPage extends StatefulWidget {
+class StatisticsPage extends StatelessWidget {
   const StatisticsPage({super.key});
-
-  @override
-  State<StatisticsPage> createState() => _StatisticsPageState();
-}
-
-class _StatisticsPageState extends State<StatisticsPage> {
-  @override
-  void initState() {
-    super.initState();
-    context.read<StatisticsCubit>().loadStatistics();
-  }
 
   @override
   Widget build(BuildContext context) {

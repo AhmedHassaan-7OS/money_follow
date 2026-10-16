@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
+import 'package:money_follow/utils/isolate_json.dart';
 import 'package:money_follow/control/sqlcontrol.dart';
 import 'package:money_follow/models/expense_model.dart';
 import 'package:money_follow/models/income_model.dart';
@@ -21,12 +21,17 @@ class BackupDataProcessor {
   /// Process and validate backup data from JSON string
   static Future<BackupImportResult> processBackupData(String jsonString) async {
     try {
-      final Map<String, dynamic> backupMap = jsonDecode(jsonString);
+      // Decode + parse on a background isolate to keep the UI thread free.
+      final Map<String, dynamic> backupMap = await decodeJsonMapInBackground(
+        jsonString,
+      );
       final backupData = BackupData.fromMap(backupMap);
 
       // Validate backup format
       if (!backupData.isValid) {
-        return BackupImportResult.failure(BackupConstants.invalidBackupFormatMessage);
+        return BackupImportResult.failure(
+          BackupConstants.invalidBackupFormatMessage,
+        );
       }
 
       // Validate app name
@@ -41,29 +46,42 @@ class BackupDataProcessor {
         backupDate: backupData.timestamp,
       );
     } catch (e) {
-      return BackupImportResult.failure('خطأ في قراءة ملف النسخة الاحتياطية: $e');
+      return BackupImportResult.failure(
+        'خطأ في قراءة ملف النسخة الاحتياطية: $e',
+      );
     }
   }
 
   /// Get all data from database
   static Future<Map<String, dynamic>> getAllData() async {
     try {
-      final incomeData = await _sqlControl.getData(BackupConstants.incomesTable);
-      final incomes = incomeData.map((e) => IncomeModel.fromMap(e).toMap()).toList();
+      final incomeData = await _sqlControl.getData(
+        BackupConstants.incomesTable,
+      );
+      final incomes = incomeData
+          .map((e) => IncomeModel.fromMap(e).toMap())
+          .toList();
 
-      final expenseData = await _sqlControl.getData(BackupConstants.expensesTable);
-      final expenses = expenseData.map((e) => ExpenseModel.fromMap(e).toMap()).toList();
+      final expenseData = await _sqlControl.getData(
+        BackupConstants.expensesTable,
+      );
+      final expenses = expenseData
+          .map((e) => ExpenseModel.fromMap(e).toMap())
+          .toList();
 
-      final commitmentData = await _sqlControl.getData(BackupConstants.commitmentsTable);
-      final commitments = commitmentData.map((e) => CommitmentModel.fromMap(e).toMap()).toList();
+      final commitmentData = await _sqlControl.getData(
+        BackupConstants.commitmentsTable,
+      );
+      final commitments = commitmentData
+          .map((e) => CommitmentModel.fromMap(e).toMap())
+          .toList();
 
       return {
         'incomes': incomes,
         'expenses': expenses,
         'commitments': commitments,
       };
-    } catch (e) {
-      debugPrint('Error getting data: $e');
+    } catch (_) {
       return {};
     }
   }
@@ -83,12 +101,9 @@ class BackupDataProcessor {
     bool clearExisting = false,
   }) async {
     try {
-      debugPrint('Starting backup restore...');
-      
       // Clear existing data if requested
       if (clearExisting) {
         await _clearAllData();
-        debugPrint('Existing data cleared');
       }
 
       int successCount = 0;
@@ -115,10 +130,8 @@ class BackupDataProcessor {
         errorCount += result['errors'] as int;
       }
 
-      debugPrint('Import completed: $successCount success, $errorCount errors');
       return errorCount == 0;
-    } catch (e) {
-      debugPrint('Error restoring backup: $e');
+    } catch (_) {
       return false;
     }
   }
@@ -130,16 +143,19 @@ class BackupDataProcessor {
 
     for (var incomeData in incomes) {
       try {
-        if (!incomeData.containsKey('amount') || !incomeData.containsKey('date')) {
+        if (!incomeData.containsKey('amount') ||
+            !incomeData.containsKey('date')) {
           throw Exception('Missing required fields in income data');
         }
-        
+
         final income = IncomeModel.fromMap(incomeData);
-        await _sqlControl.insertData(BackupConstants.incomesTable, income.toMap());
+        await _sqlControl.insertData(
+          BackupConstants.incomesTable,
+          income.toMap(),
+        );
         successCount++;
-      } catch (e) {
+      } catch (_) {
         errorCount++;
-        debugPrint('Error importing income: $e');
       }
     }
 
@@ -154,11 +170,13 @@ class BackupDataProcessor {
     for (var expenseData in expenses) {
       try {
         final expense = ExpenseModel.fromMap(expenseData);
-        await _sqlControl.insertData(BackupConstants.expensesTable, expense.toMap());
+        await _sqlControl.insertData(
+          BackupConstants.expensesTable,
+          expense.toMap(),
+        );
         successCount++;
-      } catch (e) {
+      } catch (_) {
         errorCount++;
-        debugPrint('Error importing expense: $e');
       }
     }
 
@@ -173,11 +191,13 @@ class BackupDataProcessor {
     for (var commitmentData in commitments) {
       try {
         final commitment = CommitmentModel.fromMap(commitmentData);
-        await _sqlControl.insertData(BackupConstants.commitmentsTable, commitment.toMap());
+        await _sqlControl.insertData(
+          BackupConstants.commitmentsTable,
+          commitment.toMap(),
+        );
         successCount++;
-      } catch (e) {
+      } catch (_) {
         errorCount++;
-        debugPrint('Error importing commitment: $e');
       }
     }
 
@@ -193,8 +213,8 @@ class BackupDataProcessor {
           await _sqlControl.deleteData(tableName, item['id']);
         }
       }
-    } catch (e) {
-      debugPrint('Error clearing data: $e');
+    } catch (_) {
+      return;
     }
   }
 
@@ -203,12 +223,12 @@ class BackupDataProcessor {
     try {
       final data = await getAllData();
       final backupData = createBackupData(data);
-      
-      final jsonString = jsonEncode(backupData.toMap());
+
+      // Encode on a background isolate; the payload can be large.
+      final jsonString = await encodeJsonInBackground(backupData.toMap());
       final sizeInBytes = utf8.encode(jsonString).length;
       return sizeInBytes / (1024 * 1024); // Convert to MB
-    } catch (e) {
-      debugPrint('Error calculating backup size: $e');
+    } catch (_) {
       return 0.0;
     }
   }

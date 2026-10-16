@@ -1,7 +1,8 @@
+import 'package:equatable/equatable.dart';
 import 'package:money_follow/models/expense_model.dart';
 import 'package:money_follow/models/commitment_model.dart';
 
-class HomeState {
+class HomeState extends Equatable {
   final double totalBalance;
   final double monthlyExpenses;
   final List<ExpenseModel> expenses;
@@ -52,4 +53,18 @@ class HomeState {
       filterCategory: clearFilterCategory ? null : (filterCategory ?? this.filterCategory),
     );
   }
+
+  @override
+  List<Object?> get props => [
+        totalBalance,
+        monthlyExpenses,
+        expenses,
+        commitments,
+        isLoading,
+        chartTimeFilter,
+        chartType,
+        customStartDate,
+        customEndDate,
+        filterCategory,
+      ];
 }

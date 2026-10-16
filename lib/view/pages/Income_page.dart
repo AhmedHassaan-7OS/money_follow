@@ -31,7 +31,6 @@ class _IncomePageState extends State<IncomePage> {
   @override
   void initState() {
     super.initState();
-    context.read<IncomeCubit>().loadIncomes();
   }
 
   @override

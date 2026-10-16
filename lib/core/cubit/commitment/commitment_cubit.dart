@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:money_follow/control/sqlcontrol.dart';
 import 'package:money_follow/models/commitment_model.dart';
@@ -75,12 +74,10 @@ class CommitmentCubit extends Cubit<CommitmentState> {
 
   Future<int> insertSafe(CommitmentModel commitment) async {
     try {
-      debugPrint('Commitment save: repository insert');
       return await _repo.insert(commitment).timeout(
             const Duration(seconds: 2),
           );
     } catch (_) {
-      debugPrint('Commitment save: fallback sqlcontrol');
       final map = commitment.toMap()..remove('id');
       return await _sql.insertData('commitments', map).timeout(
             const Duration(seconds: 2),
