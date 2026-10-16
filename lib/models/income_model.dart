@@ -17,12 +17,21 @@ class IncomeModel {
     return {'id': id, 'amount': amount, 'source': source, 'date': date};
   }
 
+  /// B2 fix: نفس منظرس Expense FromMap — قبول int/double وتحرير المطلوب.
   factory IncomeModel.fromMap(Map<String, dynamic> map) {
+    final amountValue = map['amount'];
+    if (amountValue is! num || !amountValue.isFinite) {
+      throw ArgumentError('amount is required and must be a valid number');
+    }
+    final dateValue = map['date'];
+    if (dateValue is! String || dateValue.isEmpty) {
+      throw ArgumentError('date is required');
+    }
     return IncomeModel(
-      id: map['id'],
-      amount: map['amount'],
-      source: map['source'],
-      date: map['date'],
+      id: map['id'] as int?,
+      amount: amountValue.toDouble(),
+      source: map['source'] as String? ?? '',
+      date: dateValue,
     );
   }
 }

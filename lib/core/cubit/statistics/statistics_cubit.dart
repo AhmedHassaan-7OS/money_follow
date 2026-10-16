@@ -6,15 +6,17 @@ import 'statistics_state.dart';
 /// Statistics Cubit (converted from StatisticsBloc).
 class StatisticsCubit extends Cubit<StatisticsState> {
   final SqlControl _sql;
+  final DateTime Function() _now;
 
-  StatisticsCubit({SqlControl? sql})
+  StatisticsCubit({SqlControl? sql, DateTime Function()? now})
       : _sql = sql ?? SqlControl(),
+        _now = now ?? DateTime.now,
         super(StatisticsInitial());
 
   Future<void> loadStatistics() async {
     emit(StatisticsLoading());
     try {
-      final now = DateTime.now();
+      final now = _now();
       final today = DateFormat('yyyy-MM-dd').format(now);
       final weekStart = DateFormat('yyyy-MM-dd')
           .format(now.subtract(Duration(days: now.weekday - 1)));

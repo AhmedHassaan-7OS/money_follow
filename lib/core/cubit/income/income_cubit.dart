@@ -31,6 +31,11 @@ class IncomeCubit extends Cubit<IncomeState> {
     required double amount,
     required String source,
   }) async {
+    // B1 defense: الـ assert مش شغال في release — فحص صريح قبل التخزين.
+    if (!amount.isFinite || amount <= 0) {
+      emit(state.copyWith(message: 'Error saving income: invalid amount'));
+      return;
+    }
     try {
       final income = IncomeModel(
         amount: amount,

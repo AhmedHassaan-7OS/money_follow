@@ -18,6 +18,11 @@ class AppValidators {
     if (parsed == null) {
       return 'Please enter a valid number';
     }
+    if (!parsed.isFinite) {
+      // B1: NaN و Infinity (و1e400 اللي بيطلع Infinity) لازم يترفضوا
+      // عشان قيمة فاسدة ما تتخزنش وتبوّظ SUM في SQL.
+      return 'Please enter a valid number';
+    }
     if (parsed <= 0) {
       return 'Amount must be greater than 0';
     }

@@ -3,52 +3,62 @@
 /// without requiring internet connection
 class AISuggestionService {
   
-  /// Suggest category based on expense description/note
+  /// Suggest category based on expense description/note.
+  ///
+  /// B10 fix: التفرقة بتتم على مستوى كلمة كاملة (tokens) بدل substring،
+  /// فعشان `teacher` ما توصفش Food لبـ tea، وbusiness ما توصفش Transport لبـ bus.
   static String suggestCategory(String description) {
     final desc = description.toLowerCase().trim();
+    final tokens = _tokenize(desc);
+    
+    // طيران/تذاكر مواصلات: check قبل Entertainment لكي flight ticket/piracy أكثر للنقل
+    // طيران/تذاكر المواصلات بتفوز على Entertainment عشان "flight ticket" ما تتصنفش ترفيه.
+    if (_containsAny(tokens, ['flight', 'airline'])) {
+      return 'Transport';
+    }
     
     // Food related keywords
-    if (_containsAny(desc, ['restaurant', 'food', 'meal', 'lunch', 'dinner', 'breakfast', 
+    if (_containsAny(tokens, ['restaurant', 'food', 'meal', 'lunch', 'dinner', 'breakfast', 
                            'pizza', 'burger', 'coffee', 'tea', 'snack', 'grocery', 'supermarket',
                            'mcdonalds', 'kfc', 'subway', 'starbucks', 'cafe'])) {
       return 'Food';
     }
     
     // Healthcare related keywords (check first to avoid 'bill' conflict)
-    if (_containsAny(desc, ['doctor', 'hospital', 'medicine', 'pharmacy', 'medical', 'health',
+    if (_containsAny(tokens, ['doctor', 'hospital', 'medicine', 'pharmacy', 'medical', 'health',
                            'dentist', 'clinic', 'surgery', 'treatment', 'prescription', 'drug'])) {
       return 'Healthcare';
     }
     
     // Entertainment related keywords (check before transport to handle 'ticket' properly)
-    if (_containsAny(desc, ['movie', 'cinema', 'theater', 'concert', 'game', 'gaming',
+    if (_containsAny(tokens, ['movie', 'cinema', 'theater', 'concert', 'game', 'gaming',
                            'entertainment', 'party', 'club', 'bar', 'pub', 'vacation',
                            'travel', 'hotel', 'ticket'])) {
       return 'Entertainment';
     }
     
     // Transport related keywords (removed generic 'ticket', kept specific transport tickets)
-    if (_containsAny(desc, ['gas', 'fuel', 'petrol', 'taxi', 'uber', 'lyft', 'bus', 'train',
-                           'metro', 'parking', 'toll', 'car', 'vehicle', 'transport', 'flight',
-                           'airline'])) {
+    if (_containsAny(tokens, ['gas', 'fuel', 'petrol', 'taxi', 'uber', 'lyft', 'bus', 'train',
+                           'metro', 'parking', 'toll', 'car', 'vehicle', 'transport',
+                           'flight', 'airline'])) {
       return 'Transport';
     }
     
     // Shopping related keywords
-    if (_containsAny(desc, ['shopping', 'mall', 'store', 'amazon', 'ebay', 'clothes', 'shoes',
+    if (_containsAny(tokens, ['shopping', 'mall', 'store', 'amazon', 'ebay', 'clothes', 'shoes',
                            'electronics', 'gadget', 'phone', 'laptop', 'book', 'gift', 'present'])) {
       return 'Shopping';
     }
     
     // Bills related keywords
-    if (_containsAny(desc, ['electricity', 'water', 'gas', 'internet', 'phone', 'mobile',
+    if (_containsAny(tokens, ['electricity', 'water', 'gas', 'internet', 'phone', 'mobile',
                            'insurance', 'rent', 'mortgage', 'loan', 'credit', 'bill', 'utility',
                            'subscription', 'netflix', 'spotify'])) {
       return 'Bills';
     }
     
     // Education related keywords
-    if (_containsAny(desc, ['school', 'university', 'college', 'course', 'book', 'education',
+    if (_containsAny(tokens, ['school', 'university', 'college', 'course', 'book', 'education',
                            'tuition', 'fee', 'class', 'lesson', 'training', 'certification'])) {
       return 'Education';
     }
@@ -114,8 +124,13 @@ class AISuggestionService {
     return tips;
   }
   
-  /// Get spending insights
-  static Map<String, String> getSpendingInsights(Map<String, double> categorySpending) {
+  /// Get spending insights.
+  ///
+  /// B9 fix: رمز العملة دلوقتي باراميتر (افتراضي الرمز الدولار).
+  static Map<String, String> getSpendingInsights(
+    Map<String, double> categorySpending, {
+    String currencySymbol = r'\$',
+  }) {
     Map<String, String> insights = {};
     
     if (categorySpending.isEmpty) {
@@ -140,14 +155,23 @@ class AISuggestionService {
     
     // Calculate total
     double total = categorySpending.values.fold(0, (sum, amount) => sum + amount);
-    insights['total'] = "Total expenses: \$${total.toStringAsFixed(2)}";
+    insights['total'] = 'Total expenses: $currencySymbol${total.toStringAsFixed(2)}';
     
     return insights;
   }
   
-  /// Check if description contains any of the keywords
-  static bool _containsAny(String text, List<String> keywords) {
-    return keywords.any((keyword) => text.contains(keyword));
+  /// يجزئ النص لكلمات (tokens): يفصل على غير الأحرف/الأرقام،
+  /// وبيرفع بسيط للجمع (cars → car, taxis → taxi).
+  static List<String> _tokenize(String text) {
+    final words = text.toLowerCase().split(RegExp(r'[^a-z0-9]+'))
+        .where((w) => w.isNotEmpty).toList();
+    return [for (final w in words) w.length > 3 && w.endsWith('s') ? w.substring(0, w.length - 1) : w];
+  }
+
+  /// مطابقة على مستوى الكلمة: tokens جاهزة مقابل keyword list —
+  /// بدل substring اللي كان بيسبب false positives (B10).
+  static bool _containsAny(List<String> tokens, List<String> keywords) {
+    return tokens.any((t) => keywords.contains(t));
   }
   
   /// Suggest budget allocation percentages
@@ -166,10 +190,13 @@ class AISuggestionService {
   }
   
   /// Get personalized recommendations
+  ///
+  /// B9 fix: رمز العملة باراميتر اختياري بدل `$` الثابت.
   static List<String> getPersonalizedRecommendations(
     Map<String, double> monthlySpending,
-    double monthlyIncome,
-  ) {
+    double monthlyIncome, {
+    String currencySymbol = r'\$',
+  }) {
     List<String> recommendations = [];
     
     if (monthlyIncome <= 0) return recommendations;
@@ -183,7 +210,8 @@ class AISuggestionService {
         
         if (difference > recommendedAmount * 0.2) { // 20% over budget
           recommendations.add(
-            "📉 Consider reducing $category spending by \$${difference.toStringAsFixed(2)}"
+            "📉 Consider reducing $category spending by "
+            "$currencySymbol${difference.toStringAsFixed(2)}"
           );
         }
       }

@@ -31,6 +31,12 @@ class ExpenseCubit extends Cubit<ExpenseState> {
     required String date,
     String? note,
   }) async {
+    // B1 defense: الـ assert مش شغال في release، فالفحص الصريح هنا
+    // يمنع تخزين NaN/Infinity في قاعدة البيانات.
+    if (!amount.isFinite || amount <= 0) {
+      emit(ExpenseError('Invalid amount'));
+      return;
+    }
     try {
       emit(ExpenseSaving());
       final expense = ExpenseModel(
@@ -54,6 +60,11 @@ class ExpenseCubit extends Cubit<ExpenseState> {
     required String date,
     String? note,
   }) async {
+    // B1 defense: نفس فحص addExpense.
+    if (!amount.isFinite || amount <= 0) {
+      emit(ExpenseError('Invalid amount'));
+      return;
+    }
     try {
       emit(ExpenseSaving());
       final expense = ExpenseModel(
@@ -117,7 +128,8 @@ class ExpenseCubit extends Cubit<ExpenseState> {
     return AISuggestionService.getFinancialTips(spending, income);
   }
 
-  Map<String, String> getSpendingInsights() {
+  /// B9: رمز العملة باراميتر اختياري — الصفحة بتمرره من CurrencyCubit.
+  Map<String, String> getSpendingInsights({String? currencySymbol}) {
     if (state is! ExpenseLoaded) return {'general': 'No data'};
     final expenses = (state as ExpenseLoaded).expenses;
     final month = DateFormat('yyyy-MM').format(DateTime.now());
@@ -127,6 +139,9 @@ class ExpenseCubit extends Cubit<ExpenseState> {
         spending[e.category] = (spending[e.category] ?? 0) + e.amount;
       }
     }
-    return AISuggestionService.getSpendingInsights(spending);
+    return AISuggestionService.getSpendingInsights(
+      spending,
+      currencySymbol: currencySymbol ?? r'\$',
+    );
   }
 }

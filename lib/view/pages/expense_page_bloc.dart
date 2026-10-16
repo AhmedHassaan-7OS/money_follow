@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:money_follow/core/constants/app_constants.dart'
     show AppConstants;
+import 'package:money_follow/core/cubit/currency/currency_cubit.dart'
+    show CurrencyCubit;
 import 'package:money_follow/view/widgets/amount_input_field.dart'
     show AmountInputField;
 import 'package:money_follow/view/widgets/app_card.dart' show AppCard;
@@ -259,7 +261,9 @@ class _AIInsightsCard extends StatelessWidget {
       return const SizedBox.shrink();
     }
     final cubit = context.read<ExpenseCubit>();
-    final insights = cubit.getSpendingInsights();
+    // B9: نمرر رمز العملة الحالي عشان الرسالة متبقاش برمز الدولار الثابت.
+    final currencySymbol = context.read<CurrencyCubit>().state.currencySymbol;
+    final insights = cubit.getSpendingInsights(currencySymbol: currencySymbol);
     final tips = cubit.getFinancialTips(3000);
 
     return Container(

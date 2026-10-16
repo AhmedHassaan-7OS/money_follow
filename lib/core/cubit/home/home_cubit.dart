@@ -8,9 +8,16 @@ import 'home_state.dart';
 
 /// Handles data loading for the home screen.
 class HomeCubit extends Cubit<HomeState> {
-  final SqlControl _sql = SqlControl();
+  final SqlControl _sql;
 
-  HomeCubit() : super(const HomeState());
+  /// نقطة الزمن المستخدمة في كل حسابات "اليوم/الشهر/الأسبوع".
+  /// قابلة للاستبدال في الاختبارات (injection) عشان النتائج تبقى حتمية.
+  final DateTime Function() _now;
+
+  HomeCubit({SqlControl? sql, DateTime Function()? now})
+      : _sql = sql ?? SqlControl(),
+        _now = now ?? DateTime.now,
+        super(const HomeState());
 
   Future<void> loadData() async {
     emit(state.copyWith(isLoading: true));
@@ -55,7 +62,7 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   double _monthlyExpenses(List<ExpenseModel> expenses) {
-    final currentMonth = DateFormat('yyyy-MM').format(DateTime.now());
+    final currentMonth = DateFormat('yyyy-MM').format(_now());
     return expenses
         .where((e) => e.date.startsWith(currentMonth))
         .fold(0.0, (s, e) => s + e.amount);
@@ -79,7 +86,7 @@ class HomeCubit extends Cubit<HomeState> {
 
   Map<String, double> getExpensesByCategory() {
     final map = <String, double>{};
-    final now = DateTime.now();
+    final now = _now();
     for (final e in state.expenses) {
       final edate = DateTime.tryParse(e.date);
       if (edate == null) continue;
